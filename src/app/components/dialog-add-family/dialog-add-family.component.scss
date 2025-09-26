@@ -1,0 +1,25 @@
+.fam-dialog{
+  background: #f6f8fb;
+  border-radius: 12px;
+  border: 1px solid #cfe0ef;
+  overflow: hidden;
+}
+
+::ng-deep .mat-dialog-container { padding: 0; }
+
+.fam-dialog__header{
+  background: #254b72;
+  color:#fff;
+  font-weight:800;
+  padding: 12px 16px;
+}
+
+.fam-dialog__body{ padding: 16px; }
+.fam-dialog__actions{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  padding: 0 16px 16px;
+}
+
+.w-full{ width:100%; }

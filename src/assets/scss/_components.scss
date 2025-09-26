@@ -1,0 +1,119 @@
+.bg-dark {
+  background-color: $dark;
+}
+
+.bg-custom {
+  background-color: $primary;
+}
+
+.text-muted {
+  color: $muted !important;
+}
+
+.text-dark {
+  color: $dark !important;
+}
+
+.text-custom {
+  color: $custom !important;
+}
+
+.btn {
+  padding: 12px 28px;
+}
+
+.btn-sm {
+  padding: 8px 15px;
+}
+
+.btn-rounded {
+  border-radius: 30px !important;
+}
+
+.btn-custom {
+  background-color: $accent;
+  border: 2px solid $accent;
+  color: $primary;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.5s;
+  border-radius: 5px;
+  letter-spacing: 1px;
+
+  &:hover {
+    border-color: $primary !important;
+    color: $primary !important;
+  }
+
+  &:active {
+    background: $primary;
+    border-color: $accent !important;
+    color: $accent !important;
+  }
+
+  &.active {
+    background: $primary;
+    border-color: $accent !important;
+    color: $accent !important;
+  }
+}
+
+.btn-white {
+  background-color: $offwhite;
+  border: 2px solid $offwhite;
+  color: $primary;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.5s;
+  border-radius: 5px;
+  letter-spacing: 1px;
+  text-transform: capitalize;
+
+  &:hover {
+    background: $accent;
+    border-color: $accent !important;
+    color: $primary !important;
+  }
+
+  &:active {
+    background: $accent;
+    border-color: $accent !important;
+    color: $primary !important;
+  }
+
+  &.active {
+    background: $accent;
+    border-color: $accent !important;
+    color: $primary !important;
+  }
+}
+
+.btn-black {
+  background-color: $primary;
+  border: 2px solid $primary;
+  color: $accent;
+  font-size: 18px;
+  font-weight: 600;
+  transition: all 0.5s;
+  border-radius: 5px;
+  letter-spacing: 1px;
+  text-transform: capitalize;
+
+  &:hover {
+    background: $primary;
+    border-color: $accent !important;
+    color: $accent !important;
+  }
+
+  &:active {
+    background: $accent;
+    border-color: $primary !important;
+    color: $accent !important;
+  }
+
+  &.active {
+    background: $accent;
+    border-color: $primary !important;
+    color: $accent !important;
+  }
+}

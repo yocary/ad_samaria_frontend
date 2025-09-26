@@ -1,0 +1,22 @@
+.cta_section {
+  background-color: $primary;
+  padding: 80px 0px;
+  border-radius: 12px;
+
+  .cta_content {
+    h1 {
+      max-width: 650px;
+      line-height: 1.4;
+      font-size: 44px;
+      color: $text-color !important;
+    }
+
+    p {
+      color: $text-color;
+      opacity: 0.8;
+      max-width: 650px;
+      line-height: 1.8;
+      font-size: 18px;
+    }
+  }
+}

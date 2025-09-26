@@ -1,0 +1,38 @@
+// variables.scss
+
+
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600;700;800&display=swap');
+
+$azul: #2b317f;
+$morado: #662480;
+$amarillo: #fdbf21;
+
+$primary: $azul;
+$accent: $amarillo;
+$primary-opacity: rgba($primary, 0.95);
+$accent-opacity: rgba($accent, 0.8);
+$text-color: #E3EAFC;
+$title-color: $accent;
+
+$dark:#ffffff;
+$custom:#fdbf21;
+$custom-hover:#2b9467;
+$bg-custom:#2b9467;
+$bg-custom-opacity:#F5F8FF;
+$white:#FFFFFF;
+$muted:#94989a;
+$offwhite:#E3EAFC;
+
+// Base Css
+
+$h-100vh:100vh;
+$z-index:2;
+
+// Font Family
+
+$font-family: 'Prompt',
+sans-serif;
+$font-family-secondary:'Prompt',
+sans-serif;
+$font-weight-normal:600;
+$font-weight-bold:700;

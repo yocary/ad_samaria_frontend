@@ -1,0 +1,18 @@
+.hit_box {
+  .hit_icon {
+    p {
+      background-color: $primary;
+      color: $text-color;
+      padding: 10px 16px;
+      display: inline-block;
+      border-radius: 8px;
+      font-size: 15px;
+    }
+  }
+
+  .hit_detail {
+    h4 {
+      font-weight: 600;
+    }
+  }
+}

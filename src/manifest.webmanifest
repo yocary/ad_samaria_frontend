@@ -1,0 +1,12 @@
+{
+  "name": "ad_samaria",
+  "short_name": "ad_samaria",
+  "theme_color": "#2b317f",
+  "background_color": "#2b317f",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "icons": [
+    
+  ]
+}

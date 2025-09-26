@@ -1,0 +1,31 @@
+.fam-dialog{
+  background:#fff;
+  border:1px solid #d9e5ef;
+  border-radius:12px;
+  overflow:hidden;
+}
+
+::ng-deep .mat-dialog-container { padding: 0; }
+
+.fam-dialog__header{
+  background:#254b72;
+  color:#fff;
+  font-weight:800;
+  padding:12px 16px;
+}
+
+.fam-dialog__body{ padding:12px 16px; }
+.fam-dialog__actions{
+  padding: 0 16px 16px;
+  display:flex;
+  justify-content:flex-end;
+}
+
+.table{
+  width:100%;
+  border:1px solid #e0eef6;
+  border-radius:6px;
+  overflow:hidden;
+}
+th{ background:#f7fbff; }
+td, th{ padding:10px 12px; }

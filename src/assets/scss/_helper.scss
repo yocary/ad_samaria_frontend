@@ -1,0 +1,95 @@
+// helper.scss
+
+
+.section {
+  padding-top: 80px;
+  padding-bottom: 80px;
+  position: relative;
+  background-color: transparent;
+}
+
+.h-100vh {
+  height: $h-100vh;
+}
+
+.z-index {
+  z-index: 1000;
+}
+
+.bg-light {
+  background-color: $bg-custom-opacity !important;
+}
+
+.bg-overlay {
+  background: rgba(26, 26, 26, 0.72);
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+}
+
+.curv_top {
+  svg {
+    position: absolute;
+    width: 100%;
+    top: -1px;
+    left: 0;
+    bottom: 0;
+  }
+}
+
+.curv_bottom {
+  svg {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+  }
+}
+
+.sec_main_head_title {
+  max-width: 650px;
+
+  p {
+    max-width: 500px;
+  }
+
+  h2 {
+    z-index: 1;
+    position: relative;
+    font-size: 38px;
+    font-weight: 600;
+    text-transform: capitalize;
+    line-height: 1.4;
+  }
+}
+
+.sec_main_head_title_bg {
+  max-width: 650px;
+
+  p {
+    max-width: 500px;
+    color: $text-color;
+    opacity: 0.8;
+  }
+
+  h2 {
+    z-index: 1;
+    position: relative;
+    font-size: 38px;
+    color: $text-color;
+    font-weight: 600;
+    text-transform: capitalize;
+    line-height: 1.4;
+  }
+}
+
+
+
+.sec_divider {
+  background-color: #f1f1f1;
+  height: 1px;
+  width: 68%;
+  display: block;
+}

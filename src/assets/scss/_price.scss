@@ -1,0 +1,61 @@
+.price_box {
+  position: relative;
+  border-radius: 5px;
+  border: 1px solid #e7e7e7;
+  padding: 30px 34px;
+  overflow: hidden;
+
+  .price_name {
+    h2 {
+      font-size: 34px;
+    }
+
+    p {
+      font-size: 22px;
+    }
+  }
+
+  .plan_price {
+    h1 {
+      font-size: 48px;
+
+      sub {
+        font-size: 24px;
+        position: relative;
+        top: 0px;
+      }
+    }
+  }
+}
+
+.price_box.active {
+  &::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #36b37e;
+    flex-shrink: 0;
+    top: 50%;
+    position: absolute;
+    left: -15px;
+    transform: translateY(-50%);
+  }
+
+  &::before {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: $bg-custom;
+    flex-shrink: 0;
+    position: absolute;
+    left: auto;
+    right: -15px;
+  }
+
+}

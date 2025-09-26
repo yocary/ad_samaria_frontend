@@ -1,0 +1,88 @@
+<div class="page">
+  <!-- CABECERA -->
+  <div class="hero-wrap">
+    <div class="hero">
+      IGLESIA ASAMBLEA DE DIOS SAMARIA
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- TABLERO IZQ -->
+    <div class="board">
+      <div class="grid">
+        <a
+          *ngFor="let t of tiles"
+          class="tile"
+          matRipple
+          [routerLink]="t.routerLink"
+          [attr.aria-label]="t.title"
+          (click)="setActive(t.key)"
+        >
+          <div class="tile__row">
+            <div class="icon" [ngSwitch]="t.key" aria-hidden="true">
+              <!-- ROLES -->
+              <svg *ngSwitchCase="'roles'" viewBox="0 0 24 24">
+                <path d="M8 10a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm8 10v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M20 12a3 3 0 1 1-3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M21 20v-1a4 4 0 0 0-3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              <!-- MIEMBROS -->
+              <svg *ngSwitchCase="'miembros'" viewBox="0 0 24 24">
+                <path d="M8 12a3 3 0 1 1 0-6 3 3 0 0 1 0 6Zm8 0a3 3 0 1 1 0-6 3 3 0 0 1 0 6Z" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M3 20a5 5 0 0 1 5-5h0a5 5 0 0 1 5 5M11 20a5 5 0 0 1 5-5h0a5 5 0 0 1 5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+              </svg>
+              <!-- FINANZAS -->
+              <svg *ngSwitchCase="'finanzas'" viewBox="0 0 24 24">
+                <circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M9 7h2M9 10h3M9 13h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M16 14l4-2v8h-8l4-6z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+              </svg>
+              <!-- PLANIFICACIÓN -->
+              <svg *ngSwitchCase="'planificacion'" viewBox="0 0 24 24">
+                <rect x="4" y="4" width="14" height="16" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M8 2v4M14 2v4M6 10h10M6 14h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <circle cx="17.5" cy="16.5" r="2.5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
+              <!-- LIDERAZGO -->
+              <svg *ngSwitchCase="'liderazgo'" viewBox="0 0 24 24">
+                <path d="M4 18h14M4 14h10M4 10h6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M14 6l3-2v4l3-2v6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                <circle cx="6" cy="6" r="2" fill="none" stroke="currentColor" stroke-width="1.8"/>
+              </svg>
+              <!-- REPORTES -->
+              <svg *ngSwitchCase="'reportes'" viewBox="0 0 24 24">
+                <circle cx="10" cy="14" r="5" fill="none" stroke="currentColor" stroke-width="1.8"/>
+                <path d="M15 18l4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                <path d="M7 14h2l1.5-2 2 3H15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+
+            <!-- Título -->
+            <div class="title" [class.title--active]="activeKey === t.key">{{ t.title }}</div>
+          </div>
+
+          <!-- Barra amarilla inferior -->
+          <div class="tile__bar"></div>
+        </a>
+      </div>
+    </div>
+
+    <!-- LATERAL DERECHA -->
+    <div class="side">
+      <div class="welcome-card">
+        <div class="welcome-header">
+          <div class="logo"></div>
+          <div class="brand">IGLESIA<br>EVANGÉLICA</div>
+        </div>
+
+        <div class="welcome-body">
+          <div class="wel-title">Bienvenido</div>
+          <div class="wel-sub">Nos alegra que estés aquí</div>
+          <button mat-raised-button class="cta">Empezar</button>
+          <button mat-button class="more">Más información</button>
+          <div class="placeholder"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

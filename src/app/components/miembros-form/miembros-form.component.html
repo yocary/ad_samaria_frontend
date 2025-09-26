@@ -1,0 +1,87 @@
+<div class="form-wrapper">
+  <mat-card class="card">
+    <mat-card-header>
+      <mat-card-title>Agregar Miembro</mat-card-title>
+      <mat-card-subtitle>Complete los datos del miembro o visitante</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="guardar()" class="form-grid">
+
+        <mat-form-field appearance="outline" class="col-12">
+          <mat-label>Nombres</mat-label>
+          <input matInput formControlName="nombres" />
+          <mat-error *ngIf="hasError('nombres','required')">Requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-6">
+          <mat-label>Apellido Paterno</mat-label>
+          <input matInput formControlName="apellidoPaterno" />
+          <mat-error *ngIf="hasError('apellidoPaterno','required')">Requerido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-6">
+          <mat-label>Apellido Materno</mat-label>
+          <input matInput formControlName="apellidoMaterno" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-12">
+          <mat-label>Teléfono</mat-label>
+          <input matInput formControlName="telefono" />
+          <mat-error *ngIf="hasError('telefono','pattern')">Formato inválido</mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-12">
+          <mat-label>Número de DPI</mat-label>
+          <input matInput formControlName="dpi" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-12">
+          <mat-label>Dirección</mat-label>
+          <textarea matInput formControlName="direccion" rows="1"></textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-6">
+          <mat-label>Tipo de persona</mat-label>
+          <mat-select formControlName="tipoPersona">
+            <mat-option *ngFor="let t of tiposPersona" [value]="t">{{ t }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-6">
+          <mat-label>Sexo</mat-label>
+          <mat-select formControlName="sexo">
+            <mat-option *ngFor="let s of sexos" [value]="s">{{ s }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-6">
+          <mat-label>Clasificación Social</mat-label>
+          <mat-select formControlName="clasificacion">
+            <mat-option *ngFor="let c of clasificaciones" [value]="c">{{ c }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-6">
+          <mat-label>Estado Civil</mat-label>
+          <mat-select formControlName="estadoCivil">
+            <mat-option *ngFor="let e of estadosCiviles" [value]="e">{{ e }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="col-12">
+          <mat-label>Fecha de nacimiento</mat-label>
+          <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          <mat-error *ngIf="hasError('fechaNacimiento','required')">Requerido</mat-error>
+        </mat-form-field>
+
+        <div class="acciones col-12">
+          <button mat-raised-button color="primary" type="submit">Guardar</button>
+          <button mat-raised-button color="warn" type="button" (click)="cancelar()">Cancelar</button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>

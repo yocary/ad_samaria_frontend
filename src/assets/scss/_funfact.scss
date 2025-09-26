@@ -1,0 +1,26 @@
+.fun_bg {
+
+  // background-color: $white;
+  // border-top: 3px solid $custom;
+  // border-radius: 10px;	
+  .fun_box {
+    padding: 36px 18px;
+    border: 1px solid #e7e7e7;
+    border-radius: 5px;
+    background-color: $white;
+
+    .fun_icon {
+      i {
+        background-color: $bg-custom;
+        height: 50px;
+        width: 50px;
+        line-height: 50px;
+        text-align: center;
+        display: inline-block;
+        border-radius: 50%;
+        color: $white;
+        font-size: 22px;
+      }
+    }
+  }
+}

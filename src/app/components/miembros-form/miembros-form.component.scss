@@ -1,0 +1,39 @@
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+}
+
+.card {
+  max-width: 750px;
+  width: 100%;
+  margin: 16px;
+  border: 1px solid #cde7f0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  padding: 16px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+}
+
+.col-12 { grid-column: span 12; }
+.col-6  { grid-column: span 6; }
+
+@media (max-width: 768px) {
+  .col-6 { grid-column: span 12; }
+}
+
+textarea {
+  resize: vertical;
+}
+
+.acciones {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+}

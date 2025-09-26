@@ -1,0 +1,195 @@
+/* Importing Bootstrap SCSS file. */
+@import "~bootstrap/scss/bootstrap";
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@import "~@angular/material/theming";
+// Plus imports for other components in your app.
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+@include mat-core();
+
+$sdr-custom-primary: (50 : #e6e6f0,
+  100 : #bfc1d9,
+  200 : #9598bf,
+  300 : #6b6fa5,
+  400 : #4b5092,
+  500 : #2b317f,
+  600 : #262c77,
+  700 : #20256c,
+  800 : #1a1f62,
+  900 : #10134f,
+  A100 : #888cff,
+  A200 : #555bff,
+  A400 : #222aff,
+  A700 : #0811ff,
+  contrast: (50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #ffffff,
+    400 : #ffffff,
+    500 : #ffffff,
+    600 : #ffffff,
+    700 : #ffffff,
+    800 : #ffffff,
+    900 : #ffffff,
+    A100 : #000000,
+    A200 : #ffffff,
+    A400 : #ffffff,
+    A700 : #ffffff,
+  ));
+
+$sdr-custom-accent: (50 : #fff7e4,
+  100 : #feecbc,
+  200 : #fedf90,
+  300 : #fed264,
+  400 : #fdc942,
+  500 : #fdbf21,
+  600 : #fdb91d,
+  700 : #fcb118,
+  800 : #fca914,
+  900 : #fc9b0b,
+  A100 : #ffffff,
+  A200 : #fff9f2,
+  A400 : #ffe3bf,
+  A700 : #ffd8a6,
+  contrast: (50 : #000000,
+    100 : #000000,
+    200 : #000000,
+    300 : #000000,
+    400 : #000000,
+    500 : #000000,
+    600 : #000000,
+    700 : #000000,
+    800 : #000000,
+    900 : #000000,
+    A100 : #000000,
+    A200 : #000000,
+    A400 : #000000,
+    A700 : #000000,
+  ));
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$ssem-primary: mat-palette($sdr-custom-primary);
+$ssem-accent: mat-palette($sdr-custom-accent);
+
+// The warn palette is optional (defaults to red).
+$ssem-warn: mat-palette($mat-red);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$ssem-theme: mat-light-theme($ssem-primary, $ssem-accent, $ssem-warn);
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include angular-material-theme($ssem-theme);
+
+/* You can add global styles to this file, and also import other style files */
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+  background-color: #ffffff;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+mat-form-field {
+  mat-icon {
+    font-size: 18px !important;
+    color: #757575 !important;
+  }
+}
+
+.btn-container {
+  display: inline-flex !important;
+  align-items: flex-end !important;
+  border-radius: 4px !important;
+  padding: 6px 20px !important;
+
+  i {
+    font-size: 16px !important;
+    margin-right: 4px !important;
+    display: inline-flex !important;
+    align-items: flex-start !important;
+  }
+
+  mat-icon {
+    font-size: 18px !important;
+    display: inline-flex !important;
+    align-items: flex-start !important;
+    margin-top: 5px !important;
+  }
+}
+
+table {
+  text-align: justify;
+  margin: auto;
+  width: 100%;
+}
+
+td {
+  text-align: left;
+}
+
+.header-table {
+  background-color: #2b317f;
+  color: white;
+  text-align: left;
+  font-size: 14px;
+}
+
+.start {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.end {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+button:focus {
+  box-shadow: none;
+}
+
+.align-vertical-center {
+  min-height: 100%;
+  min-height: 100vh;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  -moz-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+
+  width: 100%;
+
+  -webkit-box-pack: center;
+  -moz-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+.fondo-login {
+  height: 100%;
+  margin: 0;
+  overflow-x: hidden;
+
+  background-size: 300px auto;         
+  background-position: center;       
+  background-color: #ffffff;       
+}

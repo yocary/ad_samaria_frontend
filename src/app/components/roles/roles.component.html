@@ -1,0 +1,42 @@
+<div class="wrapper">
+  <mat-card class="card">
+    <div class="card-header">
+      <span>Roles</span>
+    </div>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="agregar()" class="form">
+
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label>Personas</mat-label>
+          <mat-select formControlName="personaId">
+            <mat-option *ngFor="let p of personas" [value]="p.id">
+              {{ p.nombreCompleto }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="form.get('personaId')?.touched && form.get('personaId')?.hasError('required')">
+            Selecciona una persona
+          </mat-error>
+        </mat-form-field>
+
+        <div class="rol-group">
+          <label class="rol-title">ROL</label>
+          <mat-radio-group formControlName="rol" class="radio-col">
+            <mat-radio-button *ngFor="let r of roles" [value]="r">
+              {{ r }}
+            </mat-radio-button>
+          </mat-radio-group>
+          <mat-error *ngIf="form.get('rol')?.touched && form.get('rol')?.hasError('required')">
+            Selecciona un rol
+          </mat-error>
+        </div>
+
+        <div class="acciones">
+          <button mat-raised-button class="btn-agregar" type="submit" [disabled]="form.invalid">
+            Agregar
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
