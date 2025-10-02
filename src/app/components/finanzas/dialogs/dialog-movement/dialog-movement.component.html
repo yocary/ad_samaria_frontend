@@ -1,0 +1,56 @@
+<form class="fin-dialog" [formGroup]="form" (ngSubmit)="save()">
+  <div class="fin-dialog__header">Agregar Ingresos/Egresos</div>
+
+  <div class="fin-dialog__body grid">
+    <mat-form-field appearance="outline">
+      <mat-label>Tipo de movimiento</mat-label>
+      <mat-select formControlName="type">
+        <mat-option value="Ingreso">Ingreso</mat-option>
+        <mat-option value="Egreso">Egreso</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Fecha</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="date" />
+      <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Concepto</mat-label>
+      <input matInput formControlName="concept" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Total</mat-label>
+      <input matInput type="number" step="0.01" formControlName="amount" />
+      <span matTextSuffix>Q</span>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Método de pago</mat-label>
+      <mat-select formControlName="method">
+        <mat-option value="Efectivo">Efectivo</mat-option>
+        <mat-option value="Transferencia">Transferencia</mat-option>
+        <mat-option value="Tarjeta">Tarjeta</mat-option>
+        <mat-option value="Otro">Otro</mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Miembro</mat-label>
+      <input matInput formControlName="memberName" placeholder="Nombre del miembro" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="span-2">
+      <mat-label>Observaciones</mat-label>
+      <textarea matInput formControlName="notes" rows="3"></textarea>
+    </mat-form-field>
+  </div>
+
+  <div class="fin-dialog__actions">
+    <button mat-raised-button color="primary" type="submit">Guardar</button>
+    <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancelar</button>
+  </div>
+</form>

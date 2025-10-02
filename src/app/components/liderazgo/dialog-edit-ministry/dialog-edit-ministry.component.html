@@ -1,0 +1,14 @@
+<h2 mat-dialog-title class="hdr">Editar Ministerio</h2>
+
+<div class="wrap">
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Nombre</mat-label>
+    <input matInput [formControl]="name" />
+    <mat-error *ngIf="name.invalid && name.touched">Requerido</mat-error>
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-stroked-button (click)="cancel()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="save()" [disabled]="name.invalid">Guardar</button>
+  </div>
+</div>

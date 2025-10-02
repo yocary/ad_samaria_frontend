@@ -1,0 +1,302 @@
+/* ===== HARD OVERRIDES PARA QUITAR ESPACIOS ===== */
+
+/* Contenedor general */
+.finz{
+  --w: min(1180px, 96%);
+  background:#f3f6f9;
+  min-height:100vh;
+  padding:6px 0 12px !important;     /* MUY poco padding vertical */
+  display:grid;
+  row-gap:209px !important;             /* poco espacio entre bloques */
+  column-gap:0;
+  place-items:start center;
+}
+
+/* Elimina márgenes de todos los hijos directos (header, sections, etc.) */
+.finz > * { margin:0 !important; }
+
+/* Título */
+.finz__header{
+  width:var(--w);
+  height:34px !important;             /* más bajo */
+  display:grid; place-items:center;
+  background:#244b6b; color:#fff; font-weight:800;
+  border-radius:10px; box-shadow:0 3px 8px rgba(0,0,0,.05);
+}
+
+/* KPIs (3 columnas pegadas) */
+.kpis{
+  width:var(--w);
+  display:grid; grid-template-columns:repeat(3,1fr);
+  gap:8px !important;                 /* menos separación entre KPIs */
+  margin:0 !important;
+}
+.kpi{ display:grid; gap:2px !important; }
+.kpi label{ color:#274258; font-weight:700; line-height:1.1; }
+.kinput{
+  height:28px !important;             /* bajo */
+  display:flex; align-items:center;
+  padding:0 8px !important;
+  background:#fff;
+  border:1px solid #d8e4ee; border-radius:6px;
+}
+
+/* Tarjeta Tesorerías pegada a KPIs */
+.tre{
+  width:var(--w);
+  background:#fff;
+  border:1px solid #cfdbe6;
+  border-radius:8px;
+  padding:8px !important;             /* menos padding */
+  box-shadow:0 4px 10px rgba(25,55,100,.05);
+  display:grid;
+  gap:6px !important;                 /* compacta contenido interno */
+  margin-top:4px !important;
+}
+
+/* Chips centrados */
+.tre__chips{
+  display:flex; justify-content:center; gap:6px !important; margin:0 !important;
+}
+.chip{
+  border:0; height:24px !important; padding:0 10px !important;
+  border-radius:14px; font-weight:800; color:#fff; cursor:pointer; font-size:12px;
+}
+.chip--gray{  background:#7e8086; }
+.chip--green{ background:#8fd18a; }
+.chip--light{ background:#edf1f5; color:#2a3e55; }
+
+/* Toolbar: botón izq + buscador der */
+.tre__toolbar{
+  display:grid !important;
+  grid-template-columns:auto 1fr !important;
+  align-items:center;
+  gap:8px !important;
+  margin:0 !important;
+}
+.btn{
+  border:0; border-radius:6px; padding:6px 10px !important; font-weight:800; cursor:pointer; font-size:13px;
+}
+.btn--primary{ background:#2a67a6; color:#fff; }
+
+/* Buscador pequeño */
+.search{
+  justify-self:end;
+  width:100%; max-width:380px; height:28px !important;
+  display:flex; align-items:center; gap:6px;
+  background:#fff; border:1px solid #cfd9e6; border-radius:16px; padding:0 8px !important;
+}
+.search mat-icon{ font-size:16px !important; width:16px; height:16px; color:#7b8a9c; }
+.search input{ flex:1; border:0; outline:0; background:transparent; font-size:13px; line-height:1; }
+.search button{ border:0; background:transparent; display:grid; place-items:center; cursor:pointer; }
+
+/* Tabla: compactar filas y celdas (Angular Material MDC) */
+.tre__table{
+  border:1px solid #bfe3ed;
+  border-radius:6px;
+  overflow:hidden;
+}
+
+/* Altura de filas/encabezados */
+.tre__table .mat-mdc-header-row,
+.tre__table .mat-mdc-row{
+  height:32px !important;             /* reduce altura por fila */
+  min-height:32px !important;
+}
+
+/* Padding de celdas */
+.tre__table .mat-mdc-header-cell,
+.tre__table .mat-mdc-cell{
+  padding:0 8px !important;           /* celdas más compactas */
+}
+
+/* Estilos de colores de tabla */
+.tre__table .mat-mdc-header-cell{
+  background:#f5fbff !important; color:#517089 !important; font-weight:700;
+  border-bottom:1px solid #e3f2f7 !important;
+}
+.tre__table .mat-mdc-cell{
+  border-top:1px solid #eef6fa;
+}
+
+/* Ancho de primera columna */
+.tre__table th:first-child{ width:40%; }
+
+/* Link de tesorería */
+.tre-link{ color:#1f5d84; font-weight:800; text-decoration:none; }
+.tre-link:hover{ text-decoration:underline; }
+
+/* Responsive */
+@media (max-width: 900px){
+  .kpis{ grid-template-columns:1fr; }
+  .tre__toolbar{ grid-template-columns:1fr !important; }
+  .search{ justify-self:stretch; max-width:none; }
+}
+
+/* ================== MODO ULTRA-COMPACTO (pegado al final) ================== */
+/* 1) Reset duro dentro de .finz */
+.finz,
+.finz * {
+  box-sizing: border-box;
+}
+
+.finz {
+  --w: min(1180px, 96%);
+  background: #f3f6f9;
+  min-height: 100vh;
+  padding: 6px 0 !important;     /* quita aire vertical global */
+  display: block !important;      /* NO grid, NO gap */
+}
+
+/* 2) Quita márgenes/paddings “fantasmas” de hijos directos */
+.finz > * {
+  margin: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* 3) Espaciado controlado entre bloques (sólo 4px) */
+.finz > * + * {
+  margin-top: 4px !important;
+}
+
+/* 4) Header compacto */
+.finz__header {
+  width: var(--w);
+  height: 32px !important;
+  display: grid;
+  place-items: center;
+  background: #244b6b;
+  color: #fff;
+  font-weight: 800;
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(0,0,0,.05);
+}
+
+/* 5) KPIs en 3 columnas pero SIN márgenes ni gaps grandes */
+.kpis {
+  width: var(--w);
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  gap: 6px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.kpi { display: grid; gap: 2px !important; margin: 0 !important; }
+.kpi label { font-weight: 700; color: #274258; line-height: 1.1; margin: 0 !important; }
+.kinput {
+  height: 28px !important;
+  border: 1px solid #d8e4ee;
+  border-radius: 6px;
+  background: #fff;
+  padding: 0 8px !important;
+  display: flex; align-items: center;
+}
+
+/* 6) Tarjeta Tesorerías: sin márgenes extra */
+.tre {
+  width: var(--w);
+  margin: 0 !important;
+  padding: 8px !important;
+  border: 1px solid #cfdbe6;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(25,55,100,.05);
+}
+
+/* Chips centrados, compactos */
+.tre__chips {
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
+  gap: 6px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.chip {
+  height: 24px !important;
+  padding: 0 10px !important;
+  border-radius: 14px;
+  font-weight: 800;
+  font-size: 12px;
+  border: 0;
+  cursor: pointer;
+  color: #fff;
+}
+.chip--gray  { background:#7e8086; }
+.chip--green { background:#8fd18a; }
+.chip--light { background:#edf1f5; color:#2a3e55; }
+
+/* Toolbar: botón izquierda + buscador derecha, sin aire */
+.tre__toolbar {
+  display: grid !important;
+  grid-template-columns: auto 1fr !important;
+  align-items: center;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.btn {
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 10px !important;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+.btn--primary { background:#2a67a6; color:#fff; }
+
+/* Buscador mini */
+.search {
+  justify-self: end;
+  width: 100%;
+  max-width: 360px;
+  height: 28px !important;
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 8px !important;
+  border: 1px solid #cfd9e6; border-radius: 16px;
+  background: #fff;
+  margin: 0 !important;
+}
+.search mat-icon { font-size: 16px !important; width: 16px; height: 16px; color:#7b8a9c; }
+.search input { flex: 1; border: 0; outline: 0; background: transparent; font-size: 13px; line-height: 1; }
+.search button { border: 0; background: transparent; display: grid; place-items: center; cursor: pointer; }
+
+/* 7) Tabla Material: sin espacios extras y filas compactas */
+.tre__table {
+  border: 1px solid #bfe3ed;
+  border-radius: 6px;
+  overflow: hidden;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.tre__table .mat-mdc-table { margin: 0 !important; }
+
+.tre__table .mat-mdc-header-row,
+.tre__table .mat-mdc-row {
+  height: 30px !important;
+  min-height: 30px !important;
+}
+.tre__table .mat-mdc-header-cell,
+.tre__table .mat-mdc-cell {
+  padding: 0 8px !important;
+}
+
+.tre__table .mat-mdc-header-cell {
+  background: #f5fbff !important;
+  color: #517089 !important;
+  font-weight: 700;
+  border-bottom: 1px solid #e3f2f7 !important;
+}
+.tre__table .mat-mdc-cell { border-top: 1px solid #eef6fa; }
+.tre__table th:first-child { width: 40%; }
+.tre-link { color:#1f5d84; font-weight:800; text-decoration:none; }
+.tre-link:hover { text-decoration: underline; }
+
+/* 8) Responsive: sin aire adicional */
+@media (max-width: 900px) {
+  .kpis { grid-template-columns: 1fr !important; }
+  .tre__toolbar { grid-template-columns: 1fr !important; }
+  .search { justify-self: stretch; max-width: none; }
+}
+

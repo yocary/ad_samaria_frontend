@@ -29,6 +29,13 @@ import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { DialogAddFamilyComponent } from './components/dialog-add-family/dialog-add-family.component';
 import { DialogEditFamilyComponent } from './components/dialog-edit-family/dialog-edit-family.component';
+import { FinanzasComponent } from './components/finanzas/finanzas.component';
+import { DialogAddTreasuryComponent } from './components/finanzas/dialogs/dialog-add-treasury/dialog-add-treasury.component';
+import { DialogMovementComponent } from './components/finanzas/dialogs/dialog-movement/dialog-movement.component';
+import { DialogTreasuryDetailComponent } from './components/finanzas/dialogs/dialog-treasury-detail/dialog-treasury-detail.component';
+import { LiderazgoComponent } from './components/liderazgo/liderazgo.component';
+import { DialogMinistryMembersComponent } from './components/liderazgo/dialog-ministry-members/dialog-ministry-members.component';
+import { DialogEditMinistryComponent } from './components/liderazgo/dialog-edit-ministry/dialog-edit-ministry.component';
 
 
 const MY_DATE_FORMATS = {
@@ -54,6 +61,13 @@ const MY_DATE_FORMATS = {
     FamiliasComponent,
     DialogAddFamilyComponent,
     DialogEditFamilyComponent,
+    FinanzasComponent,
+    DialogAddTreasuryComponent,
+    DialogMovementComponent,
+    DialogTreasuryDetailComponent,
+    LiderazgoComponent,
+    DialogMinistryMembersComponent,
+    DialogEditMinistryComponent,
   ],
   imports: [
     FormsModule,

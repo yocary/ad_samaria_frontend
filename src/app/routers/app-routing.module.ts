@@ -7,6 +7,8 @@ import { MiembrosFormComponent } from "../components/miembros-form/miembros-form
 import { RolesComponent } from "../components/roles/roles.component";
 import { DashboardComponent } from "../components/dashboard/dashboard.component";
 import { FamiliasComponent } from "../components/familias/familias.component";
+import { FinanzasComponent } from "../components/finanzas/finanzas.component";
+import { LiderazgoComponent } from "../components/liderazgo/liderazgo.component";
 
 
 
@@ -17,6 +19,8 @@ const routes: Routes = [
   { path: 'roles', component: RolesComponent },
   { path: 'dashboard', component: DashboardComponent },
   { path: 'agregar-familia', component: FamiliasComponent },
+  { path: 'finanzas', component: FinanzasComponent },
+  { path: 'liderazgo', component: LiderazgoComponent },
 ];
 
 @NgModule({

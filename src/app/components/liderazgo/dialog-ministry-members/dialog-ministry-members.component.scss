@@ -1,0 +1,140 @@
+/* Fondo suave y estructura general */
+.lidr-mock{
+  padding: 8px 4px 12px;
+  background: #f6f8fb;
+}
+
+/* Título grande como en el mock */
+.big-title{
+  font-weight: 800;
+  color: #234563;
+  margin: 6px 0 10px;
+  font-size: 18px;
+}
+
+/* Grid 2 columnas */
+.grid{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+
+/* Tarjetas */
+.card{
+  background: #fff;
+  border: 1px solid #d9e6f2;
+  border-radius: 8px;
+}
+
+/* Encabezados de tarjeta */
+.card-head{
+  height: 38px;
+  display: grid;
+  place-items: center;
+  background: #ffffff;
+  color: #234563;
+  font-weight: 800;
+  border-bottom: 1px solid #e6eef7;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.card-head.teal{
+  background: #31b6c5;       /* barra turquesa como mock */
+  color: #fff;
+  border-bottom-color: transparent;
+}
+
+/* Padding interno de las tarjetas */
+.pad{ padding: 12px; }
+
+/* ------- IZQUIERDA (Roles) ------- */
+
+.radio-line{
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 12px;
+  color: #2a3e55;
+}
+
+.roles-title{
+  font-weight: 800;
+  color: #2a3e55;
+  margin: 8px 0 6px;
+}
+
+/* Ítems de rol: radio + nombre + iconos */
+.roles-list .role-item{
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px solid #eef4fb;
+}
+.roles-list .role-item:first-child{ border-top: 0; }
+
+.role-name{
+  font-weight: 700;
+  color: #2a3e55;
+}
+
+.role-actions{
+  display: flex; gap: 6px;
+}
+.ico-blue mat-icon{ color:#2a67a6; }
+.ico-red mat-icon{ color:#e14b4b; }
+
+/* vacío */
+.empty{
+  color:#8ea0b3;
+  font-style: italic;
+  padding: 6px 0;
+}
+
+/* ------- DERECHA (Personas) ------- */
+
+.line{
+  display: flex; gap: 10px; align-items: center; margin-bottom: 10px;
+}
+.grow{ flex: 1; }
+.btn-add{ min-width: 100px; }
+
+/* Encabezado de la lista de miembros */
+.list-head{
+  font-weight: 700;
+  color: #3c5169;
+  padding: 8px 0 6px;
+}
+
+/* Fila de miembro */
+.member-row{
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 0;
+  border-top: 1px solid #eef4fb;
+}
+.member-row:first-of-type{ border-top: 0; }
+
+.member-name{ color:#2a3e55; }
+
+.btn-delete{
+  background: #e14b4b !important;
+  color: #fff !important;
+  min-width: 92px;
+  height: 28px; line-height: 28px; padding: 0 10px;
+  border-radius: 6px;
+}
+
+/* Footer: botón cerrar a la izquierda como en el mock */
+.footer{
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Responsive */
+@media (max-width: 900px){
+  .grid{ grid-template-columns: 1fr; }
+}

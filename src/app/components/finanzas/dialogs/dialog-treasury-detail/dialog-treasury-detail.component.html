@@ -1,0 +1,278 @@
+<h2 mat-dialog-title class="dlg-title">{{ treasury?.name || 'Tesorería' }}</h2>
+
+<mat-tab-group class="dlg-tabs" [selectedIndex]="selectedIndex" animationDuration="200ms">
+
+  <!-- ===================== MOVIMIENTOS ===================== -->
+  <mat-tab label="Movimientos">
+    <div class="mov-wrap">
+
+      <div class="kpis-row">
+        <div class="kpi purple">
+          <div class="kpi-title">Total Ingresos</div>
+          <div class="kpi-val">Q {{ kpiIngresos | number:'1.2-2' }}</div>
+        </div>
+        <div class="kpi teal">
+          <div class="kpi-title">Total Egresos</div>
+          <div class="kpi-val">Q {{ kpiEgresos | number:'1.2-2' }}</div>
+        </div>
+        <div class="kpi orange">
+          <div class="kpi-title">Saldo disponible</div>
+          <div class="kpi-val">Q {{ kpiSaldo | number:'1.2-2' }}</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button mat-raised-button color="primary" class="btn-primary" (click)="addMovement()">
+          + Agregar Ingresos / Egresos
+        </button>
+
+        <div class="right">
+          <div class="search">
+            <mat-icon>search</mat-icon>
+            <input [formControl]="searchMov" placeholder="Buscar" />
+          </div>
+
+          <button mat-stroked-button (click)="download()">Descargar</button>
+
+          <mat-form-field appearance="outline" class="period">
+            <mat-label>Periodo</mat-label>
+            <mat-select (selectionChange)="periodChanged($event.value)">
+              <mat-option value="all">Todos</mat-option>
+              <mat-option value="m1">Último mes</mat-option>
+              <mat-option value="m3">Últimos 3 meses</mat-option>
+              <mat-option value="y1">Último año</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="table">
+        <table mat-table [dataSource]="movements">
+          <ng-container matColumnDef="index">
+            <th mat-header-cell *matHeaderCellDef>No.</th>
+            <td mat-cell *matCellDef="let r; let i = index">{{ i+1 }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="date">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let r">{{ r.date | date:'dd/MM/yy' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="concept">
+            <th mat-header-cell *matHeaderCellDef>Concepto</th>
+            <td mat-cell *matCellDef="let r">{{ r.concept }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="category">
+            <th mat-header-cell *matHeaderCellDef>Categoría</th>
+            <td mat-cell *matCellDef="let r">{{ r.category || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="amount">
+            <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+            <td mat-cell *matCellDef="let r">Q {{ r.amount | number:'1.2-2' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let r">
+              <button mat-raised-button color="accent" class="btn-sm" (click)="editMovement(r)">Editar</button>
+              <button mat-raised-button color="warn" class="btn-sm" (click)="deleteMovement(r)">Eliminar</button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['index','date','concept','category','amount','actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['index','date','concept','category','amount','actions'];"></tr>
+        </table>
+      </div>
+
+      <div class="footer">
+        <button mat-stroked-button (click)="close()">Cerrar</button>
+      </div>
+    </div>
+  </mat-tab>
+
+  <!-- ===================== CATEGORÍAS ===================== -->
+  <mat-tab label="Categorías">
+    <div class="cat-wrap">
+      <div class="cat-toolbar">
+        <mat-form-field appearance="outline" class="cat-name">
+          <mat-label>Nombre</mat-label>
+          <input matInput [formControl]="catName" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="cat-type">
+          <mat-label>-Seleccionar tipo-</mat-label>
+          <mat-select [formControl]="catType">
+            <mat-option value="Ingreso">Ingreso</mat-option>
+            <mat-option value="Egreso">Egreso</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <button mat-raised-button color="primary" class="btn-add" (click)="addCategory()">+ Agregar</button>
+      </div>
+
+      <div class="cat-table">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th class="col-num">No.</th>
+              <th>Categoría</th>
+              <th class="col-tipo">Tipo</th>
+              <th class="col-acc">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let c of catList; let i = index">
+              <td class="col-num">{{ i + 1 }}</td>
+
+              <td>
+                <ng-container *ngIf="!c.editing; else editName">
+                  {{ c.name }}
+                </ng-container>
+                <ng-template #editName>
+                  <input matInput class="inline-input" [(ngModel)]="c._name" />
+                </ng-template>
+              </td>
+
+              <td class="col-tipo">
+                <ng-container *ngIf="!c.editing; else editType">
+                  <span class="badge" [ngClass]="c.type === 'Ingreso' ? 'badge-ingreso' : 'badge-egreso'">{{ c.type }}</span>
+                </ng-container>
+                <ng-template #editType>
+                  <mat-form-field appearance="outline" class="inline-select">
+                    <mat-select [(ngModel)]="c._type">
+                      <mat-option value="Ingreso">Ingreso</mat-option>
+                      <mat-option value="Egreso">Egreso</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </ng-template>
+              </td>
+
+              <td class="col-acc">
+                <ng-container *ngIf="!c.editing; else editBtns">
+                  <button mat-raised-button color="accent" class="btn-sm" (click)="startEditCategory(c)">Editar</button>
+                  <button mat-raised-button color="warn" class="btn-sm" (click)="removeCategory(c)">Eliminar</button>
+                </ng-container>
+                <ng-template #editBtns>
+                  <button mat-raised-button color="primary" class="btn-sm" (click)="saveEditCategory(c)">Guardar</button>
+                  <button mat-stroked-button class="btn-sm" (click)="cancelEditCategory(c)">Cancelar</button>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="footer">
+        <button mat-stroked-button (click)="close()">Cerrar</button>
+      </div>
+    </div>
+  </mat-tab>
+
+  <!-- ===================== ADMINISTRAR USUARIOS ===================== -->
+  <mat-tab label="Administrar Usuarios">
+    <div class="usr-wrap">
+
+      <button mat-raised-button color="primary" class="btn-primary" (click)="startAddUser()">
+        + Agregar Usuario
+      </button>
+
+      <div class="usr-table">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th class="col-num">No.</th>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th>Rol</th>
+              <th class="col-acc">Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <!-- Fila de alta/edición -->
+            <tr *ngIf="userEditing">
+              <td class="col-num">—</td>
+              <td>
+                <mat-form-field appearance="outline" class="inline-field">
+                  <mat-label>Nombre</mat-label>
+                  <input matInput [formControl]="userName">
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field appearance="outline" class="inline-field">
+                  <mat-label>Correo</mat-label>
+                  <input matInput [formControl]="userEmail">
+                </mat-form-field>
+              </td>
+              <td>
+                <mat-form-field appearance="outline" class="inline-field">
+                  <mat-label>Rol</mat-label>
+                  <mat-select [formControl]="userRole">
+                    <mat-option *ngFor="let r of userRoles" [value]="r">{{ r }}</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </td>
+              <td class="col-acc">
+                <button mat-raised-button color="primary" class="btn-sm" (click)="saveUser()">Guardar</button>
+                <button mat-stroked-button class="btn-sm" (click)="cancelUser()">Cancelar</button>
+              </td>
+            </tr>
+
+            <!-- Usuarios existentes -->
+            <tr *ngFor="let u of users; let i = index">
+              <td class="col-num">{{ i + 1 }}</td>
+              <td>{{ u.name }}</td>
+              <td>{{ u.email }}</td>
+              <td>{{ u.role }}</td>
+              <td class="col-acc">
+                <button mat-raised-button color="accent" class="btn-sm" (click)="editUser(u)">Editar</button>
+                <button mat-raised-button color="warn" class="btn-sm" (click)="removeUser(u.id)">Eliminar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="footer">
+        <button mat-stroked-button (click)="close()">Cerrar</button>
+      </div>
+    </div>
+  </mat-tab>
+
+  <!-- ===================== EDITAR TESORERÍA ===================== -->
+  <mat-tab label="Editar Tesorería">
+    <div class="edit-wrap">
+      <div class="form-title">Actualizar Tesorería</div>
+
+      <form [formGroup]="editForm" class="edit-form">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Nombre de la tesorería</mat-label>
+          <input matInput formControlName="name" />
+          <mat-error *ngIf="editForm.controls.name.invalid && editForm.controls.name.touched">
+            Requerido
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label>Estado</mat-label>
+          <mat-select formControlName="status">
+            <mat-option *ngFor="let s of treasuryStatuses" [value]="s">{{ s }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label>Moneda</mat-label>
+          <mat-select formControlName="currency">
+            <mat-option *ngFor="let c of currencies" [value]="c.value">{{ c.label }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <div class="edit-actions">
+          <button mat-raised-button color="warn" class="btn-wide" (click)="deleteTreasury()">Eliminar</button>
+          <button mat-stroked-button class="btn-wide" (click)="close()">Cancelar</button>
+          <button mat-raised-button color="primary" class="btn-wide btn-green" [disabled]="editForm.invalid" (click)="saveTreasury()">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </mat-tab>
+</mat-tab-group>

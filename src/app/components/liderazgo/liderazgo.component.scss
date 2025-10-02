@@ -1,0 +1,59 @@
+/* Contenedor general centrado */
+.ldr{
+  --w: min(820px, 96%);
+  background:#f5f7fb;
+  border-radius:10px;
+  border:1px solid #cfe0ef;
+  padding:12px;
+  width:var(--w);
+  margin: 16px auto; /* centrado horizontal */
+}
+
+/* Encabezado */
+.ldr__header{
+  height:40px; display:grid; place-items:center;
+  background:#244b6b; color:#fff; font-weight:800; border-radius:8px; margin-bottom:10px;
+}
+
+/* Buscador */
+.ldr__search{
+  width:100%; height:34px; margin-bottom:10px;
+  display:flex; align-items:center; gap:8px;
+  border:1px solid #cfd9e6; border-radius:18px; background:#fff;
+  padding:0 10px;
+}
+.ldr__search mat-icon{ font-size:18px; color:#7b8a9c; }
+.ldr__search input{ border:0; outline:0; background:transparent; flex:1; }
+
+/* Agregar ministerio */
+.ldr__add{ display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+.ldr__add .grow{ flex:1; }
+
+/* ====== LISTA: FIX de alineación ====== */
+.ldr__list{
+  border:1px solid #e3edf7; border-radius:8px; overflow:hidden; background:#fff;
+}
+
+.ldr__list .row{
+  display:grid;
+  grid-template-columns: minmax(240px, 1fr) auto; /* da aire a la columna de nombre */
+  align-items:center;
+  gap:12px;                 /* separación entre nombre y acciones */
+  padding:10px 14px;        /* 👈 más padding a los lados */
+  border-top:1px solid #eef4fb;
+}
+.ldr__list .row:first-child{ border-top:0; }
+
+/* Nombre con padding interno y truncamiento elegante */
+.name{
+  padding-left: 2px;        /* un pelín de aire extra al borde izquierdo */
+  font-weight:700; color:#28445c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;  /* si el nombre es largo, pone … */
+}
+
+/* Acciones a la derecha */
+.actions{ display:flex; gap:8px; justify-self:end; }
+.pill{ height:28px; line-height:28px; padding:0 10px; border-radius:6px; font-weight:700; }
+.pill--blue{ background:#2a67a6; color:#fff; }
