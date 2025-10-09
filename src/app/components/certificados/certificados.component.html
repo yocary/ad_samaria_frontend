@@ -1,0 +1,46 @@
+<div class="certs">
+  <div class="certs__header">CERTIFICADOS</div>
+
+  <div class="toolbar">
+    <button mat-raised-button color="primary" (click)="openNew()">+ Nuevo Certificado</button>
+
+    <div class="search">
+      <mat-icon>search</mat-icon>
+      <input [formControl]="search" placeholder="Buscar" />
+    </div>
+  </div>
+
+  <div class="table">
+    <table mat-table [dataSource]="filtered">
+      <ng-container matColumnDef="member">
+        <th mat-header-cell *matHeaderCellDef>Miembro</th>
+        <td mat-cell *matCellDef="let r">{{ r.memberName || '-' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="type">
+        <th mat-header-cell *matHeaderCellDef>Tipo de Certificado</th>
+        <td mat-cell *matCellDef="let r">{{ r.type }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Fecha Expedición</th>
+        <td mat-cell *matCellDef="let r">{{ r.issueDate | date:'dd/MM/yyyy' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let r">
+          <button mat-stroked-button color="primary" (click)="download(r)">Descargar</button>
+          <button mat-raised-button color="warn" (click)="remove(r)">X Eliminar</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="['member','type','date','actions']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['member','type','date','actions']"></tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    <button mat-stroked-button color="primary" (click)="back()">Regresar</button>
+  </div>
+</div>

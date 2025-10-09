@@ -1,0 +1,175 @@
+<mat-dialog-content class="dlg">
+  <div class="dlg__title">CREAR CERTIFICADO</div>
+
+  <!-- Tipo de Certificado (FUERA del form dinámico) -->
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Tipo de Certificado</mat-label>
+    <mat-select [formControl]="typeCtrl">
+      <mat-option *ngFor="let t of types" [value]="t">{{ t }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <!-- Form dinámico: se reemplaza completo cuando cambia el tipo -->
+  <form *ngIf="form" [formGroup]="form" class="form">
+
+    <ng-container [ngSwitch]="currentType">
+
+      <!-- ======= MEMBRESÍA ======= -->
+      <ng-container *ngSwitchCase="'Membresía'">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Miembro</mat-label>
+          <mat-select formControlName="memberId">
+            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Pastor</mat-label>
+          <mat-select formControlName="pastorId">
+            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <!-- ======= PRESENTACIÓN DE NIÑOS ======= -->
+      <ng-container *ngSwitchCase="'Presentación de Niños'">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Miembro</mat-label>
+          <input matInput placeholder="Nombre del niño" formControlName="childName" />
+        </mat-form-field>
+
+        <!-- Padre -->
+        <div class="sect-title">Padre</div>
+        <div class="radio-row">
+          Es miembro de la iglesia:
+          <mat-radio-group formControlName="fatherIsMember">
+            <mat-radio-button [value]="true" style="margin-right:12px;">Sí</mat-radio-button>
+            <mat-radio-button [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Seleccione a una persona</mat-label>
+          <mat-select formControlName="fatherId"
+                      [disabled]="form?.get('fatherIsMember')?.value === false">
+            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Madre -->
+        <div class="sect-title">Madre</div>
+        <div class="radio-row">
+          Es miembro de la iglesia:
+          <mat-radio-group formControlName="motherIsMember">
+            <mat-radio-button [value]="true" style="margin-right:12px;">Sí</mat-radio-button>
+            <mat-radio-button [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Seleccione a una persona</mat-label>
+          <mat-select formControlName="motherId"
+                      [disabled]="form?.get('motherIsMember')?.value === false">
+            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Pastor -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Pastor</mat-label>
+          <mat-select formControlName="pastorId">
+            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Fechas y testigo -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Fecha de nacimiento</mat-label>
+          <input matInput type="date" formControlName="childBirthDate" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Testigo</mat-label>
+          <input matInput formControlName="witnessName" />
+        </mat-form-field>
+      </ng-container>
+
+      <!-- ======= BAUTISMO ======= -->
+      <ng-container *ngSwitchCase="'Bautismo'">
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Fecha de bautismo</mat-label>
+          <input matInput type="date" formControlName="baptismDate" />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Miembro</mat-label>
+          <mat-select formControlName="memberId">
+            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Pastor</mat-label>
+          <mat-select formControlName="pastorId">
+            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+      <!-- ======= MATRIMONIO ======= -->
+      <ng-container *ngSwitchCase="'Matrimonio'">
+        <!-- Esposo -->
+        <div class="sect-title">Esposo</div>
+        <div class="radio-row">
+          Es miembro de la iglesia:
+          <mat-radio-group formControlName="husbandIsMember">
+            <mat-radio-button [value]="true" style="margin-right:12px;">Sí</mat-radio-button>
+            <mat-radio-button [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Seleccione a una persona</mat-label>
+          <mat-select formControlName="husbandId"
+                      [disabled]="form?.get('husbandIsMember')?.value === false">
+            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Esposa -->
+        <div class="sect-title">Esposa</div>
+        <div class="radio-row">
+          Es miembro de la iglesia:
+          <mat-radio-group formControlName="wifeIsMember">
+            <mat-radio-button [value]="true" style="margin-right:12px;">Sí</mat-radio-button>
+            <mat-radio-button [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+        </div>
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Seleccione a una persona</mat-label>
+          <mat-select formControlName="wifeId"
+                      [disabled]="form?.get('wifeIsMember')?.value === false">
+            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <!-- Pastor -->
+        <mat-form-field appearance="outline" class="w-full">
+          <mat-label>Pastor</mat-label>
+          <mat-select formControlName="pastorId">
+            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </ng-container>
+
+    </ng-container>
+
+    <!-- ======= FECHA DE EXPEDICIÓN (común) ======= -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Fecha Expedición</mat-label>
+      <input matInput type="date" formControlName="issueDate" />
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center" class="dlg-actions">
+  <button mat-stroked-button color="primary" (click)="cancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="save()">Guardar</button>
+</mat-dialog-actions>

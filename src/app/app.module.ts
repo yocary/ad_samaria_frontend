@@ -36,6 +36,8 @@ import { DialogTreasuryDetailComponent } from './components/finanzas/dialogs/dia
 import { LiderazgoComponent } from './components/liderazgo/liderazgo.component';
 import { DialogMinistryMembersComponent } from './components/liderazgo/dialog-ministry-members/dialog-ministry-members.component';
 import { DialogEditMinistryComponent } from './components/liderazgo/dialog-edit-ministry/dialog-edit-ministry.component';
+import { CertificadosComponent } from './components/certificados/certificados.component';
+import { DialogCertificadoComponent } from './components/certificados/dialog-certificado/dialog-certificado/dialog-certificado.component';
 
 
 const MY_DATE_FORMATS = {
@@ -68,6 +70,8 @@ const MY_DATE_FORMATS = {
     LiderazgoComponent,
     DialogMinistryMembersComponent,
     DialogEditMinistryComponent,
+    CertificadosComponent,
+    DialogCertificadoComponent,
   ],
   imports: [
     FormsModule,

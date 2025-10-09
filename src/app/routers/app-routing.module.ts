@@ -9,6 +9,7 @@ import { DashboardComponent } from "../components/dashboard/dashboard.component"
 import { FamiliasComponent } from "../components/familias/familias.component";
 import { FinanzasComponent } from "../components/finanzas/finanzas.component";
 import { LiderazgoComponent } from "../components/liderazgo/liderazgo.component";
+import { CertificadosComponent } from "../components/certificados/certificados.component";
 
 
 
@@ -21,6 +22,7 @@ const routes: Routes = [
   { path: 'agregar-familia', component: FamiliasComponent },
   { path: 'finanzas', component: FinanzasComponent },
   { path: 'liderazgo', component: LiderazgoComponent },
+  { path: 'certificados', component: CertificadosComponent },
 ];
 
 @NgModule({
