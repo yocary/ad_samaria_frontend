@@ -41,33 +41,38 @@
           <textarea matInput formControlName="direccion" rows="1"></textarea>
         </mat-form-field>
 
+        <!-- Tipo de persona -->
         <mat-form-field appearance="outline" class="col-6">
           <mat-label>Tipo de persona</mat-label>
-          <mat-select formControlName="tipoPersona">
-            <mat-option *ngFor="let t of tiposPersona" [value]="t">{{ t }}</mat-option>
+          <mat-select formControlName="tipoPersonaId">
+            <mat-option *ngFor="let t of tiposPersona" [value]="t.id">{{ t.nombre }}</mat-option>
           </mat-select>
         </mat-form-field>
 
+        <!-- Sexo -->
         <mat-form-field appearance="outline" class="col-6">
           <mat-label>Sexo</mat-label>
-          <mat-select formControlName="sexo">
-            <mat-option *ngFor="let s of sexos" [value]="s">{{ s }}</mat-option>
+          <mat-select formControlName="sexoId">
+            <mat-option *ngFor="let s of sexos" [value]="s.id">{{ s.nombre }}</mat-option>
           </mat-select>
         </mat-form-field>
 
+        <!-- Clasificación Social -->
         <mat-form-field appearance="outline" class="col-6">
           <mat-label>Clasificación Social</mat-label>
-          <mat-select formControlName="clasificacion">
-            <mat-option *ngFor="let c of clasificaciones" [value]="c">{{ c }}</mat-option>
+          <mat-select formControlName="clasificacionId">
+            <mat-option *ngFor="let c of clasificaciones" [value]="c.id">{{ c.nombre }}</mat-option>
           </mat-select>
         </mat-form-field>
 
+        <!-- Estado Civil -->
         <mat-form-field appearance="outline" class="col-6">
           <mat-label>Estado Civil</mat-label>
-          <mat-select formControlName="estadoCivil">
-            <mat-option *ngFor="let e of estadosCiviles" [value]="e">{{ e }}</mat-option>
+          <mat-select formControlName="estadoCivilId">
+            <mat-option *ngFor="let e of estadosCiviles" [value]="e.id">{{ e.nombre }}</mat-option>
           </mat-select>
         </mat-form-field>
+
 
         <mat-form-field appearance="outline" class="col-12">
           <mat-label>Fecha de nacimiento</mat-label>

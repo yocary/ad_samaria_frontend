@@ -180,6 +180,6 @@ export class DialogCertificadoComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.clearToggleSubs();
-    this.typeSub?.unsubscribe(); // <- cerramos la sub del tipo al destruir el diálogo
+    this.typeSub?.unsubscribe();
   }
 }

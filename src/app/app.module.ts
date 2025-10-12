@@ -19,7 +19,7 @@ import { MiembrosFormComponent } from './components/miembros-form/miembros-form.
 import { RolesComponent } from './components/roles/roles.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { RouterModule } from '@angular/router';
-import { MatRippleModule } from '@angular/material/core';
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatRippleModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { FamiliasComponent } from './components/familias/familias.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -40,13 +40,13 @@ import { CertificadosComponent } from './components/certificados/certificados.co
 import { DialogCertificadoComponent } from './components/certificados/dialog-certificado/dialog-certificado/dialog-certificado.component';
 
 
-const MY_DATE_FORMATS = {
+export const MY_DATE_FORMATS = {
   parse: {
-    dateInput: 'DD-MM-YYYY',
+    dateInput: 'DD/MM/YYYY',
   },
   display: {
-    dateInput: 'DD-MM-YYYY',
-    monthYearLabel: 'MMM YYYY',
+    dateInput: 'DD/MM/YYYY',
+    monthYearLabel: 'MMMM YYYY',
     dateA11yLabel: 'LL',
     monthYearA11yLabel: 'MMMM YYYY',
   },
@@ -95,7 +95,9 @@ const MY_DATE_FORMATS = {
   providers: [
     DatePipe,
     SpinnerService,
-    { provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi: true }
+    { provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi: true },
+        { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }, // idioma español
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
   ],
   bootstrap: [AppComponent]
 })
