@@ -1,77 +1,70 @@
-<h2 mat-dialog-title class="hdr">{{ ministry.name }}</h2>
+<div class="dlg">
+  <div class="dlg__title">Integrantes del Liderazgo</div>
 
-<div class="lidr-mock">
+  <!-- Barra agregar -->
+  <div class="bar">
+    <mat-form-field appearance="outline" class="w-40">
+      <mat-label>Buscar persona</mat-label>
+      <input type="text" matInput [formControl]="personaCtrl" [matAutocomplete]="auto" />
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectPerson($event.option.value)">
+        <mat-option *ngFor="let p of filteredPeople$ | async" [value]="p">
+          {{ p.nombre }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
 
-  <div class="grid">
-    <!-- IZQUIERDA: ROLES -->
-    <section class="card left-card">
-      <div class="card-head teal">Agregar Rol</div>
+    <mat-form-field appearance="outline" class="w-24">
+      <mat-label>Rol</mat-label>
+      <mat-select [formControl]="rolCtrl">
+        <mat-option *ngFor="let r of roles" [value]="r.id">{{ r.nombre }}</mat-option>
+      </mat-select>
+    </mat-form-field>
 
-      <div class="pad">
+    <mat-form-field appearance="outline" class="w-24">
+      <mat-label>Desde</mat-label>
+      <input matInput type="date" [formControl]="fechaCtrl"/>
+    </mat-form-field>
 
-        <!-- Todos los miembros del ministerio -->
-        <div class="radio-line">
-          <mat-radio-button></mat-radio-button>
-          <span>Todos los miembros del ministerio</span>
-        </div>
-
-        <div class="roles-title">ROLES</div>
-
-        <!-- Lista de roles -->
-        <div class="roles-list">
-          <div class="role-item" *ngFor="let r of roles">
-            <mat-radio-button></mat-radio-button>
-
-            <div class="role-name">{{ r.name }}</div>
-
-            <div class="role-actions">
-              <button mat-icon-button class="ico-blue" (click)="editRole(r)" aria-label="Editar">
-                <mat-icon>edit</mat-icon>
-              </button>
-              <button mat-icon-button class="ico-red" (click)="removeRole(r)" aria-label="Eliminar">
-                <mat-icon>close</mat-icon>
-              </button>
-            </div>
-          </div>
-
-          <div class="empty" *ngIf="!roles?.length">No hay roles agregados</div>
-        </div>
-      </div>
-    </section>
-
-    <!-- DERECHA: PERSONAS -->
-    <section class="card right-card">
-      <div class="card-head">Personas</div>
-
-      <div class="pad">
-        <div class="line">
-          <mat-form-field appearance="outline" class="grow">
-            <mat-label>Seleccionar a un miembro</mat-label>
-            <mat-select [formControl]="personSelect">
-              <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
-            </mat-select>
-          </mat-form-field>
-
-          <button mat-raised-button color="primary" class="btn-add" (click)="addPerson()">
-            Agregar
-          </button>
-        </div>
-
-        <div class="list-head">Nombre del miembro</div>
-
-        <div class="member-row" *ngFor="let m of members">
-          <div class="member-name">{{ m.person?.name }}</div>
-          <button mat-raised-button color="warn" class="btn-delete" (click)="removePerson(m.id)">
-            X Eliminar
-          </button>
-        </div>
-
-        <div class="empty" *ngIf="!members?.length">Sin personas agregadas</div>
-      </div>
-    </section>
+    <button mat-raised-button color="primary" (click)="agregar()">+ Agregar</button>
   </div>
 
-  <div class="footer">
-    <button mat-stroked-button (click)="close()">Cerrar</button>
+  <!-- Tabla -->
+  <div class="table-wrap" *ngIf="!cargando; else loading">
+    <table mat-table [dataSource]="miembros">
+      <ng-container matColumnDef="persona">
+        <th mat-header-cell *matHeaderCellDef>Persona</th>
+        <td mat-cell *matCellDef="let m">{{ m.nombrePersona }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="rol">
+        <th mat-header-cell *matHeaderCellDef>Rol</th>
+        <td mat-cell *matCellDef="let m">{{ m.nombreRol || '-' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="desde">
+        <th mat-header-cell *matHeaderCellDef>Desde</th>
+        <td mat-cell *matCellDef="let m">{{ m.desde || '-' }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let m">
+          <button mat-stroked-button color="warn" (click)="desactivar(m)">Desactivar</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+
+    <div class="empty" *ngIf="miembros.length === 0">Sin integrantes.</div>
+  </div>
+
+  <ng-template #loading>
+    <div class="loading">Cargando…</div>
+  </ng-template>
+
+  <div class="dlg-actions">
+    <button mat-stroked-button color="primary" (click)="cerrar()">Cerrar</button>
   </div>
 </div>

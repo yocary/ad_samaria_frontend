@@ -1,14 +1,32 @@
-<h2 mat-dialog-title class="hdr">Editar Ministerio</h2>
+<div class="dlg">
+  <div class="dlg__title">Editar Liderazgo</div>
 
-<div class="wrap">
   <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Nombre</mat-label>
-    <input matInput [formControl]="name" />
-    <mat-error *ngIf="name.invalid && name.touched">Requerido</mat-error>
+    <mat-label>Nombre del liderazgo</mat-label>
+    <input matInput [formControl]="nombreCtrl" />
   </mat-form-field>
 
   <div class="actions">
-    <button mat-stroked-button (click)="cancel()">Cancelar</button>
-    <button mat-raised-button color="primary" (click)="save()" [disabled]="name.invalid">Guardar</button>
+    <button mat-stroked-button color="primary" (click)="cerrar()">Cancelar</button>
+    <button mat-raised-button color="primary" (click)="guardarNombre()" [disabled]="guardando">
+      Guardar
+    </button>
   </div>
+
+  <div class="sub">Roles</div>
+
+  <div class="roles">
+    <mat-form-field appearance="outline" class="grow">
+      <mat-label>Nuevo rol</mat-label>
+      <input matInput [formControl]="nuevoRolCtrl" />
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="agregarRol()">+ Agregar rol</button>
+  </div>
+
+  <ul class="role-list">
+    <li *ngFor="let r of roles; index as i">
+      <span>{{ r }}</span>
+      <button mat-stroked-button color="warn" (click)="eliminarRol(i)">Eliminar</button>
+    </li>
+  </ul>
 </div>

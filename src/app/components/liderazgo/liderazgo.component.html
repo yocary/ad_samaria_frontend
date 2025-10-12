@@ -1,7 +1,8 @@
 <div class="ldr">
+  <!-- Encabezado -->
   <div class="ldr__header">Agregar Liderazgo</div>
 
-  <!-- Buscador -->
+  <!-- Buscador centrado -->
   <div class="ldr__search">
     <mat-icon>search</mat-icon>
     <input [formControl]="search" placeholder="Buscar ministerio" />
@@ -19,12 +20,18 @@
   <!-- Lista -->
   <div class="ldr__list">
     <div class="row" *ngFor="let m of filtered">
-      <div class="name">{{ m.name }}</div>
+      <div class="name" [matTooltip]="m.nombre">{{ m.nombre }}</div>
+      <div class="count">Miembros: {{ m.totalMiembros }}</div>
       <div class="actions">
         <button mat-raised-button class="pill pill--blue" (click)="openMembers(m)">Integrantes</button>
         <button mat-raised-button color="accent" class="pill" (click)="openEdit(m)">Editar</button>
         <button mat-raised-button color="warn" class="pill" (click)="remove(m.id)">X Eliminar</button>
       </div>
+    </div>
+
+    <!-- vacío -->
+    <div class="empty" *ngIf="filtered.length === 0">
+      No hay resultados para esa búsqueda.
     </div>
   </div>
 </div>

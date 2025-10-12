@@ -1,9 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs/operators';
-
-import { LiderazgoService, Ministry } from 'src/app/services/liderazgo.service';
+import { LiderazgoService, LiderazgoListado } from 'src/app/services/liderazgo.service';
+import { MatDialog } from '@angular/material/dialog';
+import Swal from 'sweetalert2';
 import { DialogMinistryMembersComponent } from './dialog-ministry-members/dialog-ministry-members.component';
 import { DialogEditMinistryComponent } from './dialog-edit-ministry/dialog-edit-ministry.component';
 
@@ -14,8 +14,8 @@ import { DialogEditMinistryComponent } from './dialog-edit-ministry/dialog-edit-
   encapsulation: ViewEncapsulation.None
 })
 export class LiderazgoComponent implements OnInit {
-  ministries: Ministry[] = [];
-  filtered: Ministry[] = [];
+  ministries: LiderazgoListado[] = [];
+  filtered: LiderazgoListado[] = [];
 
   search = new FormControl('');
   newMinistry = new FormControl('');
@@ -23,44 +23,58 @@ export class LiderazgoComponent implements OnInit {
   constructor(private svc: LiderazgoService, private dialog: MatDialog) {}
 
   ngOnInit(): void {
-    this.svc.ministries$.subscribe(list => {
+    this.load();
+    this.search.valueChanges.pipe(debounceTime(150)).subscribe(() => this.applyFilter());
+  }
+
+  load() {
+    this.svc.listar().subscribe(list => {
       this.ministries = list;
       this.applyFilter();
     });
-    this.search.valueChanges.pipe(debounceTime(150)).subscribe(() => this.applyFilter());
   }
 
   private applyFilter() {
     const q = (this.search.value || '').toLowerCase().trim();
-    this.filtered = q ? this.ministries.filter(m => m.name.toLowerCase().includes(q)) : this.ministries.slice();
+    this.filtered = q
+      ? this.ministries.filter(m => m.nombre.toLowerCase().includes(q))
+      : [...this.ministries];
   }
 
   addMinistry() {
-    const name = (this.newMinistry.value || '').trim();
-    if (!name) return;
-    this.svc.addMinistry(name);
-    this.newMinistry.reset();
-    this.applyFilter();
-  }
-
-  openMembers(ministry: Ministry) {
-    this.dialog.open(DialogMinistryMembersComponent, {
-      width: '980px',
-      maxWidth: '98vw',
-      disableClose: true,
-      data: { ministry }
+    const nombre = (this.newMinistry.value || '').trim();
+    if (!nombre) return;
+    this.svc.crear(nombre).subscribe({
+      next: () => { this.newMinistry.reset(); this.load(); },
+      error: e => Swal.fire('Error', e?.error?.message || 'No se pudo crear', 'error')
     });
   }
 
-  openEdit(ministry: Ministry) {
-    this.dialog.open(DialogEditMinistryComponent, {
-      width: '560px',
-      disableClose: true,
-      data: { ministry }
-    });
-  }
+openMembers(m: { id: number; nombre: string }) {
+  this.dialog.open(DialogMinistryMembersComponent, {
+    width: '1000px',
+    maxWidth: '98vw',
+    disableClose: true,
+    data: { liderazgoId: m.id }
+  })
+  .afterClosed()
+  .subscribe(() => this.load()); // refresca list
+}
+openEdit(m: { id: number; nombre: string }) {
+  this.dialog.open(DialogEditMinistryComponent, {
+    width: '640px',
+    maxWidth: '96vw',
+    disableClose: true,
+    data: { liderazgoId: m.id, nombreActual: m.nombre }
+  })
+  .afterClosed()
+  .subscribe(ok => { if (ok) this.load(); });
+}
 
   remove(id: number) {
-    this.svc.removeMinistry(id);
+    this.svc.eliminar(id).subscribe({
+      next: () => this.load(),
+      error: e => Swal.fire('Error', e?.error?.message || 'No se pudo eliminar', 'error')
+    });
   }
 }

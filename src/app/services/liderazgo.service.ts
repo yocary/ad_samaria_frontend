@@ -1,102 +1,65 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
-export interface Ministry {
+export interface LiderazgoListado {
   id: number;
-  name: string;
+  nombre: string;
+  totalMiembros: number;
 }
 
-export interface Role {
+export interface LiderazgoMiembro {
   id: number;
-  ministryId: number;
-  name: string;
-}
-
-export interface Person {
-  id: number;
-  name: string;
-}
-
-export interface MinistryMember {
-  id: number;
-  ministryId: number;
-  personId: number;
+  liderazgoId: number;
+  personaId: number;
+  rolId: number | null;
+  desde: string | null;        // dd/MM/yyyy
+  hasta: string | null;        // dd/MM/yyyy
+  nombrePersona: string;
+  nombreRol: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class LiderazgoService {
-  // Estado en memoria
-  private _ministries = new BehaviorSubject<Ministry[]>([
-    { id: 1, name: 'Alabanza' },
-    { id: 2, name: 'Misiones' },
-  ]);
-  ministries$ = this._ministries.asObservable();
+  private base = `${environment.api}/liderazgo`;
 
-  private _roles = new BehaviorSubject<Role[]>([
-    { id: 1, ministryId: 1, name: 'Presidente' },
-    { id: 2, ministryId: 1, name: 'Tesorero' },
-  ]);
-  roles$ = this._roles.asObservable();
+  constructor(private http: HttpClient) {}
 
-  private _people = new BehaviorSubject<Person[]>([
-    { id: 1, name: 'Juan Pérez' },
-    { id: 2, name: 'María López' },
-    { id: 3, name: 'Carlos Gómez' },
-  ]);
-  people$ = this._people.asObservable();
-
-  private _members = new BehaviorSubject<MinistryMember[]>([
-    { id: 1, ministryId: 1, personId: 1 },
-    { id: 2, ministryId: 1, personId: 2 },
-  ]);
-  members$ = this._members.asObservable();
-
-  // Helpers internos
-  private nextId(arr: { id: number }[]) {
-    return arr.length ? Math.max(...arr.map(x => x.id)) + 1 : 1;
+  listar() {
+    return this.http.get<LiderazgoListado[]>(`${this.base}`);
   }
 
-  // CRUD Ministerios
-  addMinistry(name: string) {
-    const cur = this._ministries.value.slice();
-    cur.push({ id: this.nextId(cur), name });
-    this._ministries.next(cur);
-  }
-  updateMinistry(id: number, name: string) {
-    const cur = this._ministries.value.slice();
-    const i = cur.findIndex(m => m.id === id);
-    if (i >= 0) { cur[i] = { ...cur[i], name }; this._ministries.next(cur); }
-  }
-  removeMinistry(id: number) {
-    this._ministries.next(this._ministries.value.filter(m => m.id !== id));
-    this._roles.next(this._roles.value.filter(r => r.ministryId !== id));
-    this._members.next(this._members.value.filter(mm => mm.ministryId !== id));
+  crear(nombre: string) {
+    return this.http.post(`${this.base}`, { nombre });
   }
 
-  // Roles por ministerio
-  addRole(ministryId: number, name: string) {
-    const cur = this._roles.value.slice();
-    cur.push({ id: this.nextId(cur), ministryId, name });
-    this._roles.next(cur);
-  }
-  removeRole(roleId: number) {
-    this._roles.next(this._roles.value.filter(r => r.id !== roleId));
-  }
-  updateRole(roleId: number, name: string) {
-    const cur = this._roles.value.slice();
-    const i = cur.findIndex(r => r.id === roleId);
-    if (i >= 0) { cur[i] = { ...cur[i], name }; this._roles.next(cur); }
+  renombrar(id: number, nombre: string) {
+    return this.http.put(`${this.base}/${id}`, { nombre });
   }
 
-  // Miembros por ministerio
-  addMember(ministryId: number, personId: number) {
-    const cur = this._members.value.slice();
-    // evitar duplicados
-    if (cur.some(m => m.ministryId === ministryId && m.personId === personId)) return;
-    cur.push({ id: this.nextId(cur), ministryId, personId });
-    this._members.next(cur);
+  eliminar(id: number) {
+    return this.http.delete(`${this.base}/${id}`);
   }
-  removeMember(memberId: number) {
-    this._members.next(this._members.value.filter(m => m.id !== memberId));
+
+  // Roles
+  listarRoles(liderazgoId: number) {
+    return this.http.get<string[]>(`${this.base}/${liderazgoId}/roles`);
+  }
+  crearRol(liderazgoId: number, nombre: string) {
+    return this.http.post(`${this.base}/${liderazgoId}/roles`, { nombre });
+  }
+  eliminarRol(rolId: number) {
+    return this.http.delete(`${this.base}/roles/${rolId}`);
+  }
+
+  // Miembros
+  listarMiembros(liderazgoId: number) {
+    return this.http.get<LiderazgoMiembro[]>(`${this.base}/${liderazgoId}/miembros`);
+  }
+  agregarMiembro(liderazgoId: number, personaId: number, rolId: number, desde: string) {
+    return this.http.post(`${this.base}/${liderazgoId}/miembros`, { personaId, rolId, desde });
+  }
+  desactivarMiembro(liderazgoMiembroId: number) {
+    return this.http.delete(`${this.base}/miembros/${liderazgoMiembroId}`);
   }
 }
