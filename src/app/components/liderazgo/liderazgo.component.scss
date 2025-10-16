@@ -1,4 +1,4 @@
-/* Contenedor general centrado */
+/* ===== CONTENEDOR PRINCIPAL ===== */
 .ldr{
   --w: min(820px, 96%);
   background:#f5f7fb;
@@ -6,54 +6,100 @@
   border:1px solid #cfe0ef;
   padding:12px;
   width:var(--w);
-  margin: 16px auto; /* centrado horizontal */
+  margin:16px auto;
+  box-shadow: 0 6px 18px rgba(25, 42, 70, .06);
 }
 
-/* Encabezado */
+/* ===== ENCABEZADO ===== */
 .ldr__header{
   height:40px; display:grid; place-items:center;
   background:#244b6b; color:#fff; font-weight:800; border-radius:8px; margin-bottom:10px;
+  letter-spacing:.2px;
 }
 
-/* Buscador */
-.ldr__search{
-  width:100%; height:34px; margin-bottom:10px;
+/* ===== TOOLBAR (BUSCAR ARRIBA DERECHA + AGREGAR ABAJO) ===== */
+.ldr__toolbar{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+/* --- Buscador arriba a la derecha --- */
+.search{
+  align-self:flex-end;
+  width:280px; /* ajusta si lo deseas */
+  height:38px;
   display:flex; align-items:center; gap:8px;
-  border:1px solid #cfd9e6; border-radius:18px; background:#fff;
-  padding:0 10px;
+  border:1px solid #cfd9e6; border-radius:22px; background:#fff;
+  padding:0 12px;
+  transition: box-shadow .15s ease, border-color .15s ease;
 }
-.ldr__search mat-icon{ font-size:18px; color:#7b8a9c; }
-.ldr__search input{ border:0; outline:0; background:transparent; flex:1; }
+.search:focus-within{
+  border-color:#8fb6d7;
+  box-shadow:0 0 0 3px rgba(36, 75, 107, .12);
+}
+.search mat-icon{ font-size:20px; color:#7b8a9c; }
+.search input{
+  border:0; outline:0; background:transparent; flex:1;
+  font-size:14px; color:#2b3a4d; font-weight:500;
+}
 
-/* Agregar ministerio */
-.ldr__add{ display:flex; gap:8px; align-items:center; margin-bottom:10px; }
-.ldr__add .grow{ flex:1; }
+/* --- Bloque Agregar (debajo, ancho completo) --- */
+.add{
+  display:flex; gap:10px; align-items:center; min-width:0; width:100%;
+}
+.add .grow{ flex:1; min-width:0; }
 
-/* ====== LISTA: FIX de alineación ====== */
+/* Pulido del mat-form-field sin romper Material */
+.add ::ng-deep .mat-mdc-form-field{ width:100%; }
+.add ::ng-deep .mdc-notched-outline__leading,
+.add ::ng-deep .mdc-notched-outline__notch,
+.add ::ng-deep .mdc-notched-outline__trailing{
+  border-radius:10px;
+}
+
+/* Botón agregar */
+.add button[mat-raised-button]{
+  height:38px; border-radius:10px; font-weight:700; padding:0 16px; white-space:nowrap;
+  background:#244b6b; color:#fff;
+  box-shadow:0 3px 6px rgba(36, 75, 107, .15);
+  transition: background .2s ease, transform .1s ease;
+}
+.add button[mat-raised-button]:hover{ background:#2f709a; }
+.add button[mat-raised-button]:active{ transform:scale(.98); }
+
+/* ===== LISTA ===== */
 .ldr__list{
   border:1px solid #e3edf7; border-radius:8px; overflow:hidden; background:#fff;
 }
-
 .ldr__list .row{
   display:grid;
-  grid-template-columns: minmax(240px, 1fr) auto; /* da aire a la columna de nombre */
+  grid-template-columns:minmax(240px, 1fr) auto;
   align-items:center;
-  gap:12px;                 /* separación entre nombre y acciones */
-  padding:10px 14px;        /* 👈 más padding a los lados */
+  gap:12px;
+  padding:10px 14px;
   border-top:1px solid #eef4fb;
 }
 .ldr__list .row:first-child{ border-top:0; }
 
-/* Nombre con padding interno y truncamiento elegante */
 .name{
-  padding-left: 2px;        /* un pelín de aire extra al borde izquierdo */
+  padding-left:2px;
   font-weight:700; color:#28445c;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;  /* si el nombre es largo, pone … */
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
 
-/* Acciones a la derecha */
 .actions{ display:flex; gap:8px; justify-self:end; }
 .pill{ height:28px; line-height:28px; padding:0 10px; border-radius:6px; font-weight:700; }
 .pill--blue{ background:#2a67a6; color:#fff; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 760px){
+  .search{ align-self:stretch; width:100%; }
+  .add{ flex-direction:column; align-items:stretch; }
+  .add button[mat-raised-button]{ width:100%; }
+}
+@media (max-width: 640px){
+  .ldr__list .row{ grid-template-columns:1fr; }
+  .actions{ justify-self:start; }
+}

@@ -1,11 +1,11 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormControl } from '@angular/forms';
-import { debounceTime, switchMap } from 'rxjs/operators';
 import { Observable, of } from 'rxjs';
+import { debounceTime, switchMap } from 'rxjs/operators';
 
-import { LiderazgoService, LiderazgoMiembro } from 'src/app/services/liderazgo.service';
-import { PersonasService, PersonaMini } from 'src/app/services/personas.service';
+import { LiderazgoService, MiembroRol, Rol, PersonaLite } from 'src/app/services/liderazgo.service';
+import { PersonasService } from 'src/app/services/personas.service';
 
 @Component({
   selector: 'app-dialog-ministry-members',
@@ -13,19 +13,20 @@ import { PersonasService, PersonaMini } from 'src/app/services/personas.service'
   styleUrls: ['./dialog-ministry-members.component.scss']
 })
 export class DialogMinistryMembersComponent implements OnInit {
+  // viene del open(..., { data: { liderazgoId }})
   liderazgoId!: number;
 
-  // Listado
-  miembros: LiderazgoMiembro[] = [];
+  // Tabla
+  miembros: MiembroRol[] = [];
   displayedColumns = ['persona','rol','desde','acciones'];
 
   // Agregar integrante
   personaCtrl = new FormControl('');
-  filteredPeople$: Observable<PersonaMini[]> = of([]);
-  selectedPerson: PersonaMini | null = null;
+  filteredPeople$: Observable<PersonaLite[]> = of([]);
+  selectedPerson: PersonaLite | null = null;
 
-  rolCtrl = new FormControl(null);
-  roles: { id: number; nombre: string }[] = []; // si sólo devuelves nombre, rellenamos ids locales
+rolCtrl = new FormControl(null);
+  roles: Rol[] = [];
   fechaCtrl = new FormControl(''); // yyyy-MM-dd
 
   cargando = false;
@@ -52,7 +53,7 @@ export class DialogMinistryMembersComponent implements OnInit {
     );
   }
 
-  private cargarMiembros() {
+  private cargarMiembros(): void {
     this.cargando = true;
     this.lsvc.listarMiembros(this.liderazgoId).subscribe({
       next: list => { this.miembros = list; this.cargando = false; },
@@ -60,23 +61,22 @@ export class DialogMinistryMembersComponent implements OnInit {
     });
   }
 
-  private cargarRoles() {
-    // si tu API devuelve solo string[], generamos ids locales
-    this.lsvc.listarRoles(this.liderazgoId).subscribe(names => {
-      this.roles = names.map((n, i) => ({ id: i + 1, nombre: n }));
-      if (this.roles.length) this.rolCtrl.setValue(this.roles[0].id);
+  private cargarRoles(): void {
+    this.lsvc.listarRoles(this.liderazgoId).subscribe({
+      next: roles => {
+        this.roles = roles;
+        if (this.roles.length) this.rolCtrl.setValue(this.roles[0].id);
+      }
     });
   }
 
-  selectPerson(p: PersonaMini) {
+  selectPerson(p: PersonaLite): void {
     this.selectedPerson = p;
-    this.personaCtrl.setValue(`${p.nombre} (${p.id})`, { emitEvent: false });
+    this.personaCtrl.setValue(`${p.nombre}`, { emitEvent: false });
   }
 
-  agregar() {
+  agregar(): void {
     if (!this.selectedPerson || !this.rolCtrl.value || !this.fechaCtrl.value) return;
-    // Nota: en backend el rol espera rolId real; si solo devuelves nombres,
-    // actualiza tu endpoint para regresar {id,nombre}. Aquí dejamos la llamada tal cual:
     this.lsvc.agregarMiembro(this.liderazgoId, this.selectedPerson.id, this.rolCtrl.value, this.fechaCtrl.value)
       .subscribe({
         next: () => {
@@ -88,9 +88,13 @@ export class DialogMinistryMembersComponent implements OnInit {
       });
   }
 
-  desactivar(row: LiderazgoMiembro) {
-    this.lsvc.desactivarMiembro(row.id).subscribe(() => this.cargarMiembros());
+  // 🔧 Este método faltaba y es el que usa el template (desactivar)
+  desactivar(m: MiembroRol): void {
+    if (!confirm(`¿Desactivar a ${m.nombrePersona}?`)) return;
+    this.lsvc.eliminarMiembro(this.liderazgoId, m.id).subscribe({
+      next: () => this.cargarMiembros()
+    });
   }
 
-  cerrar() { this.dialogRef.close(); }
+  cerrar(): void { this.dialogRef.close(); }
 }

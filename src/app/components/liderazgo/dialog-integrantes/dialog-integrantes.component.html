@@ -1,0 +1,100 @@
+<mat-dialog-content class="integrantes-content">
+  <div class="dlg-int">
+    <!-- Título con el nombre del liderazgo -->
+    <div class="dlg-int__title">
+      {{ liderazgo?.nombre }}
+    </div>
+
+    <div class="grid">
+      <!-- IZQUIERDA: Roles -->
+      <section class="card">
+        <button class="btn-rol" mat-raised-button color="primary" (click)="abrirAgregarRol()">
+          Agregar Rol
+        </button>
+
+        <div class="todos-miembros">
+          <span class="todos-texto">Todos los miembros del ministerio</span>
+        </div>
+
+        <div class="roles-title">ROLES</div>
+
+        <!-- Radio para seleccionar rol (filtra y define a qué rol se agrega) -->
+        <mat-radio-group [(ngModel)]="rolSeleccionadoId" (ngModelChange)="refrescarMiembros()">
+          <div class="rol-item" *ngFor="let r of roles">
+            <div class="rol-left">
+              <mat-radio-button [value]="r.id"></mat-radio-button>
+
+              <!-- Vista normal / edición inline -->
+              <ng-container *ngIf="editId !== r.id; else editTpl">
+                <span class="rol-nombre" (click)="activarEdicion(r)">{{ r.nombre }}</span>
+              </ng-container>
+              <ng-template #editTpl>
+                <div class="rol-edit">
+                  <input class="rol-input" [formControl]="editNameCtrl" (keyup.enter)="guardarEdicion(r)" />
+                  <button mat-stroked-button color="primary" (click)="guardarEdicion(r)">Guardar</button>
+                  <button mat-button (click)="cancelarEdicion()">Cancelar</button>
+                </div>
+              </ng-template>
+            </div>
+
+            <div class="rol-actions" *ngIf="editId !== r.id">
+              <button mat-icon-button (click)="activarEdicion(r)" matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="eliminarRolInline(r)" matTooltip="Eliminar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </mat-radio-group>
+      </section>
+
+      <!-- DERECHA: Personas -->
+      <section class="card">
+        <div class="card__header">Personas</div>
+
+        <div class="row-add">
+          <mat-form-field appearance="outline" class="grow">
+            <mat-label>Seleccionar un miembro</mat-label>
+            <mat-select [formControl]="personaSelCtrl">
+              <mat-option *ngFor="let p of miembrosCombo" [value]="p.id">
+                {{ p.nombre }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <button mat-raised-button color="primary" (click)="agregar()">Agregar</button>
+        </div>
+
+        <div class="tabla" *ngIf="!cargando; else loadingTpl">
+          <table mat-table [dataSource]="miembros">
+            <ng-container matColumnDef="persona">
+              <th mat-header-cell *matHeaderCellDef>Nombre del miembro</th>
+              <td mat-cell *matCellDef="let m">{{ m.nombrePersona }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="accion">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let m">
+                <button mat-raised-button color="warn" (click)="quitar(m)">X Eliminar</button>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          </table>
+
+          <div class="empty" *ngIf="miembros.length === 0">Sin integrantes.</div>
+        </div>
+
+        <ng-template #loadingTpl>
+          <div class="loading">Cargando…</div>
+        </ng-template>
+      </section>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center" class="dlg-int__actions">
+  <button mat-stroked-button color="primary" (click)="cerrar()">Regresar</button>
+</mat-dialog-actions>

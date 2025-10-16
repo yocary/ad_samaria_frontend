@@ -1,0 +1,18 @@
+<mat-dialog-content class="dlg">
+  <div class="dlg__title">
+    {{ data.modo === 'crear' ? 'Agregar nuevo rol' : 'Editar rol' }}
+  </div>
+
+  <div class="dlg__body">
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Nombre del rol</mat-label>
+      <input matInput [formControl]="nombreCtrl" />
+      <mat-error *ngIf="nombreCtrl.touched && nombreCtrl.invalid">Requerido</mat-error>
+    </mat-form-field>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="center" class="dlg__actions">
+  <button mat-stroked-button color="warn" mat-dialog-close>Cancelar</button>
+  <button mat-raised-button color="primary" (click)="guardar()">Guardar</button>
+</mat-dialog-actions>

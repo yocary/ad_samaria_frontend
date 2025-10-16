@@ -1,32 +1,13 @@
 <div class="dlg">
-  <div class="dlg__title">Editar Liderazgo</div>
+  <div class="dlg__title">Editar Ministerio</div>
 
   <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Nombre del liderazgo</mat-label>
+    <mat-label>Nombre</mat-label>
     <input matInput [formControl]="nombreCtrl" />
   </mat-form-field>
 
-  <div class="actions">
-    <button mat-stroked-button color="primary" (click)="cerrar()">Cancelar</button>
-    <button mat-raised-button color="primary" (click)="guardarNombre()" [disabled]="guardando">
-      Guardar
-    </button>
+  <div class="dlg__actions">
+    <button mat-stroked-button mat-dialog-close>Cancelar</button>
+    <button mat-raised-button color="primary" (click)="guardar()">Guardar</button>
   </div>
-
-  <div class="sub">Roles</div>
-
-  <div class="roles">
-    <mat-form-field appearance="outline" class="grow">
-      <mat-label>Nuevo rol</mat-label>
-      <input matInput [formControl]="nuevoRolCtrl" />
-    </mat-form-field>
-    <button mat-raised-button color="primary" (click)="agregarRol()">+ Agregar rol</button>
-  </div>
-
-  <ul class="role-list">
-    <li *ngFor="let r of roles; index as i">
-      <span>{{ r }}</span>
-      <button mat-stroked-button color="warn" (click)="eliminarRol(i)">Eliminar</button>
-    </li>
-  </ul>
 </div>

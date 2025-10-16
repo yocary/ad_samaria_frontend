@@ -1,0 +1,176 @@
+/* ===== CONTENEDOR PRINCIPAL ===== */
+.ldr {
+  --w: min(820px, 96%);
+  background: #f5f7fb;
+  border-radius: 10px;
+  border: 1px solid #cfe0ef;
+  padding: 12px;
+  width: var(--w);
+  margin: 20px auto;
+  box-shadow: 0 4px 15px rgba(36, 75, 107, 0.08);
+}
+
+/* ===== ENCABEZADO ===== */
+.ldr__header {
+  height: 45px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(90deg, #244b6b 0%, #2f709a 100%);
+  color: #fff;
+  font-weight: 800;
+  border-radius: 8px;
+  margin-bottom: 14px;
+  letter-spacing: 0.3px;
+  font-size: 16px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* ===== TOOLBAR (Buscar + Agregar) ===== */
+.ldr__toolbar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 14px;
+  border: 1px solid #e3edf7;
+  box-shadow: 0 3px 12px rgba(36, 75, 107, 0.05);
+}
+
+@media (max-width: 760px) {
+  .ldr__toolbar {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== BUSCADOR ===== */
+.search {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #cfd9e6;
+  border-radius: 20px;
+  padding: 0 14px;
+  background: #fff;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search:hover {
+  border-color: #9ec7e8;
+}
+.search:focus-within {
+  border-color: #2a67a6;
+  box-shadow: 0 0 0 3px rgba(42, 103, 166, 0.15);
+}
+
+.search mat-icon {
+  font-size: 20px;
+  color: #5f7b93;
+}
+.search input {
+  border: none;
+  outline: none;
+  flex: 1;
+  background: transparent;
+  font-size: 14px;
+  color: #2b3a4d;
+  font-weight: 500;
+}
+
+/* ===== AGREGAR MINISTERIO ===== */
+.add {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.add .grow {
+  flex: 1;
+}
+
+/* Mat Form Field pulido */
+.add ::ng-deep .mat-mdc-form-field {
+  width: 100%;
+}
+.add ::ng-deep .mdc-notched-outline__leading,
+.add ::ng-deep .mdc-notched-outline__notch,
+.add ::ng-deep .mdc-notched-outline__trailing {
+  border-radius: 8px;
+}
+
+/* Botón Agregar */
+.add button[mat-raised-button] {
+  height: 38px;
+  border-radius: 8px;
+  font-weight: 700;
+  padding: 0 18px;
+  background: #244b6b;
+  color: #fff;
+  transition: background 0.25s ease;
+}
+.add button[mat-raised-button]:hover {
+  background: #2f709a;
+}
+
+/* ===== LISTA ===== */
+.ldr__list {
+  border: 1px solid #e3edf7;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.ldr__list .row {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-top: 1px solid #eef4fb;
+  transition: background 0.2s;
+}
+.ldr__list .row:first-child {
+  border-top: 0;
+}
+.ldr__list .row:hover {
+  background: #f1f7fc;
+}
+
+.name {
+  padding-left: 2px;
+  font-weight: 700;
+  color: #28445c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+  justify-self: end;
+}
+.pill {
+  height: 28px;
+  line-height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+.pill--blue {
+  background: #2a67a6;
+  color: #fff;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 640px) {
+  .ldr__list .row {
+    grid-template-columns: 1fr;
+  }
+  .actions {
+    justify-self: start;
+  }
+}
