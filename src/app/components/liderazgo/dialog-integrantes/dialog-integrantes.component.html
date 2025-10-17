@@ -63,7 +63,11 @@
             </mat-select>
           </mat-form-field>
 
-          <button mat-raised-button color="primary" (click)="agregar()">Agregar</button>
+<button mat-raised-button color="primary"
+        (click)="agregar()"
+        [disabled]="!personaSelCtrl.value || !rolSeleccionadoId">
+  Agregar
+</button>
         </div>
 
         <div class="tabla" *ngIf="!cargando; else loadingTpl">

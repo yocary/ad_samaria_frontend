@@ -20,10 +20,8 @@ export class PersonasService {
   }
 
     // services/personas.service.ts
-listarTodos() {
-  // Endpoint sugerido en backend: GET /persona/listar que devuelve [{id,nombre},...]
-  return this.http.get<PersonaMini[]>(`${environment.api}/persona/listar`);
-  // Si prefieres fallback: return this.buscar('*');
+listarTodos(): Observable<PersonaMini[]> {
+  return this.http.get<PersonaMini[]>(`${environment.api}/persona/listar-todos`);
 }
 
 }

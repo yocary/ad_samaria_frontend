@@ -133,18 +133,17 @@ eliminarRolInline(r: Rol): void {
   }
 
   agregar(): void {
-    const personaId = this.personaSelCtrl.value;
-    const rolId = this.rolSeleccionadoId ?? null;
+  const personaId = this.personaSelCtrl.value;
+  const rolId = this.rolSeleccionadoId;
 
-    if (!personaId) { alert('Selecciona un miembro.'); return; }
-    if (!rolId) { alert('Selecciona un rol en la lista de la izquierda.'); return; }
+  if (!personaId || !rolId) return;
 
-    this.lsvc.agregarMiembro(this.data.liderazgoId, personaId, rolId).subscribe({
-      next: () => {
-        this.personaSelCtrl.reset(null);
-        this.cargarMiembros(); // refresca tabla
-      }
-    });
+  this.lsvc.agregarMiembro(this.data.liderazgoId, personaId, rolId).subscribe({
+    next: () => {
+      this.personaSelCtrl.reset(null);
+      this.cargarMiembros(); // refresca la tabla derecha
+    }
+  });
   }
 
   quitar(m: MiembroRol): void {

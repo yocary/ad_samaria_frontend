@@ -70,12 +70,6 @@ crearRol(liderazgoId: number, nombre: string) {
     return this.http.get<MiembroRol[]>(`${this.base}/liderazgo/${liderazgoId}/miembros`);
   }
 
-agregarMiembro(liderazgoId: number, personaId: number, rolId: number, desdeISO?: string) {
-  const body: any = { personaId, rolId };
-  if (desdeISO) body.desde = desdeISO;   // solo si quieres enviar fecha
-  return this.http.post(`${this.base}/liderazgo/${liderazgoId}/miembros`, body);
-}
-
   eliminarMiembro(liderazgoId: number, miembroLidId: number): Observable<void> {
     return this.http.delete<void>(`${this.base}/liderazgo/${liderazgoId}/miembros/${miembroLidId}`);
   }
@@ -86,6 +80,10 @@ agregarMiembro(liderazgoId: number, personaId: number, rolId: number, desdeISO?:
     const params = new HttpParams().set('q', q);
     return this.http.get<PersonaLite[]>(`${this.base}/persona/buscar`, { params });
   }
+
+  agregarMiembro(liderazgoId: number, personaId: number, rolId: number) {
+  return this.http.post(`${this.base}/liderazgo/${liderazgoId}/miembros`, { personaId, rolId });
+}
 
 
 }

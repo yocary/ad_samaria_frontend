@@ -75,18 +75,18 @@ rolCtrl = new FormControl(null);
     this.personaCtrl.setValue(`${p.nombre}`, { emitEvent: false });
   }
 
-  agregar(): void {
-    if (!this.selectedPerson || !this.rolCtrl.value || !this.fechaCtrl.value) return;
-    this.lsvc.agregarMiembro(this.liderazgoId, this.selectedPerson.id, this.rolCtrl.value, this.fechaCtrl.value)
-      .subscribe({
-        next: () => {
-          this.selectedPerson = null;
-          this.personaCtrl.reset('');
-          this.fechaCtrl.reset('');
-          this.cargarMiembros();
-        }
-      });
-  }
+  // agregar(): void {
+  //   if (!this.selectedPerson || !this.rolCtrl.value || !this.fechaCtrl.value) return;
+  //   this.lsvc.agregarMiembro(this.liderazgoId, this.selectedPerson.id, this.rolCtrl.value, this.fechaCtrl.value)
+  //     .subscribe({
+  //       next: () => {
+  //         this.selectedPerson = null;
+  //         this.personaCtrl.reset('');
+  //         this.fechaCtrl.reset('');
+  //         this.cargarMiembros();
+  //       }
+  //     });
+  // }
 
   // 🔧 Este método faltaba y es el que usa el template (desactivar)
   desactivar(m: MiembroRol): void {
