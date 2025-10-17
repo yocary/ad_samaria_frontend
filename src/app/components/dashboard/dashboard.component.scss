@@ -172,3 +172,19 @@ $shadow: 0 10px 18px rgba(0,0,0,.07);
 .placeholder {
   height: 62px; background: #e9f2ff; border-radius: 10px;
 }
+
+.tile {
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.tile:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+.icon svg {
+  width: 40px;
+  height: 40px;
+  color: #244b6b;
+}
+

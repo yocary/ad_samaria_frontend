@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 
 interface Tile {
-  key: 'roles' | 'miembros' | 'finanzas' | 'planificacion' | 'liderazgo' | 'reportes';
+  key: 'roles' | 'miembros' | 'finanzas' | 'planificacion' | 'liderazgo' | 'reportes' | 'certificados';
   title: string;
   routerLink: string;
 }
@@ -19,6 +19,7 @@ export class DashboardComponent {
     { key: 'planificacion', title: 'PLANIFICACIÓN',  routerLink: '/planificacion' },
     { key: 'liderazgo',     title: 'LIDERAZGO',      routerLink: '/liderazgo' },
     { key: 'reportes',      title: 'REPORTES',       routerLink: '/reportes' },
+    { key: 'certificados',  title: 'CERTIFICADOS',   routerLink: '/certificados' },
   ];
 
   // Para marcar activo si lo necesitas (opcional)

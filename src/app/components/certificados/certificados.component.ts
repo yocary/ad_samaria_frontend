@@ -4,6 +4,7 @@ import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs/operators';
 import { DialogCertificadoComponent } from './dialog-certificado/dialog-certificado/dialog-certificado.component'; 
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-certificados',
@@ -16,7 +17,7 @@ export class CertificadosComponent implements OnInit {
   data: Certificate[] = [];
   filtered: Certificate[] = [];
 
-  constructor(private svc: CertificadosService, private dialog: MatDialog) {}
+  constructor(private svc: CertificadosService, private dialog: MatDialog, private router: Router) {}
 
   ngOnInit(): void {
     this.svc.certs$.subscribe((list) => {
@@ -59,7 +60,6 @@ this.dialog.open(DialogCertificadoComponent, {
   }
 
   back() {
-    // si es un submódulo, navega; si no, sólo placeholder:
-    // this.router.navigateByUrl('/inicio');
+    this.router.navigate(['/dashboard']);
   }
 }
