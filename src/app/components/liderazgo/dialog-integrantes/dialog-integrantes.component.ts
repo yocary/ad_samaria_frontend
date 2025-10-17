@@ -92,18 +92,24 @@ export class DialogIntegrantesComponent implements OnInit {
       }
     });
   }
-  eliminarRolInline(r: Rol): void {
-    if (!confirm(`¿Eliminar el rol "${r.nombre}"?`)) return;
-    this.lsvc.eliminarRol(this.data.liderazgoId, r.id).subscribe({
-      next: () => {
-        this.roles = this.roles.filter(x => x.id !== r.id);
-        if (this.rolSeleccionadoId === r.id) {
-          this.rolSeleccionadoId = null;
-          this.refrescarMiembros();
-        }
+eliminarRolInline(r: Rol): void {
+  this.lsvc.eliminarRol(this.data.liderazgoId, r.id).subscribe({
+    next: () => {
+      // Quita el rol de la lista sin recargar
+      this.roles = this.roles.filter(x => x.id !== r.id);
+
+      // Si el rol eliminado estaba seleccionado, limpia la selección
+      if (this.rolSeleccionadoId === r.id) {
+        this.rolSeleccionadoId = null;
+        this.refrescarMiembros();
       }
-    });
-  }
+    },
+    error: (err) => {
+      console.error('Error eliminando rol', err);
+    }
+  });
+}
+
 
   // ---------------- Miembros ----------------
   private cargarMiembros(): void {

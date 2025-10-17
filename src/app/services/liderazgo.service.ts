@@ -53,9 +53,9 @@ export class LiderazgoService {
     return this.http.get<Rol[]>(`${this.base}/liderazgo/${liderazgoId}/roles`);
   }
 
-  crearRol(liderazgoId: number, nombre: string): Observable<Rol> {
-    return this.http.post<Rol>(`${this.base}/liderazgo/${liderazgoId}/roles`, { nombre });
-  }
+crearRol(liderazgoId: number, nombre: string) {
+  return this.http.post<Rol>(`${this.base}/liderazgo/${liderazgoId}/roles`, { nombre });
+}
 
   editarRol(liderazgoId: number, rolId: number, nombre: string): Observable<void> {
     return this.http.put<void>(`${this.base}/liderazgo/${liderazgoId}/roles/${rolId}`, { nombre });
