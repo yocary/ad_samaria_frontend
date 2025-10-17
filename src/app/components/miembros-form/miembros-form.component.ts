@@ -5,6 +5,7 @@ import {
   MiembrosService,
   OpcionCatalogo,
 } from 'src/app/services/miembros.service';
+import { Router } from '@angular/router';
 
 export const MY_DATE_FORMATS = {
   parse: {
@@ -47,7 +48,7 @@ export class MiembrosFormComponent implements OnInit {
     fechaNacimiento: [null, Validators.required], // Date del datepicker
   });
 
-  constructor(private fb: FormBuilder, private svc: MiembrosService) {}
+  constructor(private fb: FormBuilder, private svc: MiembrosService, private router: Router) {}
 
   ngOnInit(): void {
     // Cargar catálogos (en paralelo) y setear defaults
@@ -120,7 +121,7 @@ export class MiembrosFormComponent implements OnInit {
   }
 
   cancelar(): void {
-    this.resetDefaults();
+    this.router.navigate(['/dashboard']);
   }
 
   private resetDefaults() {
