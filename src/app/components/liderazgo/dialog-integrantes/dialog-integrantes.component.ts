@@ -135,47 +135,39 @@ eliminarRolInline(r: Rol): void {
 
 agregar(): void {
   const personaId = this.personaSelCtrl.value;
-  const rolId = this.rolSeleccionadoId;
+  const rolId = this.rolSeleccionadoId ?? 0;
 
-  if (!personaId || !rolId) return;
-
-  // 1) Validación en cliente: ya pertenece a este liderazgo con cualquier rol
-  const yaExiste = this.miembrosRaw.some(m => m.personaId === personaId);
-  if (yaExiste) {
-    Swal.fire('No permitido',
-      'Esta persona ya tiene un rol asignado en este liderazgo. No se puede asignar otro.',
-      'warning'
-    );
+  if (!personaId || !rolId) {
+    Swal.fire('Atención', 'Debe seleccionar un miembro y un rol.', 'warning');
     return;
   }
 
-  // 2) Llamada a backend (cubre carreras o si el listado local no está actualizado)
+  // Verificar si el rol ya tiene alguien asignado
+  const existeRolAsignado = this.miembrosRaw.some(m => m.rolId === rolId);
+
+  if (existeRolAsignado) {
+    Swal.fire({
+      title: 'Rol ya ocupado',
+      text: 'Este rol ya tiene un integrante asignado en este liderazgo.',
+      icon: 'warning',
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: '#244b6b'
+    });
+    return;
+  }
+
+  // Si pasa la validación, lo agrega normalmente
   this.lsvc.agregarMiembro(this.data.liderazgoId, personaId, rolId).subscribe({
     next: () => {
+      Swal.fire('Éxito', 'Miembro agregado correctamente.', 'success');
       this.personaSelCtrl.reset(null);
-      this.cargarMiembros(); // refresca la tabla
-      Swal.fire('Asignado', 'Miembro agregado correctamente.', 'success');
+      this.cargarMiembros();
     },
-    error: (err) => {
-      // Si tu servicio lanza IllegalArgumentException o 409, mostramos mensaje amable
-      const msgBackend =
-        (err?.error && typeof err.error === 'string') ? err.error :
-        (err?.error?.message ?? '');
-
-      if (msgBackend?.toLowerCase().includes('ya es integrante')
-          || msgBackend?.toLowerCase().includes('ya tiene un rol')
-          || err?.status === 409) {
-        Swal.fire('No permitido',
-          'Esta persona ya tiene un rol asignado en este liderazgo. No se puede asignar otro.',
-          'warning'
-        );
-      } else {
-        Swal.fire('Error', 'No se pudo agregar el miembro.', 'error');
-        console.error(err);
-      }
+    error: () => {
+      Swal.fire('Error', 'No se pudo agregar el miembro.', 'error');
     }
   });
-  }
+}
 
 quitar(m: MiembroRol): void {
   Swal.fire({
