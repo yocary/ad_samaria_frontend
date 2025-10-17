@@ -5,6 +5,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { LiderazgoService, Rol, MiembroRol } from 'src/app/services/liderazgo.service';
 import { PersonasService, PersonaMini } from 'src/app/services/personas.service';
 import { DialogRolComponent } from '../dialog-rol/dialog-rol.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-dialog-integrantes',
@@ -132,26 +133,74 @@ eliminarRolInline(r: Rol): void {
     this.miembros = this.miembrosRaw.filter(m => m.rolId === this.rolSeleccionadoId);
   }
 
-  agregar(): void {
+agregar(): void {
   const personaId = this.personaSelCtrl.value;
   const rolId = this.rolSeleccionadoId;
 
   if (!personaId || !rolId) return;
 
+  // 1) Validación en cliente: ya pertenece a este liderazgo con cualquier rol
+  const yaExiste = this.miembrosRaw.some(m => m.personaId === personaId);
+  if (yaExiste) {
+    Swal.fire('No permitido',
+      'Esta persona ya tiene un rol asignado en este liderazgo. No se puede asignar otro.',
+      'warning'
+    );
+    return;
+  }
+
+  // 2) Llamada a backend (cubre carreras o si el listado local no está actualizado)
   this.lsvc.agregarMiembro(this.data.liderazgoId, personaId, rolId).subscribe({
     next: () => {
       this.personaSelCtrl.reset(null);
-      this.cargarMiembros(); // refresca la tabla derecha
+      this.cargarMiembros(); // refresca la tabla
+      Swal.fire('Asignado', 'Miembro agregado correctamente.', 'success');
+    },
+    error: (err) => {
+      // Si tu servicio lanza IllegalArgumentException o 409, mostramos mensaje amable
+      const msgBackend =
+        (err?.error && typeof err.error === 'string') ? err.error :
+        (err?.error?.message ?? '');
+
+      if (msgBackend?.toLowerCase().includes('ya es integrante')
+          || msgBackend?.toLowerCase().includes('ya tiene un rol')
+          || err?.status === 409) {
+        Swal.fire('No permitido',
+          'Esta persona ya tiene un rol asignado en este liderazgo. No se puede asignar otro.',
+          'warning'
+        );
+      } else {
+        Swal.fire('Error', 'No se pudo agregar el miembro.', 'error');
+        console.error(err);
+      }
     }
   });
   }
 
-  quitar(m: MiembroRol): void {
-    if (!confirm(`¿Quitar a ${m.nombrePersona}?`)) return;
-    this.lsvc.eliminarMiembro(this.data.liderazgoId, m.id).subscribe({
-      next: () => this.cargarMiembros()
-    });
-  }
+quitar(m: MiembroRol): void {
+  Swal.fire({
+    title: 'Confirmar eliminación',
+    text: `¿Está seguro de eliminar a ${m.nombrePersona}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'No',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6'
+  }).then(result => {
+    if (result.isConfirmed) {
+      this.lsvc.eliminarMiembro(this.data.liderazgoId, m.id).subscribe({
+        next: () => {
+          Swal.fire('Eliminado', `${m.nombrePersona} fue eliminado correctamente.`, 'success');
+          this.cargarMiembros();
+        },
+        error: () => {
+          Swal.fire('Error', 'No se pudo eliminar el miembro.', 'error');
+        }
+      });
+    }
+  });
+}
 
   // Combo de personas
   private cargarMiembrosCombo(): void {
