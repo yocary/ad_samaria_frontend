@@ -49,7 +49,7 @@ export class MiembrosHomeComponent implements OnInit, OnDestroy {
   }
 
   // Navegación
-  agregarPersona() { this.router.navigate(['/miembros/form']); }
+  agregarPersona() { this.router.navigate(['/miembros/nuevo']); }
   agregarFamilia() { this.router.navigate(['/familias']); }
   regresar() { this.router.navigate(['/dashboard']); }
 
