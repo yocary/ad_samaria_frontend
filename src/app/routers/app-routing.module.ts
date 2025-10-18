@@ -10,6 +10,7 @@ import { FamiliasComponent } from "../components/familias/familias.component";
 import { FinanzasComponent } from "../components/finanzas/finanzas.component";
 import { LiderazgoComponent } from "../components/liderazgo/liderazgo.component";
 import { CertificadosComponent } from "../components/certificados/certificados.component";
+import { MiembrosHomeComponent } from "../components/miembros-home/miembros-home.component";
 
 
 
@@ -23,6 +24,15 @@ const routes: Routes = [
   { path: 'finanzas', component: FinanzasComponent },
   { path: 'liderazgo', component: LiderazgoComponent },
   { path: 'certificados', component: CertificadosComponent },
+   { path: 'miembros', children: [
+      { path: 'home', component: MiembrosHomeComponent },      // pantalla principal
+      { path: 'form', component: MiembrosFormComponent },  // ya lo tienes creado
+    ]
+  },
+  { path: 'familias', children: [
+      // { path: 'form', component: FamiliasFormComponent },  // si aún no existe, crea un stub
+    ]
+  },
 ];
 
 @NgModule({

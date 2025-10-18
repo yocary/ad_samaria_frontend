@@ -40,6 +40,7 @@ import { CertificadosComponent } from './components/certificados/certificados.co
 import { DialogCertificadoComponent } from './components/certificados/dialog-certificado/dialog-certificado/dialog-certificado.component';
 import { DialogIntegrantesComponent } from './components/liderazgo/dialog-integrantes/dialog-integrantes.component';
 import { DialogRolComponent } from './components/liderazgo/dialog-rol/dialog-rol.component';
+import { MiembrosHomeComponent } from './components/miembros-home/miembros-home.component';
 
 
 export const MY_DATE_FORMATS = {
@@ -76,6 +77,7 @@ export const MY_DATE_FORMATS = {
     DialogCertificadoComponent,
     DialogIntegrantesComponent,
     DialogRolComponent,
+    MiembrosHomeComponent,
   ],
   imports: [
     FormsModule,
