@@ -1,45 +1,110 @@
-:host { display:block; width:100%; }
-
-.wrap{
-  width: min(520px, 96vw);
-  margin: 18px auto;
-  background: #fff;
-  border:1px solid #dfe7f0;
-  border-radius:14px;
-  box-shadow:0 6px 16px rgba(25,55,100,.06);
-  padding: 14px 16px 18px;
+.card {
+    width: min(1180px, 96vw);
+    margin: 12px auto;
+    background: #fff;
+    border: 1px solid #dfe7f0;
+    border-radius: 12px;
+    box-shadow: 0 6px 16px rgba(25, 55, 100, .06);
+    padding: 14px 16px 18px;
 }
 
-.header{
-  width:100%;
-  height:46px;
-  border-radius:14px;
-  background:#24527a;
-  color:#fff;
-  display:grid;
-  place-items:center;
-  font-weight:800;
-  letter-spacing:.4px;
-  margin-bottom:16px;
+.card__header {
+    height: 46px;
+    border-radius: 14px;
+    background: #24527a;
+    color: #fff;
+    display: grid;
+    place-items: center;
+    font-weight: 800;
+    letter-spacing: .4px;
+    margin-bottom: 12px;
 }
 
-.body{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:16px;
-  padding: 12px 0 8px;
+.toolbar {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 10px;
 }
 
-.btn{
-  min-width: 220px;
-  height: 40px;
-  border-radius: 10px;
-  font-weight: 700;
+.btns {
+    display: flex;
+    gap: 8px;
 }
 
-.footer{
-  display:flex;
-  justify-content:flex-end;
-  margin-top: 12px;
+.search {
+    justify-self: end;
+    width: 100%;
+    max-width: 420px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid #cfd9e6;
+    border-radius: 22px;
+    padding: 0 10px;
+}
+
+.search mat-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 20px;
+    color: #7b8a9c;
+}
+
+.search input {
+    flex: 1;
+    border: 0;
+    outline: 0;
+    background: transparent;
+}
+
+.table {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid #dfebf6;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.table .mat-mdc-table {
+    min-width: 420px;
+    width: 100%;
+}
+
+.table .mat-mdc-header-row,
+.table .mat-mdc-row {
+    height: 44px;
+}
+
+.table .mat-mdc-header-cell {
+    background: #f5fbff;
+    color: #516b85;
+    font-weight: 700;
+    border-bottom: 1px solid #e5eff7;
+    padding: 10px 12px;
+}
+
+.table .mat-mdc-cell {
+    border-top: 1px solid #f1f6fb;
+    padding: 10px 12px;
+}
+
+.footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 12px;
+}
+
+@media (max-width:900px) {
+    .toolbar {
+        grid-template-columns: 1fr
+    }
+
+    .search {
+        justify-self: stretch;
+        max-width: none
+    }
 }

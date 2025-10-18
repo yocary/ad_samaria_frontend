@@ -25,12 +25,12 @@ const routes: Routes = [
   { path: 'liderazgo', component: LiderazgoComponent },
   { path: 'certificados', component: CertificadosComponent },
    { path: 'miembros', children: [
-      { path: 'home', component: MiembrosHomeComponent },      // pantalla principal
-      { path: 'form', component: MiembrosFormComponent },  // ya lo tienes creado
+      { path: 'home', component: MiembrosHomeComponent },
+      { path: 'nuevo', component: MiembrosFormComponent },
     ]
   },
   { path: 'familias', children: [
-      // { path: 'form', component: FamiliasFormComponent },  // si aún no existe, crea un stub
+      // { path: 'form', component: FamiliasFormComponent },
     ]
   },
 ];

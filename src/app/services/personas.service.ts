@@ -5,7 +5,7 @@ import { Observable } from 'rxjs';
 
 export interface PersonaMini {
   id: number;
-  nombre: string; // concatenado en backend: nombres + apellidos
+  nombre: string;
 }
 
 @Injectable({ providedIn: 'root' })
