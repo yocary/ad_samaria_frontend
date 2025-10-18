@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
 import { DialogCertificadoComponent } from './dialog-certificado/dialog-certificado/dialog-certificado.component';
 import {
   CertificadosApiService,
-  CertificadoDTO
+  CertificadoDTO,
 } from 'src/app/services/certificados-api.service';
 
 @Component({
@@ -28,14 +28,15 @@ export class CertificadosComponent implements OnInit {
     private router: Router
   ) {}
 
-
   ngOnInit(): void {
     this.load();
-    this.search.valueChanges.pipe(debounceTime(200)).subscribe(q => this.applyFilter(q || ''));
+    this.search.valueChanges
+      .pipe(debounceTime(200))
+      .subscribe((q) => this.applyFilter(q || ''));
   }
 
   private load(q: string = '') {
-    this.api.listar(q).subscribe(list => {
+    this.api.listar(q).subscribe((list) => {
       this.data = list;
       this.applyFilter(this.search.value || '');
     });
@@ -44,9 +45,10 @@ export class CertificadosComponent implements OnInit {
   private applyFilter(q: string) {
     const s = q.toLowerCase().trim();
     this.filtered = s
-      ? this.data.filter(c =>
-          (c.miembro || '').toLowerCase().includes(s) ||
-          (c.tipo || '').toLowerCase().includes(s)
+      ? this.data.filter(
+          (c) =>
+            (c.miembro || '').toLowerCase().includes(s) ||
+            (c.tipo || '').toLowerCase().includes(s)
         )
       : this.data.slice();
   }
@@ -56,9 +58,11 @@ export class CertificadosComponent implements OnInit {
       width: '96vw',
       maxWidth: '860px',
       disableClose: true,
-      autoFocus: false
+      autoFocus: false,
     });
-    ref.afterClosed().subscribe(ok => { if (ok) this.load(); });
+    ref.afterClosed().subscribe((ok) => {
+      if (ok) this.load();
+    });
   }
 
   // ===== Descargar PDF =====
@@ -66,7 +70,9 @@ export class CertificadosComponent implements OnInit {
     this.api.descargarPdf(row.id).subscribe({
       next: (blob) => {
         const fecha = row.fecha ? ` (${row.fecha})` : '';
-        const nombreBase = `${row.tipo || 'certificado'} - ${row.miembro || ''}${fecha}`.trim();
+        const nombreBase = `${row.tipo || 'certificado'} - ${
+          row.miembro || ''
+        }${fecha}`.trim();
         const filename = `${nombreBase}.pdf`.replace(/[\\/:*?"<>|]/g, '_');
 
         const url = URL.createObjectURL(blob);
@@ -78,20 +84,19 @@ export class CertificadosComponent implements OnInit {
         a.remove();
         URL.revokeObjectURL(url);
       },
-      error: err => {
+      error: (err) => {
         console.error(err);
         alert('No se pudo descargar el PDF');
-      }
+      },
     });
   }
 
-
-remove(row: CertificadoDTO) {
-  this.api.delete(row.id).subscribe({
-    next: () => {
-      this.filtered = this.filtered.filter(x => x.id !== row.id);
-    }
-  });
+  remove(row: CertificadoDTO) {
+    this.api.delete(row.id).subscribe({
+      next: () => {
+        this.filtered = this.filtered.filter((x) => x.id !== row.id);
+      },
+    });
   }
 
   private descargarBlob(blob: Blob, fileName: string) {
@@ -105,6 +110,7 @@ remove(row: CertificadoDTO) {
     URL.revokeObjectURL(url);
   }
 
-
-  back() { this.router.navigate(['/dashboard']); }
+  back() {
+    this.router.navigate(['/dashboard']);
+  }
 }

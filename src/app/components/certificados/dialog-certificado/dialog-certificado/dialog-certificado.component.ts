@@ -10,12 +10,15 @@ import { CertificadosService } from 'src/app/services/certificado.service';
 // 👉 nuevo: servicio HTTP real al backend
 import {
   CertificadosApiService,
+  CrearBautismoRequest,
+  CrearMatrimonioRequest,
+  CrearNinosRequest,
 } from 'src/app/services/certificados-api.service';
 
 @Component({
   selector: 'app-dialog-certificado',
   templateUrl: './dialog-certificado.component.html',
-  styleUrls: ['./dialog-certificado.component.scss']
+  styleUrls: ['./dialog-certificado.component.scss'],
 })
 export class DialogCertificadoComponent implements OnInit, OnDestroy {
   types = ['Membresía', 'Presentación de Niños', 'Bautismo', 'Matrimonio'];
@@ -35,21 +38,21 @@ export class DialogCertificadoComponent implements OnInit, OnDestroy {
   ];
 
   // Suscripciones separadas
-  private typeSub?: Subscription;          // <- SOLO para cambios de tipo
+  private typeSub?: Subscription; // <- SOLO para cambios de tipo
   private toggleSubs: Subscription[] = []; // <- para radios Sí/No
 
   // 👉 mapa de tipos → id en tu tabla tipo_certificado (ajusta a tus IDs reales)
   private tipoIdMap: Record<string, number> = {
-    'Membresía': 1,
+    Membresía: 1,
     'Presentación de Niños': 2,
-    'Bautismo': 3,
-    'Matrimonio': 4
+    Bautismo: 3,
+    Matrimonio: 4,
   };
 
   constructor(
     private dialogRef: MatDialogRef<DialogCertificadoComponent>,
-    private certSvc: CertificadosService,          // lo mantengo por si lo usas
-    private api: CertificadosApiService            // <-- se usa para guardar en backend
+    private certSvc: CertificadosService, // lo mantengo por si lo usas
+    private api: CertificadosApiService // <-- se usa para guardar en backend
   ) {}
 
   ngOnInit(): void {
@@ -58,9 +61,17 @@ export class DialogCertificadoComponent implements OnInit, OnDestroy {
     this.buildForm(this.currentType);
 
     // Muy importante: esta suscripción NO se limpia en buildForm
-    this.typeSub = this.typeCtrl.valueChanges.subscribe(v => {
+    this.typeSub = this.typeCtrl.valueChanges.subscribe((v) => {
       this.currentType = v || 'Membresía';
       this.buildForm(this.currentType);
+
+      this.currentType = this.typeCtrl.value || 'Presentación de Niños';
+      this.buildForm(this.currentType);
+
+      this.typeSub = this.typeCtrl.valueChanges.subscribe((v) => {
+        this.currentType = v || 'Presentación de Niños';
+        this.buildForm(this.currentType);
+      });
     });
   }
 
@@ -68,54 +79,37 @@ export class DialogCertificadoComponent implements OnInit, OnDestroy {
     this.clearToggleSubs(); // limpia SOLO las subs de toggles (no la del tipo)
 
     switch (type) {
-case 'Membresía':
-  this.form = new FormGroup({
-    memberName: new FormControl('', Validators.required),
-    issueDate:  new FormControl('', Validators.required),
-  });
-  break;
-
+      case 'Membresía':
+        this.form = new FormGroup({
+          memberName: new FormControl('', Validators.required),
+          issueDate: new FormControl('', Validators.required),
+        });
+        break;
 
       case 'Bautismo':
         this.form = new FormGroup({
-          baptismDate: new FormControl('', Validators.required),
-          memberId:    new FormControl(null, Validators.required),
-          pastorId:    new FormControl(null, Validators.required),
-          issueDate:   new FormControl('', Validators.required),
+          nombreMiembro: new FormControl('', Validators.required), // <- texto libre
+          baptismDate: new FormControl('', Validators.required), // fecha de bautismo
+          issueDate: new FormControl('', Validators.required), // fecha de expedición (común)
         });
         break;
 
       case 'Presentación de Niños':
         this.form = new FormGroup({
-          childName:       new FormControl('', Validators.required),
-          childBirthDate:  new FormControl('', Validators.required),
-
-          fatherIsMember:  new FormControl(true),
-          fatherId:        new FormControl(null),
-
-          motherIsMember:  new FormControl(true),
-          motherId:        new FormControl(null),
-
-          pastorId:        new FormControl(null, Validators.required),
-          witnessName:     new FormControl(''),
-
-          issueDate:       new FormControl('', Validators.required),
+          childName: new FormControl('', Validators.required),
+          fatherName: new FormControl('', Validators.required),
+          motherName: new FormControl('', Validators.required),
+          lugarFechaNacimiento: new FormControl('', Validators.required),
+          issueDate: new FormControl('', Validators.required), // común
         });
-        this.setupChildMemberToggles();
         break;
 
       case 'Matrimonio':
         this.form = new FormGroup({
-          husbandIsMember: new FormControl(true),
-          husbandId:       new FormControl(null),
-
-          wifeIsMember:    new FormControl(true),
-          wifeId:          new FormControl(null),
-
-          pastorId:        new FormControl(null, Validators.required),
-          issueDate:       new FormControl('', Validators.required),
+          husbandName: new FormControl('', Validators.required),
+          wifeName: new FormControl('', Validators.required),
+          issueDate: new FormControl('', Validators.required), // fecha expedición
         });
-        this.setupMarriageMemberToggles();
         break;
 
       default:
@@ -130,20 +124,32 @@ case 'Membresía':
   private setupChildMemberToggles(): void {
     if (!this.form) return;
     const fFlag = this.form.get('fatherIsMember');
-    const fSel  = this.form.get('fatherId');
+    const fSel = this.form.get('fatherId');
     const mFlag = this.form.get('motherIsMember');
-    const mSel  = this.form.get('motherId');
+    const mSel = this.form.get('motherId');
     if (!fFlag || !fSel || !mFlag || !mSel) return;
 
     const apply = () => {
       const isF = !!fFlag.value;
-      if (!isF) { fSel.reset(); fSel.disable(); fSel.clearValidators(); }
-      else { fSel.enable(); fSel.setValidators([Validators.required]); }
+      if (!isF) {
+        fSel.reset();
+        fSel.disable();
+        fSel.clearValidators();
+      } else {
+        fSel.enable();
+        fSel.setValidators([Validators.required]);
+      }
       fSel.updateValueAndValidity({ emitEvent: false });
 
       const isM = !!mFlag.value;
-      if (!isM) { mSel.reset(); mSel.disable(); mSel.clearValidators(); }
-      else { mSel.enable(); mSel.setValidators([Validators.required]); }
+      if (!isM) {
+        mSel.reset();
+        mSel.disable();
+        mSel.clearValidators();
+      } else {
+        mSel.enable();
+        mSel.setValidators([Validators.required]);
+      }
       mSel.updateValueAndValidity({ emitEvent: false });
     };
 
@@ -156,20 +162,32 @@ case 'Membresía':
   private setupMarriageMemberToggles(): void {
     if (!this.form) return;
     const hFlag = this.form.get('husbandIsMember');
-    const hSel  = this.form.get('husbandId');
+    const hSel = this.form.get('husbandId');
     const wFlag = this.form.get('wifeIsMember');
-    const wSel  = this.form.get('wifeId');
+    const wSel = this.form.get('wifeId');
     if (!hFlag || !hSel || !wFlag || !wSel) return;
 
     const apply = () => {
       const isH = !!hFlag.value;
-      if (!isH) { hSel.reset(); hSel.disable(); hSel.clearValidators(); }
-      else { hSel.enable(); hSel.setValidators([Validators.required]); }
+      if (!isH) {
+        hSel.reset();
+        hSel.disable();
+        hSel.clearValidators();
+      } else {
+        hSel.enable();
+        hSel.setValidators([Validators.required]);
+      }
       hSel.updateValueAndValidity({ emitEvent: false });
 
       const isW = !!wFlag.value;
-      if (!isW) { wSel.reset(); wSel.disable(); wSel.clearValidators(); }
-      else { wSel.enable(); wSel.setValidators([Validators.required]); }
+      if (!isW) {
+        wSel.reset();
+        wSel.disable();
+        wSel.clearValidators();
+      } else {
+        wSel.enable();
+        wSel.setValidators([Validators.required]);
+      }
       wSel.updateValueAndValidity({ emitEvent: false });
     };
 
@@ -179,7 +197,7 @@ case 'Membresía':
   }
 
   private clearToggleSubs(): void {
-    this.toggleSubs.forEach(s => s.unsubscribe());
+    this.toggleSubs.forEach((s) => s.unsubscribe());
     this.toggleSubs = [];
   }
 
@@ -196,14 +214,17 @@ case 'Membresía':
   }
 
   private nombrePersona(id?: number): string {
-    const p = this.people.find(x => x.id === id);
+    const p = this.people.find((x) => x.id === id);
     return p ? p.name : '';
   }
 
   // ====== Guardar (crea el registro en BD) ======
   save(): void {
     if (!this.form) return;
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
     const tipo = this.currentType;
     const tipoId = this.tipoIdMap[tipo] ?? 0; // ajusta IDs reales
@@ -218,73 +239,70 @@ case 'Membresía':
     // EXTRAS que van al JRXML (ajusta claves a las que tu backend espera)
     const extras: Record<string, string> = {};
 
-if (tipo === 'Membresía') {
-  const nombreMiembro = v.memberName;
-  const fechaIso = this.toIso(v.issueDate);
+    if (tipo === 'Membresía') {
+      const nombreMiembro = v.memberName;
+      const fechaIso = this.toIso(v.issueDate);
 
-  // 1️⃣ Guardar en BD
-  this.api.crearMembresiaCertificado({ nombreMiembro, fecha: fechaIso }).subscribe({
-    next: () => {
-      // 2️⃣ Luego generar el PDF
-      this.api.generarMembresiaPdf({ nombreMiembro, fecha: fechaIso }).subscribe({
-        next: (blob) => {
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.href = url;
-          a.download = `Certificado Membresía - ${nombreMiembro}.pdf`;
-          a.click();
-          URL.revokeObjectURL(url);
-          Swal.fire('Éxito', 'Certificado creado y descargado', 'success');
+      // 1️⃣ Guardar en BD
+      this.api
+        .crearMembresiaCertificado({ nombreMiembro, fecha: fechaIso })
+        .subscribe({
+          next: () => {
+            Swal.fire('Éxito', 'Certificado de membresía creado', 'success');
+            this.dialogRef.close(true);
+          },
+          error: () =>
+            Swal.fire('Error', 'No se pudo guardar el certificado', 'error'),
+        });
+    }
+    if (tipo === 'Bautismo') {
+      const v = this.form.getRawValue();
+      const req: CrearBautismoRequest = {
+        nombreMiembro: String(v.nombreMiembro || '').trim(),
+        fechaBautismo: this.toIso(v.baptismDate),
+        fechaExpedicion: this.toIso(v.issueDate),
+      };
+
+      // 1) Guarda el registro en BD
+      this.api.crearBautismo(req).subscribe({
+        next: () => {
+          Swal.fire('OK', 'Certificado de bautismo creado', 'success');
           this.dialogRef.close(true);
         },
-        error: () => Swal.fire('Error', 'No se pudo generar el PDF', 'error')
+        error: () =>
+          Swal.fire('Error', 'No se pudo crear el certificado', 'error'),
       });
-    },
-    error: () => Swal.fire('Error', 'No se pudo guardar el certificado', 'error')
-  });
-}
- else if (tipo === 'Bautismo') {
-      miembroId = Number(v.memberId);
-      pastorId = Number(v.pastorId);
-      extras['OTORGADO_A'] = this.nombrePersona(v.memberId);
-      extras['PASTOR'] = this.nombrePersona(v.pastorId);
-      extras['FECHA_BAUTISMO'] = this.toIso(v.baptismDate);
-      extras['FECHA_EXPEDICION'] = fechaIso;
 
-    } else if (tipo === 'Presentación de Niños') {
-      pastorId = Number(v.pastorId);
-      // miembroId: si alguno de los padres es miembro, lo usamos como "miembro principal"
-      if (v.fatherIsMember && v.fatherId) miembroId = Number(v.fatherId);
-      else if (v.motherIsMember && v.motherId) miembroId = Number(v.motherId);
-      else miembroId = pastorId; // fallback si tu BD exige NOT NULL (ajústalo si permites null)
-
-      extras['OTORGADO_A'] = String(v.childName || '');
-      extras['PADRE'] = v.fatherIsMember ? this.nombrePersona(v.fatherId) : '';
-      extras['MADRE'] = v.motherIsMember ? this.nombrePersona(v.motherId) : '';
-      extras['PASTOR'] = this.nombrePersona(v.pastorId);
-      extras['LUGAR_FECHA_NAC'] = this.toIso(v.childBirthDate);
-      extras['TESTIGO'] = String(v.witnessName || '');
-      extras['FECHA_EXPEDICION'] = fechaIso;
-
-    } else if (tipo === 'Matrimonio') {
-      pastorId = Number(v.pastorId);
-      // miembroId: elegimos esposo si es miembro; si no, esposa; si no, pastor (si tu BD exige NOT NULL)
-      if (v.husbandIsMember && v.husbandId) miembroId = Number(v.husbandId);
-      else if (v.wifeIsMember && v.wifeId) miembroId = Number(v.wifeId);
-      else miembroId = pastorId;
-
-      extras['PAREJA_A'] = v.husbandIsMember ? this.nombrePersona(v.husbandId) : '';
-      extras['PAREJA_B'] = v.wifeIsMember ? this.nombrePersona(v.wifeId) : '';
-      extras['PASTOR'] = this.nombrePersona(v.pastorId);
-      extras['FECHA_EXPEDICION'] = fechaIso;
+      // (Opcional) Si quisieras descargar inmediatamente el PDF:
+      // this.api.pdfBautismo(req).subscribe(blob => { ... });
+      return;
     }
+    if (this.currentType === 'Matrimonio') {
+      const v = this.form.getRawValue();
+      const req: CrearMatrimonioRequest = {
+        esposo: String(v.husbandName || ''),
+        esposa: String(v.wifeName || ''),
+        fechaExpedicion: this.toIso(v.issueDate) || this.toIso(new Date()),
+      };
 
+      this.api.crearMatrimonio(req).subscribe({
+        next: () => {
+          Swal.fire('OK', 'Certificado de matrimonio creado', 'success');
+          this.dialogRef.close(true); // para refrescar listado
+        },
+        error: (err) => {
+          console.error(err);
+          Swal.fire('Error', 'No se pudo crear el certificado', 'error');
+        },
+      });
 
-
-
+      return;
+    }
   }
 
-  cancel(): void { this.dialogRef.close(false); }
+  cancel(): void {
+    this.dialogRef.close(false);
+  }
 
   ngOnDestroy(): void {
     this.clearToggleSubs();
