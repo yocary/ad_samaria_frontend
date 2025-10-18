@@ -298,6 +298,29 @@ export class DialogCertificadoComponent implements OnInit, OnDestroy {
 
       return;
     }
+
+    if (this.currentType === 'Presentación de Niños') {
+      const req: CrearNinosRequest = {
+        nombreMiembro: String(v.childName || ''),
+        nombrePadre: String(v.fatherName || ''),
+        nombreMadre: String(v.motherName || ''),
+        lugarFechaNacimiento: String(v.lugarFechaNacimiento || ''),
+        fechaExpedicion: this.toIso(v.issueDate) || this.toIso(new Date()),
+      };
+
+      this.api.crearNinos(req).subscribe({
+        next: () => {
+          Swal.fire('OK', 'Certificado creado correctamente', 'success');
+          this.dialogRef.close(true); // para que el padre recargue el listado
+        },
+        error: (err) => {
+          console.error(err);
+          Swal.fire('Error', 'No se pudo crear el certificado', 'error');
+        },
+      });
+
+      return;
+    }
   }
 
   cancel(): void {
