@@ -15,21 +15,14 @@
     <ng-container [ngSwitch]="currentType">
 
       <!-- ======= MEMBRESÍA ======= -->
-      <ng-container *ngSwitchCase="'Membresía'">
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Miembro</mat-label>
-          <mat-select formControlName="memberId">
-            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
-          </mat-select>
-        </mat-form-field>
+<!-- ======= MEMBRESÍA ======= -->
+<ng-container *ngSwitchCase="'Membresía'">
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Miembro</mat-label>
+    <input matInput placeholder="Nombre del miembro" formControlName="memberName" />
+  </mat-form-field>
+</ng-container>
 
-        <mat-form-field appearance="outline" class="w-full">
-          <mat-label>Pastor</mat-label>
-          <mat-select formControlName="pastorId">
-            <mat-option *ngFor="let p of people" [value]="p.id">{{ p.name }}</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </ng-container>
 
       <!-- ======= PRESENTACIÓN DE NIÑOS ======= -->
       <ng-container *ngSwitchCase="'Presentación de Niños'">

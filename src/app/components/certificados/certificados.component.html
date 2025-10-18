@@ -12,20 +12,20 @@
 
   <div class="table">
     <table mat-table [dataSource]="filtered">
-      <ng-container matColumnDef="member">
-        <th mat-header-cell *matHeaderCellDef>Miembro</th>
-        <td mat-cell *matCellDef="let r">{{ r.memberName || '-' }}</td>
-      </ng-container>
+    <ng-container matColumnDef="member">
+  <th mat-header-cell *matHeaderCellDef>Miembro</th>
+  <td mat-cell *matCellDef="let r">{{ r.miembro || '-' }}</td>
+</ng-container>
 
-      <ng-container matColumnDef="type">
-        <th mat-header-cell *matHeaderCellDef>Tipo de Certificado</th>
-        <td mat-cell *matCellDef="let r">{{ r.type }}</td>
-      </ng-container>
+<ng-container matColumnDef="type">
+  <th mat-header-cell *matHeaderCellDef>Tipo de Certificado</th>
+  <td mat-cell *matCellDef="let r">{{ r.tipo }}</td>
+</ng-container>
 
-      <ng-container matColumnDef="date">
-        <th mat-header-cell *matHeaderCellDef>Fecha Expedición</th>
-        <td mat-cell *matCellDef="let r">{{ r.issueDate | date:'dd/MM/yyyy' }}</td>
-      </ng-container>
+<ng-container matColumnDef="date">
+  <th mat-header-cell *matHeaderCellDef>Fecha Expedición</th>
+  <td mat-cell *matCellDef="let r">{{ r.fecha | date:'dd/MM/yyyy' }}</td>
+</ng-container>
 
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>

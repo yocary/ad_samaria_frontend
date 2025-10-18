@@ -74,4 +74,5 @@ export class CertificadosService {
   findPerson(id?: number) {
     return this._people.value.find(p => p.id === id);
   }
+  
 }
