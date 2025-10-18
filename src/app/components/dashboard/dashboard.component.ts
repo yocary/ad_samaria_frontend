@@ -18,7 +18,6 @@ export class DashboardComponent {
     { key: 'finanzas',      title: 'FINANZAS',       routerLink: '/finanzas' },
     { key: 'planificacion', title: 'PLANIFICACIÓN',  routerLink: '/planificacion' },
     { key: 'liderazgo',     title: 'LIDERAZGO',      routerLink: '/liderazgo' },
-    { key: 'reportes',      title: 'REPORTES',       routerLink: '/reportes' },
     { key: 'certificados',  title: 'CERTIFICADOS',   routerLink: '/certificados' },
   ];
 
