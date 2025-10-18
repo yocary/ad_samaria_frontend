@@ -112,6 +112,8 @@ export class MiembrosFormComponent implements OnInit {
       next: () => {
         Swal.fire('Guardado', 'El miembro se guardó correctamente.', 'success');
         this.resetDefaults();
+
+        this.router.navigate(['/miembros/home']);
       },
       error: (e) => {
         const msg = e?.error?.message || 'Ocurrió un error al guardar';
