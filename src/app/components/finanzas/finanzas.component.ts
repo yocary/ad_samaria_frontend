@@ -7,6 +7,7 @@ import { Treasury, Movement } from 'src/app/models/finanzas.model';
 import { DialogAddTreasuryComponent } from './dialogs/dialog-add-treasury/dialog-add-treasury.component';
 import { DialogMovementComponent } from './dialogs/dialog-movement/dialog-movement.component'; 
 import { DialogTreasuryDetailComponent } from './dialogs/dialog-treasury-detail/dialog-treasury-detail.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-finanzas',
@@ -32,7 +33,7 @@ export class FinanzasComponent implements OnInit {
 
   tabIndex = 0; // 0=Movimientos
 
-  constructor(private fin: FinanzasService, private dialog: MatDialog) {}
+  constructor(private fin: FinanzasService, private dialog: MatDialog, private router: Router) {}
 
   ngOnInit(): void {
     this.fin.treasuries$.subscribe(list => this.treasuries = list);
@@ -91,4 +92,9 @@ selectTreasury(t: Treasury) {
   }
 
   deleteMovement(row: Movement) { this.fin.removeMovement(row.id); }
+
+    regresar() {
+    this.router.navigate(['/dashboard']);
+  }
 }
+
