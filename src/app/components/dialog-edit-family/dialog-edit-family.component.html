@@ -34,7 +34,7 @@
         />
         <mat-hint *ngIf="!selectedPersona">Escribe y elige de la lista</mat-hint>
         <mat-hint *ngIf="selectedPersona">
-          Seleccionado: <strong>{{ selectedPersona?.nombre }}</strong>
+          Seleccionado: <strong>{{ selectedPersona.nombre }}</strong>
         </mat-hint>
         <button
           *ngIf="selectedPersona"
