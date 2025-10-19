@@ -1,29 +1,52 @@
 import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
+import { FormControl, Validators } from '@angular/forms';
 import { FamiliesService } from 'src/app/services/families.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-dialog-add-family',
   templateUrl: './dialog-add-family.component.html',
-  styleUrls: ['./dialog-add-family.component.scss']
 })
 export class DialogAddFamilyComponent {
-  form = this.fb.group({
-    name: ['', [Validators.required, Validators.maxLength(80)]],
-  });
+  name = new FormControl('', [Validators.required, Validators.maxLength(120)]);
+  saving = false;
 
   constructor(
-    private fb: FormBuilder,
-    private families: FamiliesService,
-    private ref: MatDialogRef<DialogAddFamilyComponent>
+    private ref: MatDialogRef<DialogAddFamilyComponent>,
+    private families: FamiliesService
   ) {}
 
-  save(): void {
-    if (this.form.invalid) { this.form.markAllAsTouched(); return; }
-    this.families.addFamily(this.form.value.name!);
-    this.ref.close(true);
-  }
+  save() {
+    if (this.name.invalid) {
+      this.name.markAsTouched();
+      return;
+    }
 
-  cancel(): void { this.ref.close(); }
+    this.saving = true;
+    this.families.crearFamilia(this.name.value!.trim()).subscribe({
+      next: () => {
+        this.ref.close(true);
+        Swal.fire({
+          title: '¡Éxito!',
+          text: 'Familia creada correctamente',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      },
+      error: () => {
+        this.saving = false;
+        Swal.fire({
+          title: 'Error',
+          text: 'No se pudo crear la familia',
+          icon: 'error',
+          confirmButtonText: 'Aceptar',
+        });
+      },
+    });
+  }
+  cancel() {
+    this.ref.close(false);
+  }
 }

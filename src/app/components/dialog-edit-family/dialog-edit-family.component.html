@@ -1,36 +1,119 @@
-<div class="fam-dialog">
-  <div class="fam-dialog__header">{{ family?.name }}</div>
+<h2 mat-dialog-title>Editar familia</h2>
 
-  <div class="fam-dialog__body">
-    <table mat-table [dataSource]="family?.members || []" class="table">
+<mat-dialog-content class="dlg">
+  <!-- Nombre -->
+  <div class="section">
+    <div class="section__title">Nombre</div>
+    <div class="row">
+      <mat-form-field appearance="outline" class="w-full">
+        <mat-label>Nombre de familia</mat-label>
+        <input matInput [formControl]="nameCtrl" />
+        <mat-error *ngIf="nameCtrl.hasError('required')">El nombre es requerido</mat-error>
+        <mat-error *ngIf="nameCtrl.hasError('maxlength')">Máximo 120 caracteres</mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="guardarNombre()">
+        <mat-icon>save</mat-icon>
+        Guardar
+      </button>
+    </div>
+  </div>
+
+  <!-- Miembros -->
+  <div class="section">
+    <div class="section__title">Miembros de la familia</div>
+
+    <!-- Campo único: buscar y seleccionar persona -->
+    <div class="add-row">
+      <mat-form-field appearance="outline" class="w-2">
+        <mat-label>Selecciona miembro</mat-label>
+        <input
+          matInput
+          placeholder="Escribe para buscar (mín. 2 letras)"
+          [formControl]="personaQuery"
+          [matAutocomplete]="auto"
+        />
+        <mat-hint *ngIf="!selectedPersona">Escribe y elige de la lista</mat-hint>
+        <mat-hint *ngIf="selectedPersona">
+          Seleccionado: <strong>{{ selectedPersona?.nombre }}</strong>
+        </mat-hint>
+        <button
+          *ngIf="selectedPersona"
+          matSuffix
+          mat-icon-button
+          aria-label="Limpiar selección"
+          (click)="limpiarSeleccionPersona()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <mat-autocomplete
+        #auto="matAutocomplete"
+        (optionSelected)="seleccionarPersona($event.option.value)"
+        [displayWith]="displayPersona"
+      >
+        <mat-option *ngFor="let p of (personas$ | async)" [value]="p">
+          <mat-icon class="mr-8">person</mat-icon> {{ p.nombre }}
+        </mat-option>
+        <mat-option *ngIf="(personas$ | async)?.length === 0 && (personaQuery.value || '').length >= 2" disabled>
+          Sin resultados
+        </mat-option>
+      </mat-autocomplete>
+
+      <mat-form-field appearance="outline" class="w-1">
+        <mat-label>Rol</mat-label>
+        <mat-select [formControl]="rolCtrl">
+          <mat-option *ngFor="let r of roles" [value]="r.id">{{ r.nombre }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <button mat-raised-button color="primary" (click)="agregarMiembro()">
+        <mat-icon>person_add</mat-icon>
+        Agregar
+      </button>
+    </div>
+
+    <!-- Tabla miembros -->
+    <table mat-table [dataSource]="miembros" class="table">
       <ng-container matColumnDef="index">
         <th mat-header-cell *matHeaderCellDef>#</th>
         <td mat-cell *matCellDef="let el; let i = index">{{ i + 1 }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="name">
-        <th mat-header-cell *matHeaderCellDef>Nombre</th>
-        <td mat-cell *matCellDef="let el">{{ el.name }}</td>
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Miembro</th>
+        <td mat-cell *matCellDef="let el">{{ el.nombre }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="role">
+      <ng-container matColumnDef="rol">
         <th mat-header-cell *matHeaderCellDef>Rol</th>
-        <td mat-cell *matCellDef="let el">{{ el.role }}</td>
+        <td mat-cell *matCellDef="let el">{{ el.rol }}</td>
       </ng-container>
 
       <ng-container matColumnDef="actions">
         <th mat-header-cell *matHeaderCellDef></th>
         <td mat-cell *matCellDef="let el">
-          <button mat-raised-button color="warn" (click)="removeMember(el)">✗ Eliminar</button>
+          <button mat-stroked-button color="warn" (click)="quitarMiembro(el.id)">
+            <mat-icon>remove_circle</mat-icon>
+            Quitar
+          </button>
         </td>
       </ng-container>
 
-      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr mat-header-row *matHeaderRowDef="['index','nombre','rol','actions']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['index','nombre','rol','actions']"></tr>
     </table>
-  </div>
 
-  <div class="fam-dialog__actions">
-    <button mat-stroked-button color="primary" (click)="close()">Cerrar</button>
+    <div class="empty" *ngIf="miembros && miembros.length === 0">
+      <mat-icon>group</mat-icon>
+      <div>No hay miembros en esta familia.</div>
+    </div>
   </div>
-</div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="close(false)">
+    <mat-icon>close</mat-icon>
+    Cerrar
+  </button>
+</mat-dialog-actions>

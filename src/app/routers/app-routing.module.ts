@@ -29,10 +29,8 @@ const routes: Routes = [
       { path: 'nuevo', component: MiembrosFormComponent },
     ]
   },
-  { path: 'familias', children: [
-      // { path: 'form', component: FamiliasFormComponent },
-    ]
-  },
+    { path: 'familias', component: FamiliasComponent },
+
 ];
 
 @NgModule({

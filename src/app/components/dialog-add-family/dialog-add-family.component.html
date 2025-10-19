@@ -1,18 +1,12 @@
-<form class="fam-dialog" [formGroup]="form" (ngSubmit)="save()">
-  <div class="fam-dialog__header">Agregar Familia</div>
-
-  <div class="fam-dialog__body">
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Nombre de la familia</mat-label>
-      <input matInput formControlName="name" />
-      <mat-error *ngIf="form.get('name')?.touched && form.get('name')?.invalid">
-        Requerido
-      </mat-error>
-    </mat-form-field>
-  </div>
-
-  <div class="fam-dialog__actions">
-    <button mat-raised-button color="primary" type="submit">Guardar</button>
-    <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancelar</button>
-  </div>
-</form>
+<h2 mat-dialog-title>Nueva familia</h2>
+<mat-dialog-content>
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Nombre de familia</mat-label>
+    <input matInput [formControl]="name" />
+    <mat-error *ngIf="name.invalid">Requerido</mat-error>
+  </mat-form-field>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="cancel()">Cancelar</button>
+  <button mat-raised-button color="primary" (click)="save()" [disabled]="saving">Guardar</button>
+</mat-dialog-actions>

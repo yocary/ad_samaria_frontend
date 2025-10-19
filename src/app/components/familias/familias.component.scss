@@ -47,3 +47,10 @@
 
 .btn-blue{ background: #254b72; color: #fff; font-weight: 700; }
 .btn-orange{ background: #f0b428; color: #fff; font-weight: 700; }
+
+.wrap { padding: 12px; }
+.board { background: #fff; border:1px solid #e7eef5; border-radius:10px; padding:14px; }
+.board__header { display:flex; gap:12px; align-items:center; }
+.search { margin-left:auto; width: min(420px, 100%); }
+.board__title { font-weight:700; margin:10px 0; }
+.table { width:100%; }

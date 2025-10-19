@@ -1,73 +1,104 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-export interface FamilyMember {
-  id: number;
-  name: string;
-  role: string;
-}
-
+// ==== MODELOS ====
 export interface Family {
   id: number;
-  name: string;
-  members: FamilyMember[];
+  nombre: string;
 }
+
+export interface FamilyMember {
+  id: number;            // id de familia_persona
+  personaId: number;
+  nombre: string;        // nombre completo de la persona
+  rol: string;           // nombre del rol
+  rolFamId: number;      // id del rol
+}
+
+export interface RoleFam {
+  id: number;
+  nombre: string;
+}
+
+export interface PersonaMini {
+  id: number;
+  nombre: string;
+}
+
+// ==== REQUESTS ====
+export interface CrearFamiliaRequest { name: string; }
+export interface ActualizarFamiliaRequest { name: string; }
+export interface AgregarMiembroRequest { personaId: number; rolFamId: number; }
 
 @Injectable({ providedIn: 'root' })
 export class FamiliesService {
-  private data: Family[] = [];
-  private seq = 1;
+  private base = `${environment.api}/familia`;
 
-  private _list$ = new BehaviorSubject<Family[]>([]);
-  families$ = this._list$.asObservable();
+  constructor(private http: HttpClient) {}
 
-  private lastFilter = '';
-
-  constructor() {
-    // Seed de ejemplo
-    this.data = [
-      {
-        id: this.seq++,
-        name: 'Familia Pérez',
-        members: [
-          { id: 11, name: 'Juan Pérez', role: 'Padre' },
-          { id: 12, name: 'Ana López', role: 'Madre' },
-        ]
-      }
-    ];
-    this.emit();
+  // Familias
+  listarFamilias(q?: string): Observable<Family[]> {
+    const params = q ? new HttpParams().set('q', q) : undefined;
+    return this.http.get<Family[]>(`${this.base}/listar`, { params });
   }
 
-  private emit() {
-    const list = this.lastFilter
-      ? this.data.filter(f => f.name.toLowerCase().includes(this.lastFilter))
-      : this.data;
-    this._list$.next([...list]);
+  crearFamilia(name: string): Observable<Family> {
+    const payload: CrearFamiliaRequest = { name };
+    return this.http.post<Family>(`${this.base}/crearFamilia`, payload);
   }
 
-  filter(q: string) {
-    this.lastFilter = (q || '').toLowerCase();
-    this.emit();
+  actualizarFamilia(id: number, name: string): Observable<Family> {
+    const payload: ActualizarFamiliaRequest = { name };
+    return this.http.put<Family>(`${this.base}/actualizarNombre/${id}`, payload);
   }
 
-  addFamily(name: string) {
-    this.data = [{ id: this.seq++, name, members: [] }, ...this.data];
-    this.emit();
+  eliminarFamilia(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/${id}`);
   }
 
-  removeFamily(id: number) {
-    this.data = this.data.filter(f => f.id !== id);
-    this.emit();
+  // Miembros de una familia
+  listarMiembros(familiaId: number): Observable<FamilyMember[]> {
+    return this.http.get<FamilyMember[]>(`${this.base}/${familiaId}/miembros`);
   }
 
-  getById(id: number) {
-    return this.data.find(f => f.id === id);
+  agregarMiembro(familiaId: number, personaId: number, rolFamId: number): Observable<FamilyMember> {
+    const payload: AgregarMiembroRequest = { personaId, rolFamId };
+    return this.http.post<FamilyMember>(`${this.base}/${familiaId}/miembros`, payload);
   }
 
-  removeMember(familyId: number, memberId: number) {
-    const fam = this.getById(familyId);
-    if (!fam) return;
-    fam.members = fam.members.filter(m => m.id !== memberId);
-    this.emit();
+  eliminarMiembro(familiaPersonaId: number): Observable<void> {
+    return this.http.delete<void>(`${this.base}/miembros/${familiaPersonaId}`);
   }
+
+  // Roles familiares
+  listarRoles(): Observable<RoleFam[]> {
+    return this.http.get<RoleFam[]>(`${this.base}/roles`);
+  }
+
+  // Personas mini (ya la tienes en backend)
+  listarPersonasMini(q?: string): Observable<PersonaMini[]> {
+    const params = q ? new HttpParams().set('q', q) : undefined;
+    return this.http.get<PersonaMini[]>(`${environment.api}/persona/listar-todos`, { params });
+  }
+
+getById(id: number): Observable<Family> {
+  return this.http.get<any>(`${this.base}/obtener/${id}`).pipe(
+    map(response => ({
+      id: response.id,
+      nombre: response.nombre  // Mapear 'nombre' a 'name'
+    }))
+  );
+}
+
+buscarPersonas(q: string) {
+  return this.http.get<PersonaMini[]>(
+    `${environment.api}/persona/buscar`,
+    { params: { q } }
+  );
+}
+
+
 }
