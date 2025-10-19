@@ -1,0 +1,117 @@
+<!-- src/app/pages/miembros/member-card-dialog/member-card-dialog.component.html -->
+<h2 mat-dialog-title>Ficha del miembro</h2>
+
+<mat-dialog-content class="dlg-body">
+  <!-- Loader -->
+  <div class="loader" *ngIf="loading">
+    <mat-progress-spinner mode="indeterminate" diameter="36"></mat-progress-spinner>
+    <div>Cargando ficha...</div>
+  </div>
+
+  <div *ngIf="!loading && ficha" class="card">
+    <!-- Encabezado -->
+    <div class="card__header">
+      <div class="avatar">
+        <mat-icon>person</mat-icon>
+      </div>
+      <div class="head-text">
+        <div class="title">{{ ficha.nombreCompleto }}</div>
+        <div class="subtitle" *ngIf="ficha.ministerio || ficha.estatus">
+          <span *ngIf="ficha.ministerio">Ministerio: {{ ficha.ministerio }}</span>
+          <span *ngIf="ficha.ministerio && ficha.estatus"> • </span>
+          <span *ngIf="ficha.estatus">Estatus: {{ ficha.estatus }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Datos básicos -->
+    <div class="grid two">
+      <div class="block">
+        <div class="block__title">Datos personales</div>
+        <div class="kv">
+          <div class="k">Teléfono</div><div class="v">{{ ficha.telefono || '—' }}</div>
+          <div class="k">DPI</div><div class="v">{{ ficha.dpi || '—' }}</div>
+          <div class="k">Dirección</div><div class="v">{{ ficha.direccion || '—' }}</div>
+        </div>
+      </div>
+
+      <div class="block">
+        <div class="block__title">Perfil</div>
+        <div class="kv">
+          <div class="k">Sexo</div><div class="v">{{ ficha.sexo || '—' }}</div>
+          <div class="k">Estado civil</div><div class="v">{{ ficha.estadoCivil || '—' }}</div>
+          <div class="k">Clasificación social</div><div class="v">{{ ficha.clasificacionSocial || '—' }}</div>
+          <div class="k">Tipo persona</div><div class="v">{{ ficha.tipoPersona || '—' }}</div>
+          <div class="k">Fecha nac.</div><div class="v">{{ ficha.fechaNacimiento || '—' }}</div>
+          <div class="k">Edad</div><div class="v">{{ ficha.edad != null ? ficha.edad : '—' }}</div>
+        </div>
+      </div>
+    </div>
+
+
+<!-- Familias -->
+<div class="block">
+  <div class="block__title">Familia</div>
+
+  <div *ngIf="hasArray(ficha.familias); else noFamilias" class="chips">
+    <mat-chip-list aria-label="Familias">
+      <mat-chip *ngFor="let f of ficha.familias" selected class="chip-2lines">
+        <div class="chip-line1">
+          {{ (f.familiaNombre) || '—' }}
+        </div>
+        <div class="chip-line2">
+          {{ ( f.rolFamiliar) || '—' }}
+        </div>
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+
+  <ng-template #noFamilias>
+    <div class="empty">Sin familias asociadas</div>
+  </ng-template>
+</div>
+
+
+<!-- Grupos -->
+<div class="block">
+  <div class="block__title">Grupos</div>
+  <div *ngIf="hasArray(ficha.grupos); else noGrupos" class="chips">
+    <mat-chip-list aria-label="Grupos">
+      <mat-chip *ngFor="let g of ficha.grupos" color="primary" selected>
+        {{ g.nombre }}
+      </mat-chip>
+    </mat-chip-list>
+  </div>
+  <ng-template #noGrupos><div class="empty">Sin grupos</div></ng-template>
+</div>
+
+
+    <!-- Liderazgos -->
+    <div class="block">
+      <div class="block__title">Liderazgos</div>
+      <table class="table" *ngIf="hasArray(ficha.liderazgos); else noLid">
+        <thead>
+          <tr>
+            <th>Liderazgo</th>
+            <th>Rol</th>
+            <th>Desde</th>
+            <th>Hasta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let l of ficha.liderazgos">
+            <td>{{ l.liderazgo }}</td>
+            <td>{{ l.rol }}</td>
+            <td>{{ l.desde || '—' }}</td>
+            <td>{{ l.hasta || '—' }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <ng-template #noLid><div class="empty">Sin liderazgos</div></ng-template>
+    </div>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-stroked-button (click)="close()">Cerrar</button>
+</mat-dialog-actions>

@@ -1,5 +1,6 @@
+// src/app/services/miembros.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
 
@@ -15,17 +16,63 @@ export interface CrearMiembroRequest {
   telefono?: string;
   dpi?: string;
   direccion?: string;
+
   sexoId: number;
   estadoCivilId: number;
   clasificacionId: number;
   tipoPersonaId: number;
+
   fechaNacimiento: string; // 'yyyy-MM-dd'
 }
 
-// 👉 DTO ligero para la lista del Home
-export interface MiembroDTO {
+/** ----- NUEVO: DTO de la ficha ----- **/
+export interface FichaFamilia {
   id: number;
-  nombre: string; // nombre completo ya “cocinado” por el backend
+  familiaNombre: string;
+  rolFamiliar: string;
+}
+
+export interface FichaLiderazgo {
+  liderazgoId: number;
+  liderazgo: string;
+  rol: string;
+  desde?: string; // dd/MM/yyyy (o vacío)
+  hasta?: string; // dd/MM/yyyy (o vacío)
+}
+
+export interface FichaCertificado {
+  id: number;
+  tipo: string;
+  fecha: string; // dd/MM/yyyy
+}
+
+export interface FichaGrupo {
+  id: number;
+  nombre: string;
+}
+
+export interface PersonaFicha {
+  id: number;
+  nombreCompleto: string;
+
+  telefono?: string;
+  dpi?: string;
+  direccion?: string;
+
+  fechaNacimiento?: string; // dd/MM/yyyy
+  edad?: number;
+
+  sexo?: string;
+  estadoCivil?: string;
+  clasificacionSocial?: string;
+  tipoPersona?: string;
+  estatus?: string;
+  ministerio?: string;
+
+  familias: FichaFamilia[];
+  liderazgos: FichaLiderazgo[];
+  certificados: FichaCertificado[];
+  grupos: FichaGrupo[];
 }
 
 @Injectable({ providedIn: 'root' })
@@ -34,27 +81,18 @@ export class MiembrosService {
 
   constructor(private http: HttpClient) {}
 
-  // ====== Catálogos ======
-  getSexos()            { return this.http.get<OpcionCatalogo[]>(`${this.base}/sexos`); }
-  getEstadosCiviles()   { return this.http.get<OpcionCatalogo[]>(`${this.base}/estados-civiles`); }
-  getClasificaciones()  { return this.http.get<OpcionCatalogo[]>(`${this.base}/clasificaciones`); }
-  getTiposPersona()     { return this.http.get<OpcionCatalogo[]>(`${this.base}/tipos-persona`); }
+  // catálogos existentes...
+  getSexos() { return this.http.get<OpcionCatalogo[]>(`${this.base}/sexos`); }
+  getEstadosCiviles() { return this.http.get<OpcionCatalogo[]>(`${this.base}/estados-civiles`); }
+  getClasificaciones() { return this.http.get<OpcionCatalogo[]>(`${this.base}/clasificaciones`); }
+  getTiposPersona() { return this.http.get<OpcionCatalogo[]>(`${this.base}/tipos-persona`); }
 
-  // ====== Crear miembro (form) ======
   crearMiembroForm(payload: CrearMiembroRequest) {
     return this.http.post(`${this.base}/form`, payload);
   }
 
-  // ====== NUEVO: Listar con filtro opcional 'q' ======
-  listar(q?: string): Observable<MiembroDTO[]> {
-    const params = q ? new HttpParams().set('q', q) : undefined;
-    // Backend: GET /persona?q=texto  ->  [{ id, nombre }]
-    return this.http.get<MiembroDTO[]>(`${this.base}`, { params });
-  }
-
-  // (Opcional) Eliminar
-  eliminar(id: number) {
-    // Backend: DELETE /persona/{id}
-    return this.http.delete(`${this.base}/${id}`);
+  /** ----- NUEVO: obtener ficha por personaId ----- **/
+  getFicha(personaId: number): Observable<PersonaFicha> {
+    return this.http.get<PersonaFicha>(`${this.base}/${personaId}/ficha`);
   }
 }

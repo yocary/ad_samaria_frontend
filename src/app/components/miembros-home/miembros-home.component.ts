@@ -4,6 +4,8 @@ import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
 import { Router } from '@angular/router';
 import { PersonasService, PersonaMini } from 'src/app/services/personas.service';
+import { MemberCardDialogComponent } from '../member-card-dialog/member-card-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-miembros-home',
@@ -16,7 +18,7 @@ export class MiembrosHomeComponent implements OnInit, OnDestroy {
   filtered: PersonaMini[] = [];
   private subs: Subscription[] = [];
 
-  constructor(private miembrosSvc: PersonasService, private router: Router) {}
+  constructor(private miembrosSvc: PersonasService, private router: Router, private dialog: MatDialog) {}
 
   ngOnInit(): void {
     // 1) Carga inicial de TODOS los miembros
@@ -54,4 +56,12 @@ export class MiembrosHomeComponent implements OnInit, OnDestroy {
   regresar() { this.router.navigate(['/dashboard']); }
 
   ngOnDestroy(): void { this.subs.forEach(s => s.unsubscribe()); }
+
+  verFicha(personaId: number, nombre?: string) {
+  this.dialog.open(MemberCardDialogComponent, {
+    width: '980px',
+    data: { personaId, nombre },
+    disableClose: false
+  });
+}
 }

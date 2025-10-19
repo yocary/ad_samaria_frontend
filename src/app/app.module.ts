@@ -41,6 +41,7 @@ import { DialogCertificadoComponent } from './components/certificados/dialog-cer
 import { DialogIntegrantesComponent } from './components/liderazgo/dialog-integrantes/dialog-integrantes.component';
 import { DialogRolComponent } from './components/liderazgo/dialog-rol/dialog-rol.component';
 import { MiembrosHomeComponent } from './components/miembros-home/miembros-home.component';
+import { MemberCardDialogComponent } from './components/member-card-dialog/member-card-dialog.component';
 
 
 export const MY_DATE_FORMATS = {
@@ -78,6 +79,7 @@ export const MY_DATE_FORMATS = {
     DialogIntegrantesComponent,
     DialogRolComponent,
     MiembrosHomeComponent,
+    MemberCardDialogComponent,
   ],
   imports: [
     FormsModule,

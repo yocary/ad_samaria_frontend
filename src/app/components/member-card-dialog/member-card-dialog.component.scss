@@ -1,0 +1,129 @@
+/* src/app/pages/miembros/member-card-dialog/member-card-dialog.component.scss */
+
+.dlg-body {
+  min-width: 860px;
+  max-width: 1000px;
+}
+
+.loader {
+  display: grid;
+  place-items: center;
+  gap: 10px;
+  padding: 24px;
+}
+
+.card {
+  border: 1px solid #e6eef6;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Header */
+.card__header {
+  display: grid;
+  grid-template-columns: 60px 1fr;
+  gap: 12px;
+  align-items: center;
+  background: #f4f8fc;
+  padding: 12px 14px;
+  border-bottom: 1px solid #e6eef6;
+}
+
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: #e9f1fb;
+  display: grid;
+  place-items: center;
+  border: 1px solid #dbe7f5;
+}
+
+.avatar mat-icon {
+  font-size: 28px;
+}
+
+.head-text .title {
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.head-text .subtitle {
+  color: #5a6b7b;
+  margin-top: 2px;
+}
+
+/* Grid blocks */
+.grid.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  padding: 12px 14px;
+}
+
+.block {
+  border: 1px solid #eef4fa;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fff;
+}
+
+.block__title {
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+/* key-value grid */
+.kv {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 6px 12px;
+}
+
+.kv .k { color: #6b7e90; }
+.kv .v { font-weight: 600; }
+
+/* chips / empty */
+.chips { padding: 4px 0; }
+
+.empty {
+  color: #7a8795;
+  padding: 8px 0;
+}
+
+.table {
+  width: 100%;
+  border: 1px solid #e6eef6;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table thead {
+  background: #f7fbff;
+}
+
+.table th, .table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #eef4fa;
+}
+
+/* Chips de dos líneas para Familias */
+.chip-2lines {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 6px 10px !important;
+  min-height: 40px;
+  line-height: 1.1;
+}
+
+.chip-2lines .chip-line1 {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.chip-2lines .chip-line2 {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-top: 2px;
+}
