@@ -2,9 +2,7 @@
   <div class="board">
     <div class="board__header">
       <button mat-raised-button color="primary" (click)="openAdd()">+ Agregar familia</button>
-  <div class="footer">
-    <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
-  </div>
+
       <mat-form-field appearance="outline" class="search">
         <mat-label>Buscar</mat-label>
         <input matInput [formControl]="search" />
@@ -38,5 +36,8 @@
       <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
+      <div class="footer">
+    <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
+  </div>
   </div>
 </div>
