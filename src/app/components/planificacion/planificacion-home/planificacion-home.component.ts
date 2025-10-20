@@ -1,9 +1,6 @@
-// src/app/components/planificacion/planificacion-home/planificacion-home.component.ts
 import { Component, OnInit } from '@angular/core';
-import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { GruposService, Grupo } from 'src/app/services/grupo.service';
-import { CreateGrupoDialogComponent } from '../create-grupo-dialog/create-grupo-dialog.component';
+import { LiderazgoService, Liderazgo } from 'src/app/services/liderazgo.service';
 
 @Component({
   selector: 'app-planificacion-home',
@@ -12,50 +9,45 @@ import { CreateGrupoDialogComponent } from '../create-grupo-dialog/create-grupo-
 })
 export class PlanificacionHomeComponent implements OnInit {
   cargando = true;
-  grupos: Grupo[] = [];
+  liderazgos: Liderazgo[] = [];
 
+  // solo para variar el borde superior de las tarjetas
   palette = ['teal', 'green', 'amber', 'blue', 'purple'];
 
   constructor(
-    private gruposSvc: GruposService,
-    private dialog: MatDialog,
+    private liderazgoSvc: LiderazgoService,
     private router: Router
   ) {}
 
   ngOnInit(): void {
-    this.cargarGrupos();
+    this.cargar();
   }
 
-  cargarGrupos(): void {
+  cargar(): void {
     this.cargando = true;
-    this.gruposSvc.listar().subscribe({
-      next: (res: Grupo[]) => { this.grupos = res || []; this.cargando = false; },
-      error: () => { this.grupos = []; this.cargando = false; }
+    // si quieres filtrar por texto, pásalo como argumento (p.ej. this.liderazgoSvc.listarLiderazgos(this.q))
+    this.liderazgoSvc.listarLiderazgos().subscribe({
+      next: (res) => {
+        this.liderazgos = res || [];
+        this.cargando = false;
+      },
+      error: () => {
+        this.liderazgos = [];
+        this.cargando = false;
+      }
     });
   }
 
-  crearGrupo(): void {
-    const ref = this.dialog.open(CreateGrupoDialogComponent, {
-      width: '520px',
-      disableClose: true
-    });
-    ref.afterClosed().subscribe(ok => { if (ok) this.cargarGrupos(); });
+  verLiderazgo(id: number): void {
+    // ajusta la ruta de destino a tu pantalla de detalle/planificación por liderazgo
+    this.router.navigate(['/planificacion/liderazgo', id]);
   }
 
-  verGrupo(id: number): void {
-    this.router.navigate(['/planificacion/grupo', id]);
+  regresar(): void {
+    this.router.navigate(['/dashboard']);
   }
-
-  regresar(): void { this.router.navigate(['/dashboard']); }
 
   colorClass(i: number): string {
     return `c-${this.palette[i % this.palette.length]}`;
-  }
-
-  // === Resuelve estado de tesorería con cualquier forma de payload ===
-  getTesoreriaActiva(g: Grupo): boolean {
-    if (typeof g.tesoreria === 'boolean') return g.tesoreria;
-    if (g.tesoreriaId !== undefined) return !!g.tesoreriaId; // tiene id => la consideramos “activa”
-    return false; // fallback
   }
 }

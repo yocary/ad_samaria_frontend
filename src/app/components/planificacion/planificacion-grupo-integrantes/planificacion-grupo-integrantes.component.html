@@ -1,0 +1,55 @@
+<div class="wrap">
+  <div class="card">
+    <div class="card__header">
+      -{{ nombreGrupo }}-
+    </div>
+
+    <div class="tabs">
+      <button class="tab tab--active">Integrantes</button>
+      <button class="tab" disabled>Eventos</button>
+      <button class="tab" disabled>Ofrendas</button>
+    </div>
+
+    <div class="body">
+      <!-- Buscador -->
+      <div class="finder">
+        <mat-form-field appearance="outline" class="finder__input">
+          <mat-label>Buscar miembro</mat-label>
+          <input matInput [formControl]="personaQuery" placeholder="Escribe al menos 2 letras" [matAutocomplete]="auto" />
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="seleccionarPersona($event.option.value)">
+          <mat-option *ngFor="let p of (resultados$ | async)" [value]="p">
+            {{ p.nombre }}
+          </mat-option>
+          <mat-option *ngIf="(resultados$ | async)?.length === 0 && (personaQuery.value?.length || 0) >= 2" disabled>
+            Sin resultados
+          </mat-option>
+        </mat-autocomplete>
+
+        <button mat-raised-button color="primary" (click)="agregarMiembro()" [disabled]="agregando">
+          + Agregar miembro
+        </button>
+      </div>
+
+      <!-- Lista -->
+      <div *ngIf="!cargando" class="list">
+        <div class="row" *ngFor="let m of integrantes">
+          <div class="name">{{ m.nombre }}</div>
+          <button mat-stroked-button color="warn" (click)="eliminarMiembro(m)">X</button>
+        </div>
+        <div class="empty" *ngIf="integrantes.length === 0">No hay integrantes en este grupo.</div>
+      </div>
+
+      <div class="loader" *ngIf="cargando">
+        <mat-progress-spinner mode="indeterminate" diameter="28"></mat-progress-spinner>
+        <span>Cargando integrantes...</span>
+      </div>
+
+      <div class="footer">
+        <button mat-stroked-button color="primary" routerLink="/dashboard">Regresar</button>
+      </div>
+    </div>
+  </div>
+</div>
