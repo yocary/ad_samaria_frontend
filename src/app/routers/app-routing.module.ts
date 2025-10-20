@@ -13,6 +13,7 @@ import { CertificadosComponent } from "../components/certificados/certificados.c
 import { MiembrosHomeComponent } from "../components/miembros-home/miembros-home.component";
 import { RolesHomeComponent } from "../components/roles/roles-home/roles-home.component";
 import { RolesRemoveComponent } from "../components/roles/roles-remove/roles-remove.component";
+import { PlanificacionHomeComponent } from "../components/planificacion/planificacion-home/planificacion-home.component";
 
 
 
@@ -26,6 +27,7 @@ const routes: Routes = [
   { path: 'finanzas', component: FinanzasComponent },
   { path: 'liderazgo', component: LiderazgoComponent },
   { path: 'certificados', component: CertificadosComponent },
+    { path: 'planificacion', component: PlanificacionHomeComponent },
    { path: 'miembros', children: [
       { path: 'home', component: MiembrosHomeComponent },
       { path: 'nuevo', component: MiembrosFormComponent },

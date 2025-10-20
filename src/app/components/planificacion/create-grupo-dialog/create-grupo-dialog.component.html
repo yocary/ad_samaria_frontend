@@ -1,0 +1,38 @@
+<h2 mat-dialog-title class="dlg-title">Crear Grupo</h2>
+
+<mat-dialog-content class="dlg-body">
+  <form [formGroup]="form" class="form">
+    <!-- Nombre -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Nombre de grupo</mat-label>
+      <input matInput formControlName="nombre" />
+      <mat-error *ngIf="form.get('nombre')?.hasError('required')">Requerido</mat-error>
+      <mat-error *ngIf="form.get('nombre')?.hasError('maxlength')">Máximo 120 caracteres</mat-error>
+    </mat-form-field>
+
+    <!-- Estado -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Estado</mat-label>
+      <mat-select formControlName="estado">
+        <mat-option [value]="true">Activo</mat-option>
+        <mat-option [value]="false">Inactivo</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('estado')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+
+    <!-- Tesorería -->
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Tesorería</mat-label>
+      <mat-select formControlName="tesoreria">
+        <mat-option [value]="true">Activo</mat-option>
+        <mat-option [value]="false">Inactivo</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.get('tesoreria')?.hasError('required')">Requerido</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="dlg-actions">
+  <button mat-raised-button color="primary" class="btn-save" (click)="guardar()" [disabled]="form.invalid">Guardar</button>
+  <button mat-raised-button color="warn" class="btn-cancel" (click)="cancelar()">Cancelar</button>
+</mat-dialog-actions>

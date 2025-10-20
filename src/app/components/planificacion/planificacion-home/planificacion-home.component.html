@@ -1,0 +1,48 @@
+<!-- src/app/components/planificacion/planificacion-home/planificacion-home.component.html -->
+<div class="wrap">
+  <div class="card">
+    <div class="card__header">PLANIFICACIÓN</div>
+
+    <div class="toolbar">
+      <button mat-raised-button color="primary" (click)="crearGrupo()">
+        + Crear Grupo
+      </button>
+    </div>
+
+    <div class="body">
+      <div class="loader" *ngIf="cargando">
+        <mat-progress-spinner mode="indeterminate" diameter="28"></mat-progress-spinner>
+        <span>Cargando grupos...</span>
+      </div>
+
+      <div class="grid" *ngIf="!cargando && grupos.length > 0">
+        <div class="gcard" *ngFor="let g of grupos; let i = index" [ngClass]="colorClass(i)">
+          <div class="gcard__title" [matTooltip]="g.nombre">{{ g.nombre }}</div>
+
+          <div class="gcard__badges">
+            <span class="chip" [class.chip--ok]="g.estado" [class.chip--off]="!g.estado">
+              {{ g.estado ? 'Activo' : 'Inactivo' }}
+            </span>
+            <span class="chip"
+                  [class.chip--ok]="getTesoreriaActiva(g)"
+                  [class.chip--off]="!getTesoreriaActiva(g)">
+              Tesorería {{ getTesoreriaActiva(g) ? 'Activa' : 'Inactiva' }}
+            </span>
+          </div>
+
+          <button mat-stroked-button class="gcard__btn" (click)="verGrupo(g.id)">
+            Ver <mat-icon>arrow_forward</mat-icon>
+          </button>
+        </div>
+      </div>
+
+      <div class="empty" *ngIf="!cargando && grupos.length === 0">
+        No hay grupos creados aún.
+      </div>
+    </div>
+
+    <div class="footer">
+      <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
+    </div>
+  </div>
+</div>

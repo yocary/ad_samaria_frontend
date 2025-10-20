@@ -44,6 +44,8 @@ import { MiembrosHomeComponent } from './components/miembros-home/miembros-home.
 import { MemberCardDialogComponent } from './components/member-card-dialog/member-card-dialog.component';
 import { RolesHomeComponent } from './components/roles/roles-home/roles-home.component';
 import { RolesRemoveComponent } from './components/roles/roles-remove/roles-remove.component';
+import { PlanificacionHomeComponent } from './components/planificacion/planificacion-home/planificacion-home.component';
+import { CreateGrupoDialogComponent } from './components/planificacion/create-grupo-dialog/create-grupo-dialog.component';
 
 
 export const MY_DATE_FORMATS = {
@@ -84,6 +86,8 @@ export const MY_DATE_FORMATS = {
     MemberCardDialogComponent,
     RolesHomeComponent,
     RolesRemoveComponent,
+    PlanificacionHomeComponent,
+    CreateGrupoDialogComponent,
   ],
   imports: [
     FormsModule,

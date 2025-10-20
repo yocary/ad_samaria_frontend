@@ -1,0 +1,36 @@
+.dlg-title {
+  text-align: center;
+  color: #1f5e8b;
+  font-weight: 800;
+}
+
+.dlg-body {
+  min-width: 420px;
+  padding-top: 4px;
+}
+
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.w-full { width: 100%; }
+
+.dlg-actions {
+  padding: 12px 8px 16px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.btn-save {
+  background: #f5b942;
+  color: #fff;
+  font-weight: 700;
+}
+
+.btn-cancel {
+  background: #c94343;
+  color: #fff;
+  font-weight: 700;
+}
