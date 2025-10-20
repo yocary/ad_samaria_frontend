@@ -1,33 +1,131 @@
-/* src/app/components/roles-delete/roles-delete.component.scss */
+/* Contenedor */
 .wrapper {
   display: grid;
   place-items: center;
   min-height: calc(100vh - 64px);
   background: #f5f7fa;
+  padding: 16px;
 }
+
+/* Card (Material surface + elevation) */
 .card {
   width: 100%;
-  max-width: 720px;
-  border: 1px solid #cde7f0;
+  max-width: 880px;
   border-radius: 12px;
+  background: #fff;
+  /* elevation 3 */
+  box-shadow:
+    0 3px 5px -1px rgba(0,0,0,.2),
+    0 6px 10px 0 rgba(0,0,0,.14),
+    0 1px 18px 0 rgba(0,0,0,.12);
   overflow: hidden;
+  border: 1px solid rgba(207,227,237,.6);
 }
+
+/* Header (color primario, alto contraste) */
 .card-header {
   background: #244b6b;
   color: #fff;
   font-weight: 700;
-  padding: 12px 16px;
+  padding: 14px 20px;
+  letter-spacing: .3px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .subtitle {
+    font-weight: 400;
+    opacity: .9;
+    margin-left: auto;
+    font-size: .9rem;
+  }
 }
-.row { display: grid; grid-template-columns: 1fr; gap: 10px; margin: 12px 0; }
+
+/* Cuerpo */
+.card-content {
+  padding: 16px 20px 20px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+  margin: 12px 0;
+}
+
 .w-full { width: 100%; }
+
+/* Tabla (mat-table look & feel) */
 .table-wrap { margin-top: 8px; }
+
 .table {
   width: 100%;
-  border: 1px solid #e0eef6;
-  border-radius: 6px;
+  border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #e0eef6;
+  background: #fff;
+  table-layout: fixed;
+
+  thead th {
+    background: #f7fbff;
+    color: #244b6b;
+    font-weight: 700;
+    border-bottom: 1px solid #e3edf4;
+  }
+
+  td, th {
+    padding: 12px 14px;
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background .15s ease, box-shadow .15s ease;
+  }
+
+  tbody tr:hover {
+    background: #f9fcff;
+  }
+
+  /* Botones de acción dentro de celdas */
+  .cell-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+
+    .mat-stroked-button {
+      border-color: #d5e8f2;
+    }
+    .mat-stroked-button:hover {
+      background: #f3faff;
+    }
+  }
 }
-th { background: #f7fbff; }
-td, th { padding: 10px 12px; }
-.loader { display: flex; align-items: center; gap: 10px; padding: 8px 0; }
-.empty { padding: 12px; color: #777; }
+
+/* Loader & estados vacíos */
+.loader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  color: #244b6b;
+
+  .mat-progress-spinner circle {
+    stroke: #244b6b;
+  }
+}
+
+.empty {
+  padding: 16px;
+  color: #6e7f91;
+  background: #f8fbfe;
+  border: 1px dashed #d8e8f2;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+  .card { margin: 0 8px; }
+  .table td, .table th { padding: 10px; }
+}

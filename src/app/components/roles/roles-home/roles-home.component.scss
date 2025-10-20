@@ -1,38 +1,112 @@
+/* Wrapper */
 .wrap {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: grid;
+  place-items: center;
   background: #f5f7fa;
+  padding: 16px;
 }
+
+/* Card (Material surface + elevation) */
 .card {
   width: 100%;
-  max-width: 440px;
+  max-width: 520px;
   border-radius: 14px;
-  overflow: hidden;
-  border: 1px solid #cde7f0;
-  box-shadow: 0 4px 12px rgba(0,0,0,.08);
   background: #fff;
+  /* elevation 4 */
+  box-shadow:
+    0 2px 4px -1px rgba(0,0,0,.2),
+    0 4px 5px 0 rgba(0,0,0,.14),
+    0 1px 10px 0 rgba(0,0,0,.12);
+  border: 1px solid rgba(205,231,240,.6);
+  overflow: hidden;
 }
+
+/* Header */
 .card__header {
   background: #244b6b;
   color: #fff;
   font-weight: 700;
   text-align: center;
-  padding: 14px 16px;
+  padding: 16px;
+  letter-spacing: .3px;
 }
+
+/* Body */
 .card__body {
   display: grid;
-  gap: 16px;
-  padding: 18px 16px;
-  place-items: center;
+  gap: 18px;
+  padding: 18px 16px 8px;
 }
+
+/* Campos Material */
+.mat-form-field {
+  width: 100%;
+}
+
+/* Grupo de radios (vertical con buen espaciado) */
+.rol-group {
+  display: grid;
+  gap: 10px;
+
+  .rol-title {
+    font-weight: 700;
+    color: #244b6b;
+    letter-spacing: .3px;
+  }
+
+  .radio-col {
+    display: grid;
+    gap: 8px;
+
+    .mat-radio-button {
+      padding: 4px 2px;
+    }
+  }
+}
+
+/* Footer con botones */
 .card__footer {
-  padding: 0 16px 16px;
+  padding: 10px 16px 16px;
   display: flex;
   justify-content: flex-end;
+  gap: 10px;
+
+  .btn {
+    min-width: 160px;
+    font-weight: 700;
+  }
+
+  .btn-primary {
+    background: #f5b942;
+    color: #fff;
+  }
+  .btn-primary:hover {
+    filter: brightness(.96);
+  }
+
+  .btn-outline {
+    border-color: #d5e8f2;
+  }
+  .btn-outline:hover {
+    background: #f3faff;
+  }
 }
-.btn {
-  width: 220px;
-  font-weight: 700;
+
+/* Ayudas/errores de Material */
+.mat-hint { color: #6e7f91; }
+.mat-error { font-size: .86rem; }
+
+/* Micro-interacciones */
+:host ::ng-deep .mat-mdc-raised-button.mat-primary {
+  background-color: #244b6b;
+}
+:host ::ng-deep .mat-mdc-raised-button.mat-primary:hover {
+  filter: brightness(.95);
+}
+
+/* Responsive */
+@media (max-width: 560px) {
+  .card { margin: 0 8px; }
+  .card__footer { justify-content: center; }
 }
