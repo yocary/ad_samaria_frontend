@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
+import { PersonaMini } from './personas.service';
 
 export interface OpcionCatalogo {
   id: number;
@@ -95,4 +96,10 @@ export class MiembrosService {
   getFicha(personaId: number): Observable<PersonaFicha> {
     return this.http.get<PersonaFicha>(`${this.base}/${personaId}/ficha`);
   }
+
+  buscarMin$(q: string) {
+  return this.http.get<PersonaMini[]>(`${this.base}/buscar`, { params: { q } });
 }
+
+}
+

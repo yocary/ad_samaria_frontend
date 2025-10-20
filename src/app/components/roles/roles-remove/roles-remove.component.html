@@ -1,0 +1,77 @@
+<!-- src/app/components/roles-delete/roles-delete.component.html -->
+<div class="wrapper">
+  <mat-card class="card">
+    <div class="card-header">Eliminar rol</div>
+
+    <mat-card-content>
+      <!-- Autocomplete de persona -->
+      <div class="row">
+        <mat-form-field appearance="fill" class="w-full">
+          <mat-label>Persona</mat-label>
+          <input
+            type="text"
+            matInput
+            placeholder="Escribe al menos 2 letras"
+            [formControl]="personaQuery"
+            [matAutocomplete]="auto"
+          />
+          <button *ngIf="personaSeleccionada" matSuffix mat-icon-button (click)="limpiarPersona()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="seleccionarPersona($event.option.value)">
+          <mat-option *ngFor="let p of (personas$ | async)" [value]="p">
+            {{ p.nombre }}
+          </mat-option>
+          <mat-option *ngIf="(personas$ | async)?.length === 0 && (personaQuery.value || '').length >= 2" disabled>
+            Sin resultados
+          </mat-option>
+        </mat-autocomplete>
+      </div>
+
+      <!-- Tabla de roles asignados -->
+      <div class="table-wrap" *ngIf="personaSeleccionada">
+        <div class="table-title">Roles asignados a {{ personaSeleccionada.nombre }}</div>
+
+        <div class="loader" *ngIf="loading">
+          <mat-progress-spinner mode="indeterminate" diameter="32"></mat-progress-spinner>
+          <div>Cargando roles...</div>
+        </div>
+
+        <table mat-table [dataSource]="rolesAsignados" class="table" *ngIf="!loading">
+          <ng-container matColumnDef="rol">
+            <th mat-header-cell *matHeaderCellDef>Rol</th>
+            <td mat-cell *matCellDef="let el">{{ el.rolNombre }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="desde">
+            <th mat-header-cell *matHeaderCellDef>Desde</th>
+            <td mat-cell *matCellDef="let el">{{ el.desde || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="hasta">
+            <th mat-header-cell *matHeaderCellDef>Hasta</th>
+            <td mat-cell *matCellDef="let el">{{ el.hasta || '—' }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let el">
+              <button mat-stroked-button color="warn" (click)="quitarRol(el.id)">Eliminar</button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="['rol','desde','hasta','actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['rol','desde','hasta','actions']"></tr>
+        </table>
+
+        <div class="empty" *ngIf="!loading && rolesAsignados.length === 0">
+          No hay roles asignados.
+        </div>
+      </div>
+    </mat-card-content>
+          <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
+  </mat-card>
+  
+</div>

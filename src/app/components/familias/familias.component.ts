@@ -40,7 +40,7 @@ export class FamiliasComponent implements OnInit {
 openEdit(fam: Family): void {
   console.log('Editando familia:', fam); // 👈 para ver en consola
   this.dialog.open(DialogEditFamilyComponent, {
-    width: '800px',
+    width: '1000px',
     data: { family: fam },
     disableClose: true
   });

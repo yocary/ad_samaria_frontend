@@ -11,6 +11,8 @@ import { FinanzasComponent } from "../components/finanzas/finanzas.component";
 import { LiderazgoComponent } from "../components/liderazgo/liderazgo.component";
 import { CertificadosComponent } from "../components/certificados/certificados.component";
 import { MiembrosHomeComponent } from "../components/miembros-home/miembros-home.component";
+import { RolesHomeComponent } from "../components/roles/roles-home/roles-home.component";
+import { RolesRemoveComponent } from "../components/roles/roles-remove/roles-remove.component";
 
 
 
@@ -27,6 +29,12 @@ const routes: Routes = [
    { path: 'miembros', children: [
       { path: 'home', component: MiembrosHomeComponent },
       { path: 'nuevo', component: MiembrosFormComponent },
+    ]
+  },
+  { path: 'roles', children: [
+      { path: 'home', component: RolesHomeComponent },
+      { path: 'agregar', component: RolesComponent },
+            { path: 'eliminar', component: RolesRemoveComponent },
     ]
   },
     { path: 'familias', component: FamiliasComponent },

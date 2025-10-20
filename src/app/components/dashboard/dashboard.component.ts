@@ -13,7 +13,7 @@ interface Tile {
 })
 export class DashboardComponent {
   tiles: Tile[] = [
-    { key: 'roles',         title: 'ROLES',          routerLink: '/roles' },
+    { key: 'roles',         title: 'ROLES',          routerLink: '/roles/home' },
     { key: 'miembros',      title: 'MIEMBROS',       routerLink: '/miembros/home' },
     { key: 'finanzas',      title: 'FINANZAS',       routerLink: '/finanzas' },
     { key: 'planificacion', title: 'PLANIFICACIÓN',  routerLink: '/planificacion' },
