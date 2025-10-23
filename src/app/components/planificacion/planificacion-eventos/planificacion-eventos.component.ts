@@ -14,6 +14,7 @@ import { EventoItem } from './tipos';
 import { EventoNewDialogComponent } from '../evento-new-dialog/evento-new-dialog.component';
 import { EventoNewPayload } from './tipos';
 import { AsistenciaDialogComponent } from '../asistencia-dialog/asistencia-dialog.component';
+import { OfrendaDialogComponent, OfrendaPayload } from '../ofrenda-dialog/ofrenda-dialog.component';
 
 type EventoRow = EventoItem & { totalAsistencias?: number }; // extendemos con el total calculado
 
@@ -236,4 +237,76 @@ private mostrarSwalObservacion(e: EventoItem, valorInicial: string): void {
     a.click();
     URL.revokeObjectURL(a.href);
   }
+
+abrirOfrenda(e?: EventoItem): void {
+  if (!e) return;
+
+  // Primero cargar ofrendas existentes
+  this.lidSvc.listarOfrendasPorEvento(e.id).subscribe({
+    next: (ofrendas) => {
+      const ofrendaExistente = ofrendas.length > 0 ? ofrendas[0] : undefined;
+      
+      const ref = this.dialog.open(OfrendaDialogComponent, {
+        width: '420px',
+        data: {
+          liderazgoNombre: this.liderazgoNombre,
+          eventos: this.eventos,
+          eventoIdDefault: e.id,
+          ofrendaExistente: ofrendaExistente
+        }
+      });
+
+      ref.afterClosed().subscribe((payload?: OfrendaPayload) => {
+        if (!payload) return;
+
+        const { eventoId, id: ofrendaId, ...body } = payload;
+        
+        if (ofrendaId) {
+          // Modo ACTUALIZACIÓN - usar el método de actualización
+          this.lidSvc.actualizarOfrenda(ofrendaId, body).subscribe({
+            next: () => {
+              Swal.fire('Listo', 'Ofrenda actualizada.', 'success');
+            },
+            error: () => Swal.fire('Error', 'No se pudo actualizar la ofrenda.', 'error')
+          });
+        } else {
+          // Modo CREACIÓN - crear nueva ofrenda
+          this.lidSvc.crearOfrendaParaEvento(eventoId, body).subscribe({
+            next: () => {
+              Swal.fire('Listo', 'Ofrenda registrada.', 'success');
+            },
+            error: () => Swal.fire('Error', 'No se pudo registrar la ofrenda.', 'error')
+          });
+        }
+      });
+    },
+    error: () => {
+      // Si falla cargar ofrendas existentes, abrir diálogo en modo creación
+      this.abrirDialogoOfrenda(e);
+    }
+  });
+}
+
+private abrirDialogoOfrenda(e: EventoItem): void {
+  const ref = this.dialog.open(OfrendaDialogComponent, {
+    width: '420px',
+    data: {
+      liderazgoNombre: this.liderazgoNombre,
+      eventos: this.eventos,
+      eventoIdDefault: e.id
+    }
+  });
+
+  ref.afterClosed().subscribe((payload?: OfrendaPayload) => {
+    if (!payload) return;
+
+    const { eventoId, ...body } = payload;
+    this.lidSvc.crearOfrendaParaEvento(eventoId, body).subscribe({
+      next: () => {
+        Swal.fire('Listo', 'Ofrenda registrada.', 'success');
+      },
+      error: () => Swal.fire('Error', 'No se pudo registrar la ofrenda.', 'error')
+    });
+  });
+}
 }

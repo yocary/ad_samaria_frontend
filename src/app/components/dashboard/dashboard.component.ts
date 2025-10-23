@@ -15,7 +15,7 @@ export class DashboardComponent {
   tiles: Tile[] = [
     { key: 'roles',         title: 'ROLES',          routerLink: '/roles/home' },
     { key: 'miembros',      title: 'MIEMBROS',       routerLink: '/miembros/home' },
-    { key: 'finanzas',      title: 'FINANZAS',       routerLink: '/finanzas' },
+    // { key: 'finanzas',      title: 'FINANZAS',       routerLink: '/finanzas' },
     { key: 'planificacion', title: 'PLANIFICACIÓN',  routerLink: '/planificacion' },
     { key: 'liderazgo',     title: 'LIDERAZGO',      routerLink: '/liderazgo' },
     { key: 'certificados',  title: 'CERTIFICADOS',   routerLink: '/certificados' },

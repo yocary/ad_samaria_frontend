@@ -16,6 +16,23 @@ export interface AsistenciaUpsert {
   presente: boolean;
   observacion?: string;
 }
+
+export interface OfrendaItem {
+  id: number;
+  fecha: string;
+  descripcion?: string;
+  cantidad: number;
+  eventoId: number;
+}
+
+export interface OfrendaPayload {
+  id?: number;
+  fecha: string;
+  descripcion?: string;
+  cantidad: number;
+  eventoId: number;
+}
+
 // ===== Tipos =====
 export type Liderazgo = { id: number; nombre: string };
 export type Rol = { id: number; nombre: string };
@@ -165,6 +182,23 @@ obtenerObservacion(liderazgoId: number, eventoId: number) {
   return this.http.get<{ observacion: string }>(
     `${this.base}/evento/${liderazgoId}/${eventoId}/observacion`
   );
+}
+
+crearOfrendaParaEvento(
+  eventoId: number,
+  body: { fecha: string; descripcion?: string; cantidad: number }
+) {
+  // ajusta si tu backend usa otra ruta
+  return this.http.post<void>(`${this.base}/ofrenda/${eventoId}/ofrendas`, body);
+}
+
+listarOfrendasPorEvento(eventoId: number): Observable<OfrendaItem[]> {
+  return this.http.get<OfrendaItem[]>(`${this.base}/ofrenda/${eventoId}/ofrendas`);
+}
+
+// En liderazgo.service.ts
+actualizarOfrenda(id: number, body: { fecha: string; descripcion?: string; cantidad: number }): Observable<void> {
+  return this.http.put<void>(`${this.base}/ofrenda/${id}`, body);
 }
 
 }

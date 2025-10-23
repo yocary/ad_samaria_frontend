@@ -51,6 +51,7 @@ import { PlanificacionGrupoIntegrantesComponent } from './components/planificaci
 import { PlanificacionEventosComponent } from './components/planificacion/planificacion-eventos/planificacion-eventos.component';
 import { EventoNewDialogComponent } from './components/planificacion/evento-new-dialog/evento-new-dialog.component';
 import { AsistenciaDialogComponent } from './components/planificacion/asistencia-dialog/asistencia-dialog.component';
+import { OfrendaDialogComponent } from './components/planificacion/ofrenda-dialog/ofrenda-dialog.component';
 
 
 export const MY_DATE_FORMATS = {
@@ -98,6 +99,7 @@ export const MY_DATE_FORMATS = {
     PlanificacionEventosComponent,
     EventoNewDialogComponent,
     AsistenciaDialogComponent,
+    OfrendaDialogComponent,
   ],
   imports: [
     FormsModule,
