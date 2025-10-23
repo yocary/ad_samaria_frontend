@@ -40,7 +40,7 @@ export class PlanificacionHomeComponent implements OnInit {
 
   verLiderazgo(id: number): void {
     // ajusta la ruta de destino a tu pantalla de detalle/planificación por liderazgo
-    this.router.navigate(['/planificacion/liderazgo', id]);
+    this.router.navigate(['/planificacion/grupo', id]);
   }
 
   regresar(): void {

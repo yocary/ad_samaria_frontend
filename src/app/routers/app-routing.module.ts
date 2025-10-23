@@ -14,6 +14,7 @@ import { MiembrosHomeComponent } from "../components/miembros-home/miembros-home
 import { RolesHomeComponent } from "../components/roles/roles-home/roles-home.component";
 import { RolesRemoveComponent } from "../components/roles/roles-remove/roles-remove.component";
 import { PlanificacionHomeComponent } from "../components/planificacion/planificacion-home/planificacion-home.component";
+import { PlanificacionGrupoDetalleComponent } from "../components/planificacion/planificacion-grupo-detalle/planificacion-grupo-detalle.component";
 
 
 
@@ -40,6 +41,7 @@ const routes: Routes = [
     ]
   },
     { path: 'familias', component: FamiliasComponent },
+      { path: 'planificacion/grupo/:id', component: PlanificacionGrupoDetalleComponent },
 
 ];
 

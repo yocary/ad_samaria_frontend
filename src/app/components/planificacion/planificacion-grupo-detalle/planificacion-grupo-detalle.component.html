@@ -1,1 +1,78 @@
-<p>planificacion-grupo-detalle works!</p>
+<div class="wrap">
+  <div class="card">
+    <div class="card__header">
+      {{ liderazgoNombre | uppercase }}
+    </div>
+
+    <div class="tabs">
+      <button class="tab active">Integrantes</button>
+      <button class="tab" disabled>Eventos</button>
+      <button class="tab" disabled>Ofrendas</button>
+    </div>
+
+    <!-- Buscador + lista resultados + agregar -->
+    <div class="bar">
+      <mat-form-field appearance="outline" class="search">
+        <mat-label>Buscar persona (mín. 2 letras)</mat-label>
+        <input matInput [formControl]="personaQuery" placeholder="Escribe el nombre…" />
+        <button mat-icon-button matSuffix *ngIf="personaQuery.value" (click)="limpiarSeleccion()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <div class="results" *ngIf="(resultados$ | async) as opciones">
+        <button class="res" *ngFor="let p of opciones" (click)="elegir(p)">
+          {{ p.nombre }}
+        </button>
+        <div class="empty" *ngIf="opciones.length === 0 && (personaQuery.value || '').length >= 2">
+          Sin resultados
+        </div>
+      </div>
+
+      <button
+        mat-raised-button
+        color="primary"
+        class="btn-add"
+        (click)="agregar()"
+        [disabled]="guardando || !seleccionado"
+      >
+        + Agregar miembro
+      </button>
+    </div>
+
+    <!-- Tabla de integrantes -->
+    <div class="table-wrap">
+      <div class="loader" *ngIf="cargandoMiembros">
+        <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+        <span>Cargando integrantes…</span>
+      </div>
+
+      <table class="table" *ngIf="!cargandoMiembros">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Miembro</th>
+            <th style="width: 120px;"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of miembros; let i = index; trackBy: trackByMiembro">
+            <td>{{ i + 1 }}</td>
+            <td>{{ m.nombre }}</td>
+            <td>
+              <button mat-stroked-button color="warn" (click)="quitar(m.id)">Quitar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="empty" *ngIf="!cargandoMiembros && miembros.length === 0">
+        Aún no hay integrantes en este liderazgo.
+      </div>
+    </div>
+
+    <div class="footer">
+      <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
+    </div>
+  </div>
+</div>
