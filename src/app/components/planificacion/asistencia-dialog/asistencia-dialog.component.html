@@ -1,0 +1,57 @@
+<!-- src/app/components/planificacion/asistencia-dialog/asistencia-dialog.component.html -->
+<h2 mat-dialog-title>
+  Asistencia — {{ data.eventoNombre }}
+  <span *ngIf="data.fecha" class="muted">({{ data.fecha }})</span>
+</h2>
+
+<mat-dialog-content class="dlg">
+  <div class="bar">
+    <mat-form-field appearance="outline" class="search">
+      <mat-label>Buscar miembro</mat-label>
+      <input matInput [formControl]="filtro" placeholder="Escribe el nombre…" />
+      <button mat-icon-button matSuffix *ngIf="filtro.value" (click)="filtro.setValue('')">
+        <mat-icon>close</mat-icon>
+      </button>
+    </mat-form-field>
+
+    <span class="spacer"></span>
+
+    <button mat-stroked-button class="btn-amber" (click)="toggleAll(true)" [disabled]="loading">Marcar todo</button>
+    <button mat-stroked-button (click)="toggleAll(false)" [disabled]="loading">Desmarcar todo</button>
+  </div>
+
+  <div class="loader" *ngIf="loading">
+    <mat-progress-spinner mode="indeterminate" diameter="28"></mat-progress-spinner>
+    <span>Cargando asistencia…</span>
+  </div>
+
+  <table class="table" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th style="width: 56px;">#</th>
+        <th>Miembro</th>
+        <th class="center" style="width: 120px;">Asistió</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let a of filtrados; let i = index; trackBy: trackById">
+        <td>{{ i + 1 }}</td>
+        <td>{{ a.nombre }}</td>
+        <td class="center">
+          <mat-checkbox [(ngModel)]="a.presente"></mat-checkbox>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="empty" *ngIf="!loading && filtrados.length === 0">
+    No hay miembros para este liderazgo o no coinciden con el filtro.
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end" class="actions">
+  <button mat-button (click)="close()">Cerrar</button>
+  <button mat-raised-button color="primary" (click)="guardar()" [disabled]="saving || loading">
+    Guardar
+  </button>
+</mat-dialog-actions>

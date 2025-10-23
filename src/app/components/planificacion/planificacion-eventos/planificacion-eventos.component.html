@@ -39,7 +39,6 @@
 
   <div class="table" *ngIf="!cargando">
     <table mat-table [dataSource]="filtrados">
-
       <ng-container matColumnDef="n">
         <th mat-header-cell *matHeaderCellDef>No.</th>
         <td mat-cell *matCellDef="let r; let i = index">{{ i + 1 }}</td>
@@ -55,19 +54,10 @@
         <td mat-cell *matCellDef="let r">{{ r.fecha }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="asist">
-        <th mat-header-cell *matHeaderCellDef>Asistencias</th>
-        <td mat-cell *matCellDef="let r">{{ r.asistencias }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="visit">
-        <th mat-header-cell *matHeaderCellDef>Visitantes</th>
-        <td mat-cell *matCellDef="let r">{{ r.visitantes }}</td>
-      </ng-container>
-
-      <ng-container matColumnDef="total">
-        <th mat-header-cell *matHeaderCellDef>Total</th>
-        <td mat-cell *matCellDef="let r">{{ r.total }}</td>
+      <!-- ÚNICA COLUMNA DE RESUMEN -->
+      <ng-container matColumnDef="totalAsistencias">
+        <th mat-header-cell *matHeaderCellDef>Total asistencias</th>
+        <td mat-cell *matCellDef="let r">{{ r.totalAsistencias ?? '—' }}</td>
       </ng-container>
 
       <ng-container matColumnDef="acciones">

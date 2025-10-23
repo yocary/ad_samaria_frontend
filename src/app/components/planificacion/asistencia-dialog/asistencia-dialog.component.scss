@@ -1,0 +1,42 @@
+/* src/app/components/planificacion/asistencia-dialog/asistencia-dialog.component.scss */
+.dlg { min-width: 720px; }
+
+.bar {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 12px;
+}
+.search { width: 340px; }
+.spacer { flex: 1; }
+
+.table {
+  width: 100%;
+  border: 1px solid #e0eef6;
+  border-radius: 6px;
+  overflow: hidden;
+}
+th { background: #f7fbff; }
+td, th { padding: 10px 12px; }
+.center { text-align: center; }
+
+.loader {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 8px 0;
+}
+.empty { padding: 12px; color: #777; }
+
+.btn-amber {
+  color: #6a4a00;
+  background: #ffd16622;
+  border-color: #ffd166;
+}
+
+.muted {
+  font-weight: normal;
+  color: #666;
+  font-size: .9rem;
+  margin-left: 6px;
+}

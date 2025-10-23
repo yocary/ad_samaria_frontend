@@ -5,10 +5,21 @@ import { environment } from 'src/environments/environment';
 import { PersonaMini } from './personas.service';
 import { EventoItem } from '../components/planificacion/planificacion-eventos/tipos';
 
+export interface AsistenciaItem {
+  personaId: number;
+  nombre: string;
+  presente: boolean;
+  asistenciaId?: number | null;
+}
+export interface AsistenciaUpsert {
+  personaId: number;
+  presente: boolean;
+  observacion?: string;
+}
 // ===== Tipos =====
-export type Liderazgo = { id: number; nombre: string; };
-export type Rol        = { id: number; nombre: string; };
-export type PersonaLite = { id: number; nombre: string; };
+export type Liderazgo = { id: number; nombre: string };
+export type Rol = { id: number; nombre: string };
+export type PersonaLite = { id: number; nombre: string };
 export type MiembroRol = {
   id: number;
   personaId: number;
@@ -33,7 +44,9 @@ export class LiderazgoService {
   }
 
   crearLiderazgo(nombre: string): Observable<Liderazgo> {
-    return this.http.post<Liderazgo>(`${this.base}/liderazgo/crearLiderazgo`, { nombre });
+    return this.http.post<Liderazgo>(`${this.base}/liderazgo/crearLiderazgo`, {
+      nombre,
+    });
   }
 
   editarLiderazgo(id: number, nombre: string): Observable<void> {
@@ -54,45 +67,104 @@ export class LiderazgoService {
     return this.http.get<Rol[]>(`${this.base}/liderazgo/${liderazgoId}/roles`);
   }
 
-crearRol(liderazgoId: number, nombre: string) {
-  return this.http.post<Rol>(`${this.base}/liderazgo/${liderazgoId}/roles`, { nombre });
-}
+  crearRol(liderazgoId: number, nombre: string) {
+    return this.http.post<Rol>(`${this.base}/liderazgo/${liderazgoId}/roles`, {
+      nombre,
+    });
+  }
 
-  editarRol(liderazgoId: number, rolId: number, nombre: string): Observable<void> {
-    return this.http.put<void>(`${this.base}/liderazgo/${liderazgoId}/roles/${rolId}`, { nombre });
+  editarRol(
+    liderazgoId: number,
+    rolId: number,
+    nombre: string
+  ): Observable<void> {
+    return this.http.put<void>(
+      `${this.base}/liderazgo/${liderazgoId}/roles/${rolId}`,
+      { nombre }
+    );
   }
 
   eliminarRol(liderazgoId: number, rolId: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/liderazgo/${liderazgoId}/roles/${rolId}`);
+    return this.http.delete<void>(
+      `${this.base}/liderazgo/${liderazgoId}/roles/${rolId}`
+    );
   }
 
   // ===== Miembros en un liderazgo =====
   listarMiembros(liderazgoId: number): Observable<MiembroRol[]> {
-    return this.http.get<MiembroRol[]>(`${this.base}/liderazgo/${liderazgoId}/miembros`);
+    return this.http.get<MiembroRol[]>(
+      `${this.base}/liderazgo/${liderazgoId}/miembros`
+    );
   }
 
   eliminarMiembro(liderazgoId: number, miembroLidId: number): Observable<void> {
-    return this.http.delete<void>(`${this.base}/liderazgo/${liderazgoId}/miembros/${miembroLidId}`);
+    return this.http.delete<void>(
+      `${this.base}/liderazgo/${liderazgoId}/miembros/${miembroLidId}`
+    );
   }
 
   // ===== Búsqueda de personas (módulo Miembros) =====
   // Asegúrate de tener el endpoint GET /persona/buscar?q=...
   buscarPersonas(q: string): Observable<PersonaLite[]> {
     const params = new HttpParams().set('q', q);
-    return this.http.get<PersonaLite[]>(`${this.base}/persona/buscar`, { params });
+    return this.http.get<PersonaLite[]>(`${this.base}/persona/buscar`, {
+      params,
+    });
   }
 
   agregarMiembro(liderazgoId: number, personaId: number, rolId: number) {
-  return this.http.post(`${this.base}/liderazgo/${liderazgoId}/miembros`, { personaId, rolId });
-}
-
+    return this.http.post(`${this.base}/liderazgo/${liderazgoId}/miembros`, {
+      personaId,
+      rolId,
+    });
+  }
 
   listarEventos(liderazgoId: number): Observable<EventoItem[]> {
-    return this.http.get<EventoItem[]>(`${this.base}/evento/${liderazgoId}/eventos`);
+    return this.http.get<EventoItem[]>(
+      `${this.base}/evento/${liderazgoId}/eventos`
+    );
   }
 
-  crearEvento(liderazgoId: number, payload: { nombre: string; fecha: string; descripcion?: string }): Observable<void> {
-    return this.http.post<void>(`${this.base}/evento/${liderazgoId}/eventos`, payload);
+  crearEvento(
+    liderazgoId: number,
+    payload: { nombre: string; fecha: string; descripcion?: string }
+  ): Observable<void> {
+    return this.http.post<void>(
+      `${this.base}/evento/${liderazgoId}/eventos`,
+      payload
+    );
   }
+
+listarAsistencia(liderazgoId: number, eventoId: number) {
+  return this.http.get<AsistenciaItem[]>(
+ `${this.base}/asistencia/liderazgo/${liderazgoId}/eventos/${eventoId}`
+  );
+}
+
+guardarAsistencia(
+  liderazgoId: number,
+  eventoId: number,
+  payload: AsistenciaUpsert[]
+) {
+  return this.http.put<void>(
+    `${this.base}/asistencia/liderazgo/${liderazgoId}/eventos/${eventoId}`,
+    payload
+  );
+}
+
+  guardarObservacion(liderazgoId: number, eventoId: number, observacion: string) {
+    return this.http.put<void>(
+      `${this.base}/evento/${liderazgoId}/${eventoId}/observacion`,
+      { observacion }
+    );
+  }
+
+  /** Obtener observación actual del evento (texto plano) */
+obtenerObservacion(liderazgoId: number, eventoId: number) {
+  // El backend devuelve { observacion: string } según tu controlador
+  return this.http.get<{ observacion: string }>(
+    `${this.base}/evento/${liderazgoId}/${eventoId}/observacion`
+  );
+}
 
 }

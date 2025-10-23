@@ -50,6 +50,7 @@ import { PlanificacionGrupoDetalleComponent } from './components/planificacion/p
 import { PlanificacionGrupoIntegrantesComponent } from './components/planificacion/planificacion-grupo-integrantes/planificacion-grupo-integrantes.component';
 import { PlanificacionEventosComponent } from './components/planificacion/planificacion-eventos/planificacion-eventos.component';
 import { EventoNewDialogComponent } from './components/planificacion/evento-new-dialog/evento-new-dialog.component';
+import { AsistenciaDialogComponent } from './components/planificacion/asistencia-dialog/asistencia-dialog.component';
 
 
 export const MY_DATE_FORMATS = {
@@ -96,6 +97,7 @@ export const MY_DATE_FORMATS = {
     PlanificacionGrupoIntegrantesComponent,
     PlanificacionEventosComponent,
     EventoNewDialogComponent,
+    AsistenciaDialogComponent,
   ],
   imports: [
     FormsModule,
