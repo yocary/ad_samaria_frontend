@@ -1,26 +1,97 @@
-.wrap { display: grid; gap: 12px; }
+.wrap { 
+  display: grid; 
+  gap: 12px; 
+}
 
 .toolbar {
-  display: flex; align-items: center; gap: 12px; justify-content: space-between;
-  .right { display: flex; align-items: center; gap: 10px; }
-  .search { min-width: 260px; }
-  .small { width: 170px; }
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  justify-content: space-between;
+  
+  .right { 
+    display: flex; 
+    align-items: center; 
+    gap: 10px; 
+  }
+  
+  .search { 
+    min-width: 260px; 
+  }
+  
+  .small { 
+    width: 170px; 
+  }
 }
 
 .table {
-  border: 1px solid #e0eef6; border-radius: 8px; overflow: hidden;
-  table { width: 100%; }
-  th { background: #f7fbff; }
-  td, th { padding: 10px 12px; }
+  border: 1px solid #e0eef6; 
+  border-radius: 8px; 
+  overflow: hidden;
+  
+  table { 
+    width: 100%; 
+  }
+  
+  th { 
+    background: #f7fbff; 
+  }
+  
+  td, th { 
+    padding: 10px 12px; 
+  }
+  
+  // Específico para la columna de acciones - SOLO CORREGIR ESPACIADO
+  .mat-column-acciones {
+    button {
+      margin-right: 8px; // Espacio entre botones
+      
+      &:last-child {
+        margin-right: 0; // Quitar margen al último botón
+      }
+    }
+  }
 }
 
 .loader {
-  display: flex; align-items: center; gap: 10px; color: #244b6b; padding: 8px 0;
+  display: flex; 
+  align-items: center; 
+  gap: 10px; 
+  color: #244b6b; 
+  padding: 8px 0;
 }
 
-.empty { padding: 14px; color: #777; text-align: center; }
+.empty { 
+  padding: 14px; 
+  color: #777; 
+  text-align: center; 
+}
 
 .btn-amber {
-  background: #f5b942; color: #fff; margin-right: 8px;
-  &:hover { filter: brightness(.95); }
+  background: #f5b942; 
+  color: #fff;
+  
+  &:hover { 
+    filter: brightness(.95); 
+  }
+}
+
+.btn-amber {
+  background: #f5b942; 
+  color: #fff; // Letras blancas
+  margin-right: 8px;
+  
+  &:hover { 
+    filter: brightness(.95); 
+  }
+}
+
+// Asegurar que el botón Ofrenda (color accent) también tenga letras blancas
+button[color="accent"] {
+  color: #fff !important;
+  margin-right: 8px;
+  
+  &:last-child {
+    margin-right: 0;
+  }
 }

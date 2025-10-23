@@ -54,7 +54,6 @@
         <td mat-cell *matCellDef="let r">{{ r.fecha }}</td>
       </ng-container>
 
-      <!-- ÚNICA COLUMNA DE RESUMEN -->
       <ng-container matColumnDef="totalAsistencias">
         <th mat-header-cell *matHeaderCellDef>Total asistencias</th>
         <td mat-cell *matCellDef="let r">{{ r.totalAsistencias ?? '—' }}</td>
