@@ -48,6 +48,8 @@ import { PlanificacionHomeComponent } from './components/planificacion/planifica
 import { CreateGrupoDialogComponent } from './components/planificacion/create-grupo-dialog/create-grupo-dialog.component';
 import { PlanificacionGrupoDetalleComponent } from './components/planificacion/planificacion-grupo-detalle/planificacion-grupo-detalle.component';
 import { PlanificacionGrupoIntegrantesComponent } from './components/planificacion/planificacion-grupo-integrantes/planificacion-grupo-integrantes.component';
+import { PlanificacionEventosComponent } from './components/planificacion/planificacion-eventos/planificacion-eventos.component';
+import { EventoNewDialogComponent } from './components/planificacion/evento-new-dialog/evento-new-dialog.component';
 
 
 export const MY_DATE_FORMATS = {
@@ -92,6 +94,8 @@ export const MY_DATE_FORMATS = {
     CreateGrupoDialogComponent,
     PlanificacionGrupoDetalleComponent,
     PlanificacionGrupoIntegrantesComponent,
+    PlanificacionEventosComponent,
+    EventoNewDialogComponent,
   ],
   imports: [
     FormsModule,

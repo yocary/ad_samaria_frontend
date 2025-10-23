@@ -60,13 +60,19 @@
 
 /* Barra superior (buscador y botón agregar) */
 .bar {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 10px;
-  align-items: start;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
   padding: 20px;
   background: #fafcff;
   border-bottom: 1px solid #e5eef5;
+  position: relative;
+}
+
+/* Contenedor del buscador */
+.search-container {
+  flex: 1;
+  position: relative;
 }
 
 /* Campo de búsqueda */
@@ -74,35 +80,45 @@
   width: 100%;
 }
 
+/* Contenedor de resultados */
+.results-wrapper {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
 /* Resultados del buscador */
 .results {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
   background: #ffffff;
   border: 1px solid #d9e4ea;
   border-radius: 6px;
   max-height: 240px;
   overflow-y: auto;
-  margin-top: 6px;
+  margin-top: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 .res {
-  padding: 8px 14px;
+  padding: 10px 14px;
   text-align: left;
   background: #fff;
   border: none;
   border-bottom: 1px solid #f2f6fa;
   cursor: pointer;
   transition: background 0.2s;
+  width: 100%;
+  font-size: 0.95rem;
 }
 .res:hover {
   background: #f5faff;
 }
 .empty {
-  padding: 12px;
+  padding: 16px;
   text-align: center;
   color: #777;
   font-size: 0.9rem;
+  font-style: italic;
 }
 
 /* Tabla de miembros */
@@ -120,12 +136,13 @@ th {
   background: #f7fbff;
   color: #333;
   text-align: left;
-  padding: 10px 12px;
+  padding: 12px;
   font-weight: 600;
   font-size: 0.95rem;
+  border-bottom: 2px solid #e5eef5;
 }
 td {
-  padding: 10px 12px;
+  padding: 12px;
   border-top: 1px solid #eef4f8;
   vertical-align: middle;
   font-size: 0.95rem;
@@ -139,11 +156,17 @@ tr:hover td {
   font-weight: 600;
   color: #fff;
   background: #f5b942 !important;
-  height: 42px;
-  margin-top: 2px;
+  height: 56px;
+  min-width: 140px;
+  margin-top: 0;
+  white-space: nowrap;
 }
 .btn-add:hover {
   filter: brightness(0.95);
+}
+.btn-add:disabled {
+  background: #cccccc !important;
+  color: #666666;
 }
 
 /* Loader */
@@ -172,4 +195,21 @@ tr:hover td {
 .results::-webkit-scrollbar-thumb {
   background: #ccc;
   border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .bar {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .btn-add {
+    width: 100%;
+    height: 48px;
+  }
+  
+  .search-container {
+    width: 100%;
+  }
 }

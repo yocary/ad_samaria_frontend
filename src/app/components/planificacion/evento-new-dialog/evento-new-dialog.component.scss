@@ -1,0 +1,10 @@
+.dlg { padding-top: 4px; }
+.hint { margin-bottom: 8px; color: #244b6b; }
+.grid {
+  display: grid; grid-template-columns: 1fr 200px; gap: 12px;
+  .full { grid-column: 1 / -1; }
+}
+
+@media (max-width: 640px) {
+  .grid { grid-template-columns: 1fr; }
+}

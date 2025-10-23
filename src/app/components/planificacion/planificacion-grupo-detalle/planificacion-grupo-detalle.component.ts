@@ -1,17 +1,17 @@
+// src/app/components/planificacion/planificacion-grupo-detalle/planificacion-grupo-detalle.component.ts
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import { debounceTime, distinctUntilChanged, startWith, switchMap, map } from 'rxjs/operators';
+import { debounceTime, switchMap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 import { LiderazgoService } from 'src/app/services/liderazgo.service';
-import { PersonasService, PersonaMini } from 'src/app/services/personas.service';
 import { MiembrosService } from 'src/app/services/miembros.service';
+import { PersonaMini } from 'src/app/services/personas.service';
 
 interface Miembro {
-  id: number;        // id del vínculo (liderazgo_miembro, etc.)
-  personaId: number;
+  id: number;
   nombre: string;
 }
 
@@ -21,167 +21,129 @@ interface Miembro {
   styleUrls: ['./planificacion-grupo-detalle.component.scss']
 })
 export class PlanificacionGrupoDetalleComponent implements OnInit {
-
   liderazgoId!: number;
-  liderazgoNombre = 'Liderazgo';
+  liderazgoNombre = '';
 
-  cargandoMiembros = true;
+  // Tabs en la misma pantalla
+  tabActivo: 'integrantes' | 'eventos' = 'integrantes';
+
+  // Buscar/Agregar integrantes
+  personaQuery = new FormControl('');
+  resultados$!: Observable<PersonaMini[]>;
+  seleccionado?: PersonaMini;
+
+  // Listado integrantes
   miembros: Miembro[] = [];
-
-  // buscador
-  personaQuery: FormControl = new FormControl('');
-  resultados$: Observable<PersonaMini[]> = of([]);
-  seleccionado: PersonaMini | null = null;
-
+  cargandoMiembros = true;
   guardando = false;
 
-  // rol base para asociar (se obtiene de listarRoles)
-  private rolBaseId: number | null = null;
-
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
     private liderazgoSvc: LiderazgoService,
-    private personasSvc: PersonasService,
-    private miembrosService: MiembrosService
+    private miembrosSvc: MiembrosService,          // <-- usar MiembrosService (tiene buscarMin$)
+    private route: ActivatedRoute,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.liderazgoId = Number(this.route.snapshot.paramMap.get('id'));
-    const qpNombre = this.route.snapshot.queryParamMap.get('nombre');
-    if (qpNombre) this.liderazgoNombre = qpNombre;
+    this.liderazgoNombre = this.route.snapshot.queryParamMap.get('nombre') || '';
 
-    if (!this.liderazgoId) {
-      Swal.fire('Aviso', 'No se recibió el liderazgo.', 'warning');
-      this.router.navigate(['/planificacion']);
-      return;
-    }
-
-    // cargar integrantes
     this.cargarMiembros();
 
-    // obtener rol base (preferimos el que se llame "Miembro")
-    this.liderazgoSvc.listarRoles(this.liderazgoId).subscribe({
-      next: (roles) => {
-        if (roles && roles.length) {
-          const rMiembro = roles.find(r => (r.nombre || '').toLowerCase().trim() === 'miembro');
-          this.rolBaseId = (rMiembro?.id ?? roles[0].id);
-        } else {
-          this.rolBaseId = null;
-        }
-      },
-      error: () => {
-        this.rolBaseId = null;
-      }
-    });
-
-    // buscador -> usa PersonasService.buscarMin$(q)
+    // Autocomplete: resultados tipados a PersonaMini[]
     this.resultados$ = this.personaQuery.valueChanges.pipe(
-      startWith('' as string),
-      debounceTime(250),
-      distinctUntilChanged(),
-      switchMap((txt: string) => {
-        const q = (txt || '').trim();
-        if (q.length < 2) return of<PersonaMini[]>([]);
-        return this.miembrosService.buscarMin$(q); // <-- tu servicio existente
-      }),
-      map(list => list ?? [])
+      debounceTime(300),
+      switchMap((v: any) => {
+        const q = ((v ?? '') as string).trim();
+        if (q.length < 2) return of([] as PersonaMini[]);
+        return this.miembrosSvc.buscarMin$(q);     // <-- aquí está buscarMin$
+      })
     );
   }
 
+  // Cambiar tab (Integrantes/Eventos) en la misma pantalla
+  cambiarTab(tab: 'integrantes' | 'eventos'): void {
+    this.tabActivo = tab;
+  }
+
+  // Cargar integrantes del liderazgo
   cargarMiembros(): void {
     this.cargandoMiembros = true;
     this.liderazgoSvc.listarMiembros(this.liderazgoId).subscribe({
       next: (res: any[]) => {
-        // res podría ser MiembroRol[]; normalizamos a {id, personaId, nombre}
-        this.miembros = (res || []).map(r => ({
-          id: Number(r.id),
-          personaId: Number(r.personaId),
-          nombre: (r.nombre ?? r.nombrePersona ?? r.miembro ?? '').toString()
+        // Normaliza posibles formas: {id, nombre} o {id, personaNombre} etc.
+        this.miembros = (res || []).map((r: any) => ({
+          id: r.id ?? r.miembroId ?? r.liderazgoMiembroId,
+          nombre: r.nombre ?? r.nombrePersona ?? r.miembroNombre ?? r.persona ?? ''
         }));
         this.cargandoMiembros = false;
       },
       error: () => {
+        this.miembros = [];
         this.cargandoMiembros = false;
-        Swal.fire('Error', 'No se pudieron cargar los integrantes.', 'error');
       }
     });
   }
 
-  // selección desde lista de resultados
-  elegir(p: PersonaMini) {
+  // Selección desde la lista de resultados
+  elegir(p: PersonaMini): void {
     this.seleccionado = p;
     this.personaQuery.setValue(p.nombre, { emitEvent: false });
   }
-  limpiarSeleccion() {
-    this.seleccionado = null;
+
+  limpiarSeleccion(): void {
+    this.seleccionado = undefined;
     this.personaQuery.setValue('', { emitEvent: true });
   }
 
+  // Agregar miembro (sin cargo/rol; enviamos rolId = 0 como comodín)
   agregar(): void {
-    if (!this.seleccionado) {
-      Swal.fire('Validación', 'Selecciona una persona de la lista.', 'info');
-      return;
-    }
-    if (this.rolBaseId == null) {
-      Swal.fire('Error', 'No hay un rol base disponible para este liderazgo.', 'error');
-      return;
-    }
-
-    // no duplicar
-    const existe = this.miembros.some(m => m.personaId === this.seleccionado!.id);
-    if (existe) {
-      Swal.fire('Aviso', 'Esta persona ya pertenece a este liderazgo.', 'info');
-      return;
-    }
+    if (!this.seleccionado) return;
 
     this.guardando = true;
-    this.liderazgoSvc
-      .agregarMiembro(this.liderazgoId, this.seleccionado.id, this.rolBaseId)
-      .subscribe({
-        next: () => {
-          this.guardando = false;
-          this.limpiarSeleccion();
-          this.cargarMiembros();
-          Swal.fire('Listo', 'Miembro agregado al liderazgo.', 'success');
-        },
-        error: (err) => {
-          this.guardando = false;
-          const status = err?.status;
-          const msg: string = err?.error?.message || err?.error || '';
-          if (status === 409 || (typeof msg === 'string' && msg.toLowerCase().includes('ya'))) {
-            Swal.fire('Duplicado', 'La persona ya estaba asociada al liderazgo.', 'info');
-          } else {
-            Swal.fire('Error', 'No se pudo agregar el miembro.', 'error');
-          }
-        }
-      });
+    const ROL_ID_POR_DEFECTO = 0;
+
+    this.liderazgoSvc.agregarMiembro(this.liderazgoId, this.seleccionado.id, ROL_ID_POR_DEFECTO).subscribe({
+      next: () => {
+        this.guardando = false;
+        Swal.fire('Éxito', 'Miembro agregado correctamente', 'success');
+        this.limpiarSeleccion();
+        this.cargarMiembros();
+      },
+      error: () => {
+        this.guardando = false;
+        Swal.fire('Error', 'No se pudo agregar el miembro', 'error');
+      }
+    });
   }
 
+  // Quitar miembro
   quitar(miembroId: number): void {
     Swal.fire({
-      title: 'Confirmar',
-      text: '¿Quitar este integrante del liderazgo?',
+      title: '¿Quitar miembro?',
+      text: 'Esta acción no se puede deshacer.',
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, quitar',
       cancelButtonText: 'Cancelar'
-    }).then(res => {
-      if (!res.isConfirmed) return;
+    }).then((r) => {
+      if (!r.isConfirmed) return;
 
       this.liderazgoSvc.eliminarMiembro(this.liderazgoId, miembroId).subscribe({
         next: () => {
-          this.cargarMiembros();
-          Swal.fire('Listo', 'Integrante quitado.', 'success');
+          this.miembros = this.miembros.filter(m => m.id !== miembroId);
+          Swal.fire('Eliminado', 'Miembro quitado del liderazgo', 'success');
         },
-        error: () => Swal.fire('Error', 'No se pudo quitar el integrante.', 'error')
+        error: () => Swal.fire('Error', 'No se pudo quitar el miembro', 'error')
       });
     });
+  }
+
+  trackByMiembro(_: number, m: Miembro): number {
+    return m.id;
   }
 
   regresar(): void {
     this.router.navigate(['/planificacion']);
   }
-
-  trackByMiembro(_i: number, m: Miembro) { return m.id; }
 }

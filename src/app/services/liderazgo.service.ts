@@ -3,6 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { PersonaMini } from './personas.service';
+import { EventoItem } from '../components/planificacion/planificacion-eventos/tipos';
 
 // ===== Tipos =====
 export type Liderazgo = { id: number; nombre: string; };
@@ -85,5 +86,13 @@ crearRol(liderazgoId: number, nombre: string) {
   return this.http.post(`${this.base}/liderazgo/${liderazgoId}/miembros`, { personaId, rolId });
 }
 
+
+  listarEventos(liderazgoId: number): Observable<EventoItem[]> {
+    return this.http.get<EventoItem[]>(`${this.base}/evento/${liderazgoId}/eventos`);
+  }
+
+  crearEvento(liderazgoId: number, payload: { nombre: string; fecha: string; descripcion?: string }): Observable<void> {
+    return this.http.post<void>(`${this.base}/evento/${liderazgoId}/eventos`, payload);
+  }
 
 }

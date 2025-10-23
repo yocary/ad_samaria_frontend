@@ -1,0 +1,87 @@
+<div class="wrap">
+  <div class="toolbar">
+    <button mat-raised-button color="primary" (click)="openCrear()">
+      + Agregar Evento
+    </button>
+
+    <div class="right">
+      <mat-form-field appearance="outline" class="small">
+        <mat-label>Reportes</mat-label>
+        <mat-select [formControl]="reporteCtrl">
+          <mat-option value="Listado">Listado</mat-option>
+          <mat-option value="Mensual">Mensual</mat-option>
+          <mat-option value="Anual">Anual</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="small">
+        <mat-label>Exportar</mat-label>
+        <mat-select [formControl]="exportCtrl" (selectionChange)="exportar()">
+          <mat-option value="CSV">CSV</mat-option>
+          <mat-option value="XLSX">Excel</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="search">
+        <mat-label>Buscar</mat-label>
+        <input matInput [formControl]="search" />
+        <button mat-icon-button matSuffix *ngIf="search.value" (click)="search.setValue('')">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="loader" *ngIf="cargando">
+    <mat-progress-spinner mode="indeterminate" diameter="28"></mat-progress-spinner>
+    <span>Cargando eventos...</span>
+  </div>
+
+  <div class="table" *ngIf="!cargando">
+    <table mat-table [dataSource]="filtrados">
+
+      <ng-container matColumnDef="n">
+        <th mat-header-cell *matHeaderCellDef>No.</th>
+        <td mat-cell *matCellDef="let r; let i = index">{{ i + 1 }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="nombre">
+        <th mat-header-cell *matHeaderCellDef>Nombre</th>
+        <td mat-cell *matCellDef="let r">{{ r.nombre }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="fecha">
+        <th mat-header-cell *matHeaderCellDef>Fecha</th>
+        <td mat-cell *matCellDef="let r">{{ r.fecha }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="asist">
+        <th mat-header-cell *matHeaderCellDef>Asistencias</th>
+        <td mat-cell *matCellDef="let r">{{ r.asistencias }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="visit">
+        <th mat-header-cell *matHeaderCellDef>Visitantes</th>
+        <td mat-cell *matCellDef="let r">{{ r.visitantes }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="total">
+        <th mat-header-cell *matHeaderCellDef>Total</th>
+        <td mat-cell *matCellDef="let r">{{ r.total }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef>Acciones</th>
+        <td mat-cell *matCellDef="let r">
+          <button mat-raised-button class="btn-amber" (click)="abrirAsistencia(r)">Asistencia</button>
+          <button mat-raised-button color="primary" (click)="abrirObservacion(r)">Observación</button>
+        </td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayed"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayed"></tr>
+    </table>
+
+    <div class="empty" *ngIf="filtrados.length === 0">Sin eventos</div>
+  </div>
+</div>

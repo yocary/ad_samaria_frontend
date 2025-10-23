@@ -1,0 +1,26 @@
+.wrap { display: grid; gap: 12px; }
+
+.toolbar {
+  display: flex; align-items: center; gap: 12px; justify-content: space-between;
+  .right { display: flex; align-items: center; gap: 10px; }
+  .search { min-width: 260px; }
+  .small { width: 170px; }
+}
+
+.table {
+  border: 1px solid #e0eef6; border-radius: 8px; overflow: hidden;
+  table { width: 100%; }
+  th { background: #f7fbff; }
+  td, th { padding: 10px 12px; }
+}
+
+.loader {
+  display: flex; align-items: center; gap: 10px; color: #244b6b; padding: 8px 0;
+}
+
+.empty { padding: 14px; color: #777; text-align: center; }
+
+.btn-amber {
+  background: #f5b942; color: #fff; margin-right: 8px;
+  &:hover { filter: brightness(.95); }
+}
