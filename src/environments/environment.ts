@@ -6,8 +6,7 @@ export const environment = {
   production: false,
   seguridad: false,
    //api: "",
-//  api: "http://localhost:8080"
-api:"https://adsamaria-backend-production.up.railway.app"
+ api: "http://localhost:8080"
 };
 
 /*
