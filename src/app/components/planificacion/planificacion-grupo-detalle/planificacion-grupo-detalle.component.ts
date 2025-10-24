@@ -37,6 +37,8 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
   cargandoMiembros = true;
   guardando = false;
 
+   private rolBaseId: number | null = null;
+
   constructor(
     private liderazgoSvc: LiderazgoService,
     private miembrosSvc: MiembrosService,          // <-- usar MiembrosService (tiene buscarMin$)
@@ -59,6 +61,20 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
         return this.miembrosSvc.buscarMin$(q);     // <-- aquí está buscarMin$
       })
     );
+
+        this.liderazgoSvc.listarRoles(this.liderazgoId).subscribe({
+      next: (roles) => {
+        if (roles && roles.length) {
+          const rMiembro = roles.find(r => (r.nombre || '').toLowerCase().trim() === 'miembro');
+          this.rolBaseId = (rMiembro?.id ?? roles[0].id);
+        } else {
+          this.rolBaseId = null;
+        }
+      },
+      error: () => {
+        this.rolBaseId = null;
+      }
+    });
   }
 
   // Cambiar tab (Integrantes/Eventos) en la misma pantalla
@@ -103,7 +119,8 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
     this.guardando = true;
     const ROL_ID_POR_DEFECTO = 0;
 
-    this.liderazgoSvc.agregarMiembro(this.liderazgoId, this.seleccionado.id, ROL_ID_POR_DEFECTO).subscribe({
+    // usar un valor por defecto si rolBaseId es null
+    this.liderazgoSvc.agregarMiembro(this.liderazgoId, this.seleccionado.id, this.rolBaseId ?? ROL_ID_POR_DEFECTO).subscribe({
       next: () => {
         this.guardando = false;
         Swal.fire('Éxito', 'Miembro agregado correctamente', 'success');
