@@ -65,7 +65,7 @@ export interface PersonaFicha {
 
   sexo?: string;
   estadoCivil?: string;
-  clasificacionSocial?: string;
+  clasificacion?: string;
   tipoPersona?: string;
   estatus?: string;
   ministerio?: string;
