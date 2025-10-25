@@ -6,6 +6,8 @@ import { Router } from '@angular/router';
 import { PersonasService, PersonaMini } from 'src/app/services/personas.service';
 import { MemberCardDialogComponent } from '../member-card-dialog/member-card-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { CrearUsuarioDialogComponent } from '../crear-usuario-dialog/crear-usuario-dialog.component';
+import jsPDF from 'jspdf';
 
 @Component({
   selector: 'app-miembros-home',
@@ -64,4 +66,45 @@ export class MiembrosHomeComponent implements OnInit, OnDestroy {
     disableClose: false
   });
 }
+
+  crearUsuario() {
+    this.dialog.open(CrearUsuarioDialogComponent, {
+      width: '400px',
+      data: { 
+        personaId: null, 
+        dpi: '' 
+      },
+      disableClose: false
+    });
+  }
+
+crearUsuarioPara(row: PersonaMini) {
+  this.dialog.open(CrearUsuarioDialogComponent, {
+    width: '400px',
+    data: { personaId: row.id, dpi: row.dpi ?? '' },
+  }).afterClosed().subscribe((res: any) => {
+    if (res) {
+      // Aquí res debería contener el username y password
+      const username = res.username;
+      const password = res.password; // O el que te devuelva el backend
+      this.descargarCredenciales(username, password);
+    }
+  });
+}
+
+
+private descargarCredenciales(username: string, password: string) {
+  const doc = new jsPDF();
+
+  doc.setFontSize(16);
+  doc.text('Credenciales de Acceso', 20, 20);
+
+  doc.setFontSize(12);
+  doc.text(`Usuario: ${username}`, 20, 40);
+  doc.text(`Contraseña: ${password}`, 20, 50);
+
+  doc.save(`credenciales_${username}.pdf`);
+}
+
+
 }

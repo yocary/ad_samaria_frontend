@@ -1,0 +1,85 @@
+/* src/app/components/crear-usuario-dialog/crear-usuario-dialog.component.scss */
+
+/* Contenedor general del diálogo */
+.mat-dialog-container {
+  padding: 24px !important;
+  border-radius: 12px !important;
+  background-color: #ffffff;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  max-width: 450px !important;
+}
+
+/* Título del diálogo */
+h2[mat-dialog-title] {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #244b6b;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+/* Contenido del diálogo */
+.dlg-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Formulario */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Campos de Material */
+.mat-form-field.w-full {
+  width: 100%;
+}
+
+/* Estilos para los errores */
+.mat-error {
+  font-size: 0.85rem;
+  color: #f44336;
+}
+
+/* Botones */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.actions button {
+  min-width: 100px;
+  font-weight: 600;
+}
+
+/* Botón principal */
+.actions button[color="primary"] {
+  background: #244b6b;
+  color: #ffffff;
+}
+
+.actions button[color="primary"]:hover {
+  background: #1e3b55;
+}
+
+/* Botón secundario */
+.actions button[mat-stroked-button] {
+  border-color: #244b6b;
+  color: #244b6b;
+}
+
+.actions button[mat-stroked-button]:hover {
+  background: rgba(36, 75, 107, 0.08);
+}
+
+/* Responsive pequeño */
+@media (max-width: 400px) {
+  .mat-dialog-container {
+    padding: 16px !important;
+    width: 100% !important;
+  }
+}

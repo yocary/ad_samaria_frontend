@@ -109,3 +109,32 @@
     gap: 24px;
   }
 }
+
+/* Botón de cerrar sesión */
+.logout-button {
+  position: absolute; /* flotando */
+  top: 20px;
+  right: 20px;
+  padding: 12px 24px;
+  background: #fff;
+  border: 1px solid #d8e4ea;
+  border-radius: 16px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: #244b6b;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+  z-index: 10; /* encima de todo */
+}
+
+.logout-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  background-color: #f5f7fa;
+}
+
+.logout-button:active {
+  transform: translateY(0);
+}
+

@@ -1,0 +1,44 @@
+<!-- src/app/components/crear-usuario-dialog/crear-usuario-dialog.component.html -->
+<h2 mat-dialog-title>Crear Usuario</h2>
+
+<mat-dialog-content class="dlg-body">
+  <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
+    <!-- Si llega personaId en data, puede que ya no necesites DPI -->
+    <mat-form-field appearance="outline" class="w-full" *ngIf="!data?.personaId">
+      <mat-label>DPI</mat-label>
+      <input matInput formControlName="dpi" maxlength="20" />
+      <mat-error *ngIf="form.get('dpi')?.touched && form.get('dpi')?.hasError('required')">
+        DPI requerido
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Contraseña</mat-label>
+      <input matInput type="password" formControlName="password" />
+      <mat-error *ngIf="form.get('password')?.touched && form.get('password')?.hasError('required')">
+        Contraseña requerida
+      </mat-error>
+      <mat-error *ngIf="form.get('password')?.touched && form.get('password')?.hasError('minlength')">
+        Mínimo 6 caracteres
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline" class="w-full">
+      <mat-label>Confirmar contraseña</mat-label>
+      <input matInput type="password" formControlName="confirm" />
+      <mat-error *ngIf="form.get('confirm')?.touched && form.get('confirm')?.hasError('required')">
+        Confirma la contraseña
+      </mat-error>
+      <mat-error *ngIf="form.hasError('noMatch') && form.get('confirm')?.touched">
+        Las contraseñas no coinciden
+      </mat-error>
+    </mat-form-field>
+
+    <div class="actions">
+      <button mat-stroked-button type="button" (click)="cancelar()" [disabled]="cargando">Cancelar</button>
+      <button mat-raised-button color="primary" type="submit" [disabled]="cargando || form.invalid">
+        {{ cargando ? 'Creando...' : 'Crear' }}
+      </button>
+    </div>
+  </form>
+</mat-dialog-content>

@@ -52,6 +52,10 @@ import { PlanificacionEventosComponent } from './components/planificacion/planif
 import { EventoNewDialogComponent } from './components/planificacion/evento-new-dialog/evento-new-dialog.component';
 import { AsistenciaDialogComponent } from './components/planificacion/asistencia-dialog/asistencia-dialog.component';
 import { OfrendaDialogComponent } from './components/planificacion/ofrenda-dialog/ofrenda-dialog.component';
+import { LoginComponent } from './components/login/login.component';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
+import { CrearUsuarioDialogComponent } from './components/crear-usuario-dialog/crear-usuario-dialog.component';
+import { CambiarPasswordDialogComponent } from './components/cambiar-password-dialog/cambiar-password-dialog.component';
 
 
 export const MY_DATE_FORMATS = {
@@ -100,6 +104,9 @@ export const MY_DATE_FORMATS = {
     EventoNewDialogComponent,
     AsistenciaDialogComponent,
     OfrendaDialogComponent,
+    LoginComponent,
+    CrearUsuarioDialogComponent,
+    CambiarPasswordDialogComponent,
   ],
   imports: [
     FormsModule,
@@ -123,7 +130,7 @@ export const MY_DATE_FORMATS = {
   providers: [
     DatePipe,
     SpinnerService,
-    { provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi: true },
+  { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
         { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }, // idioma español
     { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
   ],
