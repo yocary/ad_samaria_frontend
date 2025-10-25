@@ -1,4 +1,5 @@
 <div class="page-centered">
+
   <!-- CABECERA -->
   <div class="hero-wrap">
     <div class="hero">IGLESIA ASAMBLEA DE DIOS SAMARIA</div>
@@ -7,7 +8,9 @@
 
   <!-- CONTENIDO CENTRAL -->
   <div class="content-centered">
-    <div class="board">
+
+    <!-- Si hay tiles -->
+    <div *ngIf="tiles.length > 0; else sinAcceso" class="board">
       <div class="grid">
         <a
           *ngFor="let t of tiles"
@@ -50,5 +53,13 @@
         </a>
       </div>
     </div>
+
+    <!-- Si no hay tiles -->
+    <ng-template #sinAcceso>
+      <div class="no-access">
+        <p>No tiene asignado ningún rol asignado.</p>
+      </div>
+    </ng-template>
+
   </div>
 </div>
