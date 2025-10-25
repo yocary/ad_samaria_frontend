@@ -5,7 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Subject, forkJoin, of } from 'rxjs';
 import { debounceTime, takeUntil, map, catchError } from 'rxjs/operators';
 import Swal from 'sweetalert2';
-
+import * as XLSX from 'xlsx';
 import {
   LiderazgoService,
   AsistenciaItem,
@@ -276,29 +276,32 @@ private mostrarSwalObservacion(e: EventoItem, valorInicial: string): void {
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `eventos_${this.liderazgoId}.csv`;
+  a.download = `eventos.csv`;
   a.click();
   URL.revokeObjectURL(a.href);
 }
 
+
+
 private exportXLSX(): void {
-  const rows = [
-    ['No.', 'Nombre', 'Fecha', 'Total asistencias', 'Total ofrenda'], // Agregar nueva columna
+  const data = [
+    ['No.', 'Nombre', 'Fecha', 'Total asistencias', 'Total ofrenda'],
     ...this.filtrados.map((e, i) => [
-      `${i + 1}`,
+      i + 1,
       e.nombre,
       e.fecha,
-      `${e.totalAsistencias ?? ''}`,
-      `${e.totalOfrenda ?? ''}` // Nueva columna
+      e.totalAsistencias ?? '',
+      e.totalOfrenda ?? ''
     ]),
   ];
-  const tsv = rows.map((r) => r.join('\t')).join('\n');
-  const blob = new Blob([tsv], { type: 'application/vnd.ms-excel' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = `eventos_${this.liderazgoId}.xls`;
-  a.click();
-  URL.revokeObjectURL(a.href);
+
+  // Crear libro de trabajo
+  const ws: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(data);
+  const wb: XLSX.WorkBook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Eventos');
+
+  // Generar archivo
+  XLSX.writeFile(wb, `eventos.xlsx`);
 }
 
   // private exportXLSX(): void {
