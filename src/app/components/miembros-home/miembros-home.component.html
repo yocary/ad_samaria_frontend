@@ -15,7 +15,7 @@
 
   <div class="table">
     <table mat-table [dataSource]="filtered">
-      
+
       <!-- Columna nombre -->
       <ng-container matColumnDef="nombre">
         <th mat-header-cell *matHeaderCellDef>Nombre</th>
@@ -30,16 +30,15 @@
             Ver ficha
           </button>
 
-          <button mat-stroked-button color="accent" (click)="crearUsuarioPara(row)">
-  Crear usuario
-</button>
-
+          <!-- SOLO ADMIN -->
+          <button mat-stroked-button color="accent" *ngIf="esAdministrador()" (click)="crearUsuarioPara(row)">
+            Crear usuario
+          </button>
         </td>
       </ng-container>
 
-      <!-- Encabezados -->
+      <!-- Encabezados y filas -->
       <tr mat-header-row *matHeaderRowDef="['nombre', 'acciones']"></tr>
-      <!-- Filas -->
       <tr mat-row *matRowDef="let row; columns: ['nombre', 'acciones']"></tr>
     </table>
   </div>
