@@ -1,4 +1,3 @@
-// src/app/components/planificacion/planificacion-grupo-detalle/planificacion-grupo-detalle.component.ts
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -37,11 +36,11 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
   cargandoMiembros = true;
   guardando = false;
 
-   private rolBaseId: number | null = null;
+  private rolBaseId: number | null = null;
 
   constructor(
     private liderazgoSvc: LiderazgoService,
-    private miembrosSvc: MiembrosService,          // <-- usar MiembrosService (tiene buscarMin$)
+    private miembrosSvc: MiembrosService,
     private route: ActivatedRoute,
     private router: Router
   ) {}
@@ -56,17 +55,18 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
     this.resultados$ = this.personaQuery.valueChanges.pipe(
       debounceTime(300),
       switchMap((v: any) => {
-        const q = ((v ?? '') as string).trim();
+        const q = (v ?? '').trim();
         if (q.length < 2) return of([] as PersonaMini[]);
-        return this.miembrosSvc.buscarMin$(q);     // <-- aquí está buscarMin$
+        return this.miembrosSvc.buscarMin$(q);
       })
     );
 
-        this.liderazgoSvc.listarRoles(this.liderazgoId).subscribe({
+    // Obtener rol "miembro" del liderazgo
+    this.liderazgoSvc.listarRoles(this.liderazgoId).subscribe({
       next: (roles) => {
         if (roles && roles.length) {
           const rMiembro = roles.find(r => (r.nombre || '').toLowerCase().trim() === 'miembro');
-          this.rolBaseId = (rMiembro?.id ?? roles[0].id);
+          this.rolBaseId = rMiembro?.id ?? roles[0].id;
         } else {
           this.rolBaseId = null;
         }
@@ -75,9 +75,24 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
         this.rolBaseId = null;
       }
     });
+
+    this.resultados$ = this.personaQuery.valueChanges.pipe(
+    debounceTime(300),
+    switchMap((v: any) => {
+      const q = ((v ?? '') as string).trim();
+
+      // Si borraron el input, limpiamos la selección
+      if (!q) {
+        this.seleccionado = undefined;
+      }
+
+      if (q.length < 2) return of([] as PersonaMini[]);
+      return this.miembrosSvc.buscarMin$(q);
+    })
+  );
   }
 
-  // Cambiar tab (Integrantes/Eventos) en la misma pantalla
+  // Cambiar tab (Integrantes/Eventos)
   cambiarTab(tab: 'integrantes' | 'eventos'): void {
     this.tabActivo = tab;
   }
@@ -87,7 +102,6 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
     this.cargandoMiembros = true;
     this.liderazgoSvc.listarMiembros(this.liderazgoId).subscribe({
       next: (res: any[]) => {
-        // Normaliza posibles formas: {id, nombre} o {id, personaNombre} etc.
         this.miembros = (res || []).map((r: any) => ({
           id: r.id ?? r.miembroId ?? r.liderazgoMiembroId,
           nombre: r.nombre ?? r.nombrePersona ?? r.miembroNombre ?? r.persona ?? ''
@@ -112,14 +126,12 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
     this.personaQuery.setValue('', { emitEvent: true });
   }
 
-  // Agregar miembro (sin cargo/rol; enviamos rolId = 0 como comodín)
+  // Agregar miembro
   agregar(): void {
     if (!this.seleccionado) return;
-
     this.guardando = true;
     const ROL_ID_POR_DEFECTO = 0;
 
-    // usar un valor por defecto si rolBaseId es null
     this.liderazgoSvc.agregarMiembro(this.liderazgoId, this.seleccionado.id, this.rolBaseId ?? ROL_ID_POR_DEFECTO).subscribe({
       next: () => {
         this.guardando = false;
@@ -129,7 +141,7 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
       },
       error: () => {
         this.guardando = false;
-        Swal.fire('Error', 'No se pudo agregar el miembro', 'error');
+        Swal.fire('Error', 'El miembro ya se encuentra en el ministerio', 'error');
       }
     });
   }
@@ -145,11 +157,10 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
       cancelButtonText: 'Cancelar'
     }).then((r) => {
       if (!r.isConfirmed) return;
-
       this.liderazgoSvc.eliminarMiembro(this.liderazgoId, miembroId).subscribe({
         next: () => {
           this.miembros = this.miembros.filter(m => m.id !== miembroId);
-          Swal.fire('Eliminado', 'Miembro quitado del liderazgo', 'success');
+          Swal.fire('Eliminado', 'Miembro quitado del ministerio', 'success');
         },
         error: () => Swal.fire('Error', 'No se pudo quitar el miembro', 'error')
       });

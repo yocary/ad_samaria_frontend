@@ -6,19 +6,10 @@
 
     <!-- Tabs -->
     <div class="tabs">
-      <button
-        class="tab"
-        [class.active]="tabActivo === 'integrantes'"
-        (click)="cambiarTab('integrantes')"
-      >
+      <button class="tab" [class.active]="tabActivo === 'integrantes'" (click)="cambiarTab('integrantes')">
         Integrantes
       </button>
-
-      <button
-        class="tab"
-        [class.active]="tabActivo === 'eventos'"
-        (click)="cambiarTab('eventos')"
-      >
+      <button class="tab" [class.active]="tabActivo === 'eventos'" (click)="cambiarTab('eventos')">
         Eventos
       </button>
     </div>
@@ -37,13 +28,14 @@
               </button>
             </mat-form-field>
 
-            <div class="results-wrapper" *ngIf="(resultados$ | async) as opciones">
+            <div class="results-wrapper"
+                 *ngIf="(personaQuery.value?.length ?? 0) >= 2 && (resultados$ | async) as opciones">
               <div class="results" *ngIf="opciones.length > 0 && !seleccionado">
                 <button class="res" *ngFor="let p of opciones" (click)="elegir(p)">
                   {{ p.nombre }}
                 </button>
               </div>
-              <div class="results" *ngIf="opciones.length === 0 && (personaQuery.value || '').length >= 2 && !seleccionado">
+              <div class="results" *ngIf="opciones.length === 0 && !seleccionado">
                 <div class="empty">
                   Sin resultados
                 </div>
@@ -51,13 +43,8 @@
             </div>
           </div>
 
-          <button
-            mat-raised-button
-            color="primary"
-            class="btn-add"
-            (click)="agregar()"
-            [disabled]="guardando || !seleccionado"
-          >
+          <button mat-raised-button color="primary" class="btn-add"
+                  (click)="agregar()" [disabled]="guardando || !seleccionado">
             + Agregar miembro
           </button>
         </div>
@@ -96,9 +83,7 @@
 
       <!-- Eventos -->
       <ng-container *ngSwitchCase="'eventos'">
-        <app-planificacion-eventos
-          [liderazgoId]="liderazgoId"
-          [liderazgoNombre]="liderazgoNombre">
+        <app-planificacion-eventos [liderazgoId]="liderazgoId" [liderazgoNombre]="liderazgoNombre">
         </app-planificacion-eventos>
       </ng-container>
     </ng-container>
