@@ -16,7 +16,11 @@ import { EventoNewPayload } from './tipos';
 import { AsistenciaDialogComponent } from '../asistencia-dialog/asistencia-dialog.component';
 import { OfrendaDialogComponent, OfrendaPayload } from '../ofrenda-dialog/ofrenda-dialog.component';
 
-type EventoRow = EventoItem & { totalAsistencias?: number }; // extendemos con el total calculado
+type EventoRow = EventoItem & { 
+  totalAsistencias?: number;
+  totalOfrenda?: number; // Nueva propiedad
+};
+
 
 @Component({
   selector: 'app-planificacion-eventos',
@@ -36,7 +40,7 @@ export class PlanificacionEventosComponent implements OnInit, OnDestroy {
 
   eventos: EventoRow[] = [];
   filtrados: EventoRow[] = [];
-  displayed = ['n', 'nombre', 'fecha', 'totalAsistencias', 'acciones'];
+  displayed = ['n', 'nombre', 'fecha', 'totalAsistencias', 'totalOfrenda', 'acciones'];
 
   private destroy$ = new Subject<void>();
 
@@ -77,26 +81,60 @@ export class PlanificacionEventosComponent implements OnInit, OnDestroy {
     });
   }
 
+  // private cargarTotalesAsistencia(eventos: EventoRow[]): void {
+  //   if (!eventos.length) return;
+
+  //   const reqs = eventos.map((e) =>
+  //     this.lidSvc.listarAsistencia(this.liderazgoId, e.id).pipe(
+  //       map(
+  //         (items: AsistenciaItem[]) =>
+  //           items.filter((it) => !!it.presente).length
+  //       ),
+  //       catchError(() => of(undefined)) // si falla, dejamos undefined para no romper UI
+  //     )
+  //   );
+
+  //   forkJoin(reqs).subscribe((totales) => {
+  //     totales.forEach((t, i) => (eventos[i].totalAsistencias = t ?? undefined));
+  //     // refrescar arreglo filtrado (por si hay binding a total)
+  //     this.applyFilter((this.search.value as string) || '');
+  //   });
+  // }
+
   private cargarTotalesAsistencia(eventos: EventoRow[]): void {
-    if (!eventos.length) return;
+  if (!eventos.length) return;
 
-    const reqs = eventos.map((e) =>
-      this.lidSvc.listarAsistencia(this.liderazgoId, e.id).pipe(
-        map(
-          (items: AsistenciaItem[]) =>
-            items.filter((it) => !!it.presente).length
-        ),
-        catchError(() => of(undefined)) // si falla, dejamos undefined para no romper UI
-      )
-    );
+  const reqsAsistencia = eventos.map((e) =>
+    this.lidSvc.listarAsistencia(this.liderazgoId, e.id).pipe(
+      map(
+        (items: AsistenciaItem[]) =>
+          items.filter((it) => !!it.presente).length
+      ),
+      catchError(() => of(undefined))
+    )
+  );
 
-    forkJoin(reqs).subscribe((totales) => {
-      totales.forEach((t, i) => (eventos[i].totalAsistencias = t ?? undefined));
-      // refrescar arreglo filtrado (por si hay binding a total)
+  const reqsOfrenda = eventos.map((e) =>
+    this.lidSvc.listarOfrendasPorEvento(e.id).pipe(
+      map((ofrendas: any[]) => {
+        if (!ofrendas.length) return 0;
+        // Sumar todas las ofrendas del evento
+        return ofrendas.reduce((total, ofrenda) => total + (ofrenda.cantidad || 0), 0);
+      }),
+      catchError(() => of(undefined))
+    )
+  );
+
+  forkJoin(reqsAsistencia).subscribe((totalesAsistencia) => {
+    totalesAsistencia.forEach((t, i) => (eventos[i].totalAsistencias = t ?? undefined));
+    
+    // Cargar totales de ofrenda después
+    forkJoin(reqsOfrenda).subscribe((totalesOfrenda) => {
+      totalesOfrenda.forEach((t, i) => (eventos[i].totalOfrenda = t ?? undefined));
       this.applyFilter((this.search.value as string) || '');
     });
-  }
-
+  });
+}
   applyFilter(q: string): void {
     const s = (q || '').toLowerCase().trim();
     const src = this.eventos;
@@ -196,52 +234,144 @@ private mostrarSwalObservacion(e: EventoItem, valorInicial: string): void {
     else this.exportXLSX();
   }
 
-  private exportCSV(): void {
-    const rows = [
-      ['No.', 'Nombre', 'Fecha', 'Total asistencias'],
-      ...this.filtrados.map((e, i) => [
-        `${i + 1}`,
-        e.nombre,
-        e.fecha,
-        `${e.totalAsistencias ?? ''}`,
-      ]),
-    ];
-    const csv = rows
-      .map((r) =>
-        r.map((c) => `"${(c ?? '').toString().replace(/"/g, '""')}"`).join(',')
-      )
-      .join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `eventos_${this.liderazgoId}.csv`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
+  // private exportCSV(): void {
+  //   const rows = [
+  //     ['No.', 'Nombre', 'Fecha', 'Total asistencias'],
+  //     ...this.filtrados.map((e, i) => [
+  //       `${i + 1}`,
+  //       e.nombre,
+  //       e.fecha,
+  //       `${e.totalAsistencias ?? ''}`,
+  //     ]),
+  //   ];
+  //   const csv = rows
+  //     .map((r) =>
+  //       r.map((c) => `"${(c ?? '').toString().replace(/"/g, '""')}"`).join(',')
+  //     )
+  //     .join('\n');
+  //   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  //   const a = document.createElement('a');
+  //   a.href = URL.createObjectURL(blob);
+  //   a.download = `eventos_${this.liderazgoId}.csv`;
+  //   a.click();
+  //   URL.revokeObjectURL(a.href);
+  // }
 
-  private exportXLSX(): void {
-    const rows = [
-      ['No.', 'Nombre', 'Fecha', 'Total asistencias'],
-      ...this.filtrados.map((e, i) => [
-        `${i + 1}`,
-        e.nombre,
-        e.fecha,
-        `${e.totalAsistencias ?? ''}`,
-      ]),
-    ];
-    const tsv = rows.map((r) => r.join('\t')).join('\n');
-    const blob = new Blob([tsv], { type: 'application/vnd.ms-excel' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `eventos_${this.liderazgoId}.xls`;
-    a.click();
-    URL.revokeObjectURL(a.href);
-  }
+  private exportCSV(): void {
+  const rows = [
+    ['No.', 'Nombre', 'Fecha', 'Total asistencias', 'Total ofrenda'], // Agregar nueva columna
+    ...this.filtrados.map((e, i) => [
+      `${i + 1}`,
+      e.nombre,
+      e.fecha,
+      `${e.totalAsistencias ?? ''}`,
+      `${e.totalOfrenda ?? ''}` // Nueva columna
+    ]),
+  ];
+  const csv = rows
+    .map((r) =>
+      r.map((c) => `"${(c ?? '').toString().replace(/"/g, '""')}"`).join(',')
+    )
+    .join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `eventos_${this.liderazgoId}.csv`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+private exportXLSX(): void {
+  const rows = [
+    ['No.', 'Nombre', 'Fecha', 'Total asistencias', 'Total ofrenda'], // Agregar nueva columna
+    ...this.filtrados.map((e, i) => [
+      `${i + 1}`,
+      e.nombre,
+      e.fecha,
+      `${e.totalAsistencias ?? ''}`,
+      `${e.totalOfrenda ?? ''}` // Nueva columna
+    ]),
+  ];
+  const tsv = rows.map((r) => r.join('\t')).join('\n');
+  const blob = new Blob([tsv], { type: 'application/vnd.ms-excel' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `eventos_${this.liderazgoId}.xls`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+  // private exportXLSX(): void {
+  //   const rows = [
+  //     ['No.', 'Nombre', 'Fecha', 'Total asistencias'],
+  //     ...this.filtrados.map((e, i) => [
+  //       `${i + 1}`,
+  //       e.nombre,
+  //       e.fecha,
+  //       `${e.totalAsistencias ?? ''}`,
+  //     ]),
+  //   ];
+  //   const tsv = rows.map((r) => r.join('\t')).join('\n');
+  //   const blob = new Blob([tsv], { type: 'application/vnd.ms-excel' });
+  //   const a = document.createElement('a');
+  //   a.href = URL.createObjectURL(blob);
+  //   a.download = `eventos_${this.liderazgoId}.xls`;
+  //   a.click();
+  //   URL.revokeObjectURL(a.href);
+  // }
+
+// abrirOfrenda(e?: EventoItem): void {
+//   if (!e) return;
+
+//   // Primero cargar ofrendas existentes
+//   this.lidSvc.listarOfrendasPorEvento(e.id).subscribe({
+//     next: (ofrendas) => {
+//       const ofrendaExistente = ofrendas.length > 0 ? ofrendas[0] : undefined;
+      
+//       const ref = this.dialog.open(OfrendaDialogComponent, {
+//         width: '420px',
+//         data: {
+//           liderazgoNombre: this.liderazgoNombre,
+//           eventos: this.eventos,
+//           eventoIdDefault: e.id,
+//           ofrendaExistente: ofrendaExistente
+//         }
+//       });
+
+//       ref.afterClosed().subscribe((payload?: OfrendaPayload) => {
+//         if (!payload) return;
+
+//         const { eventoId, id: ofrendaId, ...body } = payload;
+        
+//         if (ofrendaId) {
+//           // Modo ACTUALIZACIÓN - usar el método de actualización
+//           this.lidSvc.actualizarOfrenda(ofrendaId, body).subscribe({
+//             next: () => {
+//               Swal.fire('Listo', 'Ofrenda actualizada.', 'success');
+//             },
+//             error: () => Swal.fire('Error', 'No se pudo actualizar la ofrenda.', 'error')
+//           });
+//         } else {
+//           // Modo CREACIÓN - crear nueva ofrenda
+//           this.lidSvc.crearOfrendaParaEvento(eventoId, body).subscribe({
+//             next: () => {
+//               Swal.fire('Listo', 'Ofrenda registrada.', 'success');
+//             },
+//             error: () => Swal.fire('Error', 'No se pudo registrar la ofrenda.', 'error')
+//           });
+//         }
+//       });
+//     },
+//     error: () => {
+//       // Si falla cargar ofrendas existentes, abrir diálogo en modo creación
+//       this.abrirDialogoOfrenda(e);
+//     }
+//   });
+// }
 
 abrirOfrenda(e?: EventoItem): void {
   if (!e) return;
 
-  // Primero cargar ofrendas existentes
   this.lidSvc.listarOfrendasPorEvento(e.id).subscribe({
     next: (ofrendas) => {
       const ofrendaExistente = ofrendas.length > 0 ? ofrendas[0] : undefined;
@@ -262,18 +392,18 @@ abrirOfrenda(e?: EventoItem): void {
         const { eventoId, id: ofrendaId, ...body } = payload;
         
         if (ofrendaId) {
-          // Modo ACTUALIZACIÓN - usar el método de actualización
           this.lidSvc.actualizarOfrenda(ofrendaId, body).subscribe({
             next: () => {
               Swal.fire('Listo', 'Ofrenda actualizada.', 'success');
+              this.cargarTotalesAsistencia(this.eventos); // Refrescar totales
             },
             error: () => Swal.fire('Error', 'No se pudo actualizar la ofrenda.', 'error')
           });
         } else {
-          // Modo CREACIÓN - crear nueva ofrenda
           this.lidSvc.crearOfrendaParaEvento(eventoId, body).subscribe({
             next: () => {
               Swal.fire('Listo', 'Ofrenda registrada.', 'success');
+              this.cargarTotalesAsistencia(this.eventos); // Refrescar totales
             },
             error: () => Swal.fire('Error', 'No se pudo registrar la ofrenda.', 'error')
           });
@@ -281,7 +411,6 @@ abrirOfrenda(e?: EventoItem): void {
       });
     },
     error: () => {
-      // Si falla cargar ofrendas existentes, abrir diálogo en modo creación
       this.abrirDialogoOfrenda(e);
     }
   });
