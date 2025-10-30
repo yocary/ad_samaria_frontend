@@ -13,7 +13,7 @@ import { DialogTreasuryDetailComponent } from './dialogs/dialog-treasury-detail/
   selector: 'app-finanzas',
   templateUrl: './finanzas.component.html',
   styleUrls: ['./finanzas.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.Emulated   
 })
 export class FinanzasComponent implements OnInit {
 

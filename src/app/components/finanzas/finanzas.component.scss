@@ -132,10 +132,11 @@
 
 /* ================== MODO ULTRA-COMPACTO (pegado al final) ================== */
 /* 1) Reset duro dentro de .finz */
-.finz,
-.finz * {
+:host .finz,
+:host .finz * {
   box-sizing: border-box;
 }
+
 
 .finz {
   --w: min(1180px, 96%);
@@ -274,10 +275,9 @@
   height: 30px !important;
   min-height: 30px !important;
 }
-.tre__table .mat-mdc-header-cell,
-.tre__table .mat-mdc-cell {
-  padding: 0 8px !important;
-}
+:host .tre__table .mat-mdc-header-cell,
+:host .tre__table .mat-mdc-cell { padding: 0 8px !important; }
+
 
 .tre__table .mat-mdc-header-cell {
   background: #f5fbff !important;
