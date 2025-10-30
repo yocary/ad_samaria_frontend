@@ -97,22 +97,27 @@
   <!-- ===================== CATEGORÍAS ===================== -->
   <mat-tab label="Categorías">
     <div class="cat-wrap">
-      <div class="cat-toolbar">
-        <mat-form-field appearance="outline" class="cat-name">
-          <mat-label>Nombre</mat-label>
-          <input matInput [formControl]="catName" />
-        </mat-form-field>
+      <!-- toolbar de Categorías -->
+<div class="cat-toolbar">
+  <mat-form-field appearance="outline" class="cat-name">
+    <mat-label>Nombre</mat-label>
+    <input matInput [formControl]="catName" />
+  </mat-form-field>
 
-        <mat-form-field appearance="outline" class="cat-type">
-          <mat-label>-Seleccionar tipo-</mat-label>
-          <mat-select [formControl]="catType">
-            <mat-option value="Ingreso">Ingreso</mat-option>
-            <mat-option value="Egreso">Egreso</mat-option>
-          </mat-select>
-        </mat-form-field>
+  <mat-form-field appearance="outline" class="cat-type">
+    <mat-label>-Seleccionar tipo-</mat-label>
+    <mat-select [formControl]="catTypeId">
+      <mat-option *ngFor="let t of tiposMov" [value]="t.id">
+        {{ t.nombre }}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
 
-        <button mat-raised-button color="primary" class="btn-add" (click)="addCategory()">+ Agregar</button>
-      </div>
+  <button mat-raised-button color="primary" class="btn-add" (click)="addCategory()">
+    + Agregar
+  </button>
+</div>
+
 
       <div class="cat-table">
         <table class="tbl">

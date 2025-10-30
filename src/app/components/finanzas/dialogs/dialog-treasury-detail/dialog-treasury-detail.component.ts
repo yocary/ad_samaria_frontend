@@ -27,6 +27,10 @@ type TabKey = 'mov' | 'cat' | 'users' | 'edit';
   encapsulation: ViewEncapsulation.None,
 })
 export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
+
+  
+tiposMov: { id:number; nombre:string }[] = [];
+catTypeId: FormControl = new FormControl(null); // 👈 ahora guardamos el ID del tipo
   /* ---------- Tabs ---------- */
   selectedIndex = 0;
   tabs: { key: TabKey; label: string }[] = [
@@ -106,6 +110,9 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.treasuryId = this.data.treasuryId;
 
+      this.cargarTiposMovimiento(); // 👈 carga opciones del select
+  this.recargarTablaCategorias(); // opcional: cargar ambas listas al entrar
+
     // 1) Sincronizar tesorería (del store del servicio si ya está cargada)
     this.subs.add(
       this.fin.treasuries$.subscribe((list: Treasury[]) => {
@@ -140,6 +147,24 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
+
+  private cargarTiposMovimiento() {
+  this.fin.getTiposMovimiento().subscribe(list => this.tiposMov = list || []);
+}
+
+private recargarTablaCategorias() {
+  Promise.all([
+    this.fin.getCategoriasPorTipo('Ingreso').toPromise(),
+    this.fin.getCategoriasPorTipo('Egreso').toPromise()
+  ]).then(([ing = [], egr = []]) => {
+    this.catList = [
+      ...ing.map(c => ({ id: c.id, name: c.nombre, type: 'Ingreso' as const })),
+      ...egr.map(c => ({ id: c.id, name: c.nombre, type: 'Egreso' as const })),
+    ];
+  });
+}
+
+
 
   /** Llama al backend para recargar movimientos usando periodo + q actuales */
   private reloadMovimientos(): void {
@@ -239,16 +264,29 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
   }
 
   /* ===== Categorías (mock) ===== */
-  addCategory(): void {
-    const name = (this.catName.value || '').trim();
-    const type = (this.catType.value || '').trim();
-    if (!name || (type !== 'Ingreso' && type !== 'Egreso')) {
-      return;
-    }
-    this.catList.push({ id: this.catIdSeq++, name, type: type as any });
-    this.catName.reset();
-    this.catType.reset();
+addCategory(): void {
+  const nombre = (this.catName.value || '').trim();
+  const tipoId = this.catTypeId.value;
+
+  if (!nombre || !tipoId) {
+    // podrías mostrar un snack
+    return;
   }
+
+  this.fin.createCategoria({ nombre, tipoMovimientoId: tipoId }).subscribe({
+    next: (res) => {
+      // actualizar tabla localmente
+      this.catList = [
+        ...this.catList,
+        { id: res.id, name: res.nombre, type: (res.tipo as 'Ingreso' | 'Egreso') }
+      ];
+      // limpiar formulario
+      this.catName.reset();
+      this.catTypeId.reset();
+    },
+    error: (err) => console.error('Error creando categoría', err)
+  });
+}
 
   startEditCategory(c: any): void {
     c.editing = true;

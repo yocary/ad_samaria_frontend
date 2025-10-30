@@ -17,9 +17,13 @@ export interface CrearMovimientoReq {
   observaciones?: string;
 }
 
-export interface CategoriaMini { id: number; nombre: string; }
+export interface CategoriaMini { id: number; nombre: string; tipo: string; }
 
 export interface MetodoPago { id: number; nombre: string; }
+
+export interface TipoMovimientoMini { id: number; nombre: string; }
+
+
 
 @Injectable({ providedIn: 'root' })
 export class FinanzasService {
@@ -29,6 +33,7 @@ export class FinanzasService {
   
   private baseMetodoPago = `${environment.api}/metodo-pago`;
   
+    private baseCategoria= `${environment.api}/categoria`;
 
   private treasuries: Treasury[] = [];
   private movements: Movement[] = [];
@@ -260,5 +265,14 @@ updateMovement(treasuryId: number, movementId: number, body: CrearMovimientoReq)
 getMetodosPago() {
   return this.http.get<MetodoPago[]>(`${this.baseMetodoPago}/metodos-pago`);
 }
+
+getTiposMovimiento() {
+  return this.http.get<TipoMovimientoMini[]>(`${this.baseCategoria}/tipos-movimiento`);
+}
+
+createCategoria(body: { nombre: string; tipoMovimientoId: number }) {
+  return this.http.post<CategoriaMini>(`${this.baseCategoria}/categorias`, body);
+}
+
 
 }
