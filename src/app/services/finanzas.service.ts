@@ -274,5 +274,12 @@ createCategoria(body: { nombre: string; tipoMovimientoId: number }) {
   return this.http.post<CategoriaMini>(`${this.baseCategoria}/categorias`, body);
 }
 
+updateCategoria(id: number, body: { nombre: string; tipoMovimientoId: number }) {
+  return this.http.put<CategoriaMini>(`${this.baseCategoria}/categorias/${id}`, body);
+}
+
+deleteCategoria(id: number) {
+  return this.http.delete<void>(`${this.baseCategoria}/categorias/${id}`);
+}
 
 }

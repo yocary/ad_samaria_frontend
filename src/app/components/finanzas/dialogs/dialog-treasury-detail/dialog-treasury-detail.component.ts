@@ -294,28 +294,42 @@ addCategory(): void {
     c._type = c.type;
   }
 
-  saveEditCategory(c: any): void {
-    const name = (c._name || '').trim();
-    const type = c._type;
-    if (!name || (type !== 'Ingreso' && type !== 'Egreso')) {
-      return;
-    }
-    c.name = name;
-    c.type = type;
-    c.editing = false;
-    delete c._name;
-    delete c._type;
-  }
+saveEditCategory(c: any): void {
+  const nombre = (c._name || '').trim();
+  const tipoNombre = (c._type || '').trim(); // "Ingreso" | "Egreso"
+  if (!nombre || (tipoNombre !== 'Ingreso' && tipoNombre !== 'Egreso')) return;
 
-  cancelEditCategory(c: any): void {
-    c.editing = false;
-    delete c._name;
-    delete c._type;
-  }
+  // Buscar el ID del tipo por su nombre
+  const tipo = this.tiposMov.find(t => t.nombre.toLowerCase() === tipoNombre.toLowerCase());
+  if (!tipo) { console.error('Tipo no encontrado'); return; }
 
-  removeCategory(c: any): void {
-    this.catList = this.catList.filter((x) => x.id !== c.id);
-  }
+  this.fin.updateCategoria(c.id, { nombre, tipoMovimientoId: tipo.id }).subscribe({
+    next: (res) => {
+      // Actualizar fila localmente con lo devuelto por el backend
+      c.name = res.nombre;
+      c.type = (res.tipo as 'Ingreso'|'Egreso');
+      c.editing = false;
+      delete c._name; delete c._type;
+    },
+    error: (err) => console.error('Error al actualizar categoría', err)
+  });
+}
+
+cancelEditCategory(c: any): void {
+  c.editing = false;
+  delete c._name;
+  delete c._type;
+}
+
+removeCategory(c: any): void {
+  if (!c?.id) return;
+  this.fin.deleteCategoria(c.id).subscribe({
+    next: () => {
+      this.catList = this.catList.filter(x => x.id !== c.id);
+    },
+    error: (err) => console.error('Error al eliminar categoría', err)
+  });
+}
 
   /* ===== Usuarios (mock) ===== */
   startAddUser() {

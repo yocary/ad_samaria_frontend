@@ -142,19 +142,22 @@
                 </ng-template>
               </td>
 
-              <td class="col-tipo">
-                <ng-container *ngIf="!c.editing; else editType">
-                  <span class="badge" [ngClass]="c.type === 'Ingreso' ? 'badge-ingreso' : 'badge-egreso'">{{ c.type }}</span>
-                </ng-container>
-                <ng-template #editType>
-                  <mat-form-field appearance="outline" class="inline-select">
-                    <mat-select [(ngModel)]="c._type">
-                      <mat-option value="Ingreso">Ingreso</mat-option>
-                      <mat-option value="Egreso">Egreso</mat-option>
-                    </mat-select>
-                  </mat-form-field>
-                </ng-template>
-              </td>
+<td class="col-tipo">
+  <ng-container *ngIf="!c.editing; else editType">
+    <span class="badge" [ngClass]="c.type === 'Ingreso' ? 'badge-ingreso' : 'badge-egreso'">
+      {{ c.type }}
+    </span>
+  </ng-container>
+  <ng-template #editType>
+    <mat-form-field appearance="outline" class="inline-select">
+      <!-- ahora las opciones vienen de `tiposMov` -->
+      <mat-select [(ngModel)]="c._type">
+        <mat-option *ngFor="let t of tiposMov" [value]="t.nombre">{{ t.nombre }}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </ng-template>
+</td>
+
 
               <td class="col-acc">
                 <ng-container *ngIf="!c.editing; else editBtns">
