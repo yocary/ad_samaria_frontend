@@ -31,7 +31,7 @@
   <section class="tre">
     <!-- fila 1: chips centrados -->
     <div class="tre__chips">
-      <button class="chip chip--gray"  (click)="setStatusFilter('Inactivo')">Inactivo</button>
+      <button class="chip chip--gray" (click)="setStatusFilter('Inactivo')">Inactivo</button>
       <button class="chip chip--green" (click)="setStatusFilter('Activo')">Activo</button>
       <button class="chip chip--light" (click)="setStatusFilter('Todos')">Todo</button>
     </div>
@@ -39,6 +39,22 @@
     <!-- fila 2: botón izq + buscador der -->
     <div class="tre__toolbar">
       <button class="btn btn--primary" (click)="openAddTesoreria()">+ Agregar Tesorería</button>
+
+      <div class="right">
+
+        <button class="btn btn--secondary" (click)="downloadExcel()">
+          <mat-icon>download</mat-icon>&nbsp;Descargar Excel
+        </button>
+        <div class="search">
+          <mat-icon>search</mat-icon>
+          <input [formControl]="searchTreas" placeholder="Buscar" />
+          <button *ngIf="searchTreas.value" (click)="searchTreas.setValue('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+
+      </div>
 
       <div class="search">
         <mat-icon>search</mat-icon>

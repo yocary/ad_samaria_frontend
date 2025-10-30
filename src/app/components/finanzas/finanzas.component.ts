@@ -8,6 +8,7 @@ import { FinanzasService } from 'src/app/services/finanzas.service';
 import { TesoreriaRow, Treasury } from 'src/app/models/finanzas.model';
 import { DialogAddTreasuryComponent } from './dialogs/dialog-add-treasury/dialog-add-treasury.component';
 import { DialogTreasuryDetailComponent } from './dialogs/dialog-treasury-detail/dialog-treasury-detail.component';
+import * as XLSX from 'xlsx';
 
 @Component({
   selector: 'app-finanzas',
@@ -99,7 +100,7 @@ export class FinanzasComponent implements OnInit {
       maxWidth: '98vw',
       disableClose: false,
       autoFocus: false,
-      data: { treasuryId: t.id }
+  data: { treasuryId: t.id, treasuryName: t.name }   // 👈 agrega esto
     }).afterClosed().subscribe(() => {
       // 🔁 Recargar listado y totales globales al cerrar el detalle
       this.loadTesorerias(this.searchTreas.value || '');
@@ -120,4 +121,33 @@ export class FinanzasComponent implements OnInit {
   regresar(): void {
     this.router.navigate(['/dashboard']);
   }
+
+  downloadExcel(): void {
+  // 1) Prepara los datos tal como se ven en la tabla
+  const rows = (this.treasuries || []).map(t => ({
+    'Tesorería': t.name,
+    'Ingresos': t.incomes,     // numérico
+    'Egresos': t.expenses,     // numérico
+    'Saldo': (t.incomes || 0) - (t.expenses || 0)
+  }));
+
+  // 2) Crea hoja y libro
+  const ws = XLSX.utils.json_to_sheet(rows);
+
+  // (opcional) ancho de columnas
+  ws['!cols'] = [
+    { wch: 28 }, // Tesorería
+    { wch: 14 }, // Ingresos
+    { wch: 14 }, // Egresos
+    { wch: 14 }, // Saldo
+  ];
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Tesorerías');
+
+  // 3) Nombre de archivo con fecha
+  const fecha = new Date().toISOString().slice(0,10); // yyyy-mm-dd
+  XLSX.writeFile(wb, `tesorerias_${fecha}.xlsx`);
+}
+
 }

@@ -235,19 +235,23 @@ export class DialogMovementComponent implements OnInit {
     });
   }
 
-  private loadCategorias(tipo: 'Ingreso' | 'Egreso', afterLoad?: () => void) {
-    this.fin.getCategoriasPorTipo(tipo).subscribe({
-      next: (list) => {
-        this.categorias = list || [];
-        afterLoad?.();
-      },
-      error: (e) => {
-        console.error('Error cargando categorías', e);
-        this.categorias = [];
-        afterLoad?.();
-      },
-    });
-  }
+private loadCategorias(tipo: 'Ingreso' | 'Egreso', afterLoad?: () => void) {
+  this.fin.getCategoriasPorTipo(tipo).subscribe({
+    next: (list) => {
+      this.categorias = (list || []).filter(
+        c => !['diezmo', 'diezmos'].includes((c.nombre || '').trim().toLowerCase())
+      );
+      afterLoad?.();
+    },
+    error: (e) => {
+      console.error('Error cargando categorías', e);
+      this.categorias = [];
+      afterLoad?.();
+    },
+  });
+}
+
+
 
   // ========= personas =========
 

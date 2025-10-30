@@ -297,3 +297,54 @@
   .search { justify-self: stretch; max-width: none; }
 }
 
+/* Alinea botón + buscador a la derecha */
+.tre__toolbar .right {
+  display: flex !important;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+}
+
+/* Botón Descargar Excel */
+.btn--excel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #e8f3ff;              /* azul muy claro */
+  color: #1f5d84;                   /* azul oscuro del tema */
+  border: 1px solid #b5d5f5;
+  border-radius: 6px;
+  padding: 6px 10px !important;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn--excel mat-icon {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+}
+
+.btn--excel:hover {
+  background: #d7ebff;              /* un poco más fuerte al hover */
+  border-color: #9ccaf3;
+}
+
+/* Mantén el buscador igual */
+.search {
+  justify-self: end;
+  width: 100%;
+  max-width: 360px;
+  height: 28px !important;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px !important;
+  border: 1px solid #cfd9e6;
+  border-radius: 16px;
+  background: #fff;
+  margin: 0 !important;
+}

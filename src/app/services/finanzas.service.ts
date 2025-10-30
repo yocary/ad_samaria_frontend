@@ -1,14 +1,21 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { CrearTesoreriaRes, Movement, TesoreriaCreate, TesoreriaRow, Treasury, TreasuryStatus } from '../models/finanzas.model';
+import {
+  CrearTesoreriaRes,
+  Movement,
+  TesoreriaCreate,
+  TesoreriaRow,
+  Treasury,
+  TreasuryStatus,
+} from '../models/finanzas.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { tap } from 'rxjs/operators';
 
 export interface CrearMovimientoReq {
-  tipo?: 'Ingreso' | 'Egreso';     // o usa tipoId
+  tipo?: 'Ingreso' | 'Egreso'; // o usa tipoId
   tipoId?: number;
-  fecha: string;                   // yyyy-MM-dd
+  fecha: string; // yyyy-MM-dd
   concepto?: string;
   cantidad: number;
   metodoPagoId: number;
@@ -17,23 +24,26 @@ export interface CrearMovimientoReq {
   observaciones?: string;
 }
 
-export interface CategoriaMini { id: number; nombre: string; tipo: string; }
-
-export interface MetodoPago { id: number; nombre: string; }
-
-export interface TipoMovimientoMini { id: number; nombre: string; }
-
-
+export interface CategoriaMini {
+  id: number;
+  nombre: string;
+  tipo: string;
+}
+export interface MetodoPago {
+  id: number;
+  nombre: string;
+}
+export interface TipoMovimientoMini {
+  id: number;
+  nombre: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class FinanzasService {
   private base = `${environment.api}/tesoreria`;
-
   private baseMov = `${environment.api}/movimiento`;
-  
   private baseMetodoPago = `${environment.api}/metodo-pago`;
-  
-    private baseCategoria= `${environment.api}/categoria`;
+  private baseCategoria = `${environment.api}/categoria`;
 
   private treasuries: Treasury[] = [];
   private movements: Movement[] = [];
@@ -53,51 +63,11 @@ export class FinanzasService {
   private statusFilter: 'Todos' | TreasuryStatus = 'Activo';
 
   constructor(private http: HttpClient) {
-    // seed
-    const t1: Treasury = {
-      id: this.seqT++,
-      name: 'Jóvenes',
-      status: 'Activo',
-      incomes: 100,
-      expenses: 20,
-    };
-    const t2: Treasury = {
-      id: this.seqT++,
-      name: 'Niños',
-      status: 'Inactivo',
-      incomes: 0,
-      expenses: 0,
-    };
-    this.treasuries = [t1, t2];
-
-    this.movements = [
-      {
-        id: this.seqM++,
-        treasuryId: t1.id,
-        type: 'Ingreso',
-        date: new Date().toISOString(),
-        concept: 'Ofrenda Jóvenes',
-        category: 'Ofrenda',
-        amount: 100,
-        method: 'Efectivo',
-        memberName: '',
-        notes: '',
-      },
-      {
-        id: this.seqM++,
-        treasuryId: t1.id,
-        type: 'Egreso',
-        date: new Date().toISOString(),
-        concept: 'Compra snacks',
-        category: 'Evento',
-        amount: 20,
-        method: 'Efectivo',
-        memberName: '',
-        notes: '',
-      },
-    ];
-    this.emit();
-    this.selectTreasury(t1.id);
+    // 🔇 Arranque limpio: sin datos mock
+    this.treasuries = [];
+    this.movements = [];
+    this._treasuries$.next([]);
+    this._movements$.next([]);
   }
 
   private emit() {
@@ -129,6 +99,7 @@ export class FinanzasService {
     this.filterText = (q || '').toLowerCase();
     this.emit();
   }
+
   filterByStatus(s: 'Todos' | TreasuryStatus) {
     this.statusFilter = s;
     this.emit();
@@ -193,16 +164,16 @@ export class FinanzasService {
   }
 
   mapToUI(rows: TesoreriaRow[]): Treasury[] {
-  return rows.map(r => ({
-    id: r.id,
-    name: r.nombre,
-    status: r.estado ? 'Activo' : 'Inactivo', // ← conversión aquí
-    incomes: r.ingresos,
-    expenses: r.egresos,
-  }));
-}
+    return rows.map((r) => ({
+      id: r.id,
+      name: r.nombre,
+      status: r.estado ? 'Activo' : 'Inactivo',
+      incomes: r.ingresos,
+      expenses: r.egresos,
+    }));
+  }
 
- private movementsSub = new BehaviorSubject<Movement[]>([]);
+  private movementsSub = new BehaviorSubject<Movement[]>([]);
 
   /**
    * Carga los movimientos de una tesorería y publica en `movements$`.
@@ -216,10 +187,10 @@ export class FinanzasService {
     if (opts.q && opts.q.trim()) params = params.set('q', opts.q.trim());
 
     return this.http
-      .get<Movement[]>(`${this.base}/tesorerias/${tesoreriaId}/movimientos`, { params })
-      .pipe(
-        tap((list: Movement[]) => this.movementsSub.next(list)) // 👈 tip explícito
-      );
+      .get<Movement[]>(`${this.base}/tesorerias/${tesoreriaId}/movimientos`, {
+        params,
+      })
+      .pipe(tap((list: Movement[]) => this.movementsSub.next(list)));
   }
 
   /**
@@ -244,42 +215,68 @@ export class FinanzasService {
     );
   }
 
-  getCategoriasPorTipo(tipo: 'Ingreso'|'Egreso'): Observable<CategoriaMini[]> {
-  const params = new HttpParams().set('tipo', tipo);
-  return this.http.get<CategoriaMini[]>( `${this.baseMov}/categorias`, { params });
-}
+  getCategoriasPorTipo(
+    tipo: 'Ingreso' | 'Egreso'
+  ): Observable<CategoriaMini[]> {
+    const params = new HttpParams().set('tipo', tipo);
+    return this.http.get<CategoriaMini[]>(`${this.baseMov}/categorias`, {
+      params,
+    });
+  }
 
-deleteMovement(treasuryId: number, movementId: number) {
-  return this.http.delete<void>(
-    `${this.baseMov}/tesorerias/${treasuryId}/movimientos/${movementId}`
-  );
-}
+  deleteMovement(treasuryId: number, movementId: number) {
+    return this.http.delete<void>(
+      `${this.baseMov}/tesorerias/${treasuryId}/movimientos/${movementId}`
+    );
+  }
 
-updateMovement(treasuryId: number, movementId: number, body: CrearMovimientoReq) {
-  return this.http.put<void>(
-    `${this.baseMov}/tesorerias/${treasuryId}/movimientos/${movementId}`,
-    body
-  );
-}
+  updateMovement(
+    treasuryId: number,
+    movementId: number,
+    body: CrearMovimientoReq
+  ) {
+    return this.http.put<void>(
+      `${this.baseMov}/tesorerias/${treasuryId}/movimientos/${movementId}`,
+      body
+    );
+  }
 
-getMetodosPago() {
-  return this.http.get<MetodoPago[]>(`${this.baseMetodoPago}/metodos-pago`);
-}
+  getMetodosPago() {
+    return this.http.get<MetodoPago[]>(`${this.baseMetodoPago}/metodos-pago`);
+  }
 
-getTiposMovimiento() {
-  return this.http.get<TipoMovimientoMini[]>(`${this.baseCategoria}/tipos-movimiento`);
-}
+  getTiposMovimiento() {
+    return this.http.get<TipoMovimientoMini[]>(
+      `${this.baseCategoria}/tipos-movimiento`
+    );
+  }
 
-createCategoria(body: { nombre: string; tipoMovimientoId: number }) {
-  return this.http.post<CategoriaMini>(`${this.baseCategoria}/categorias`, body);
-}
+  createCategoria(body: { nombre: string; tipoMovimientoId: number }) {
+    return this.http.post<CategoriaMini>(
+      `${this.baseCategoria}/categorias`,
+      body
+    );
+  }
 
-updateCategoria(id: number, body: { nombre: string; tipoMovimientoId: number }) {
-  return this.http.put<CategoriaMini>(`${this.baseCategoria}/categorias/${id}`, body);
-}
+  updateCategoria(
+    id: number,
+    body: { nombre: string; tipoMovimientoId: number }
+  ) {
+    return this.http.put<CategoriaMini>(
+      `${this.baseCategoria}/categorias/${id}`,
+      body
+    );
+  }
 
-deleteCategoria(id: number) {
-  return this.http.delete<void>(`${this.baseCategoria}/categorias/${id}`);
-}
+  deleteCategoria(id: number) {
+    return this.http.delete<void>(`${this.baseCategoria}/categorias/${id}`);
+  }
 
+  updateTesoreria(id: number, body: { nombre: string; estado: boolean }) {
+    return this.http.put<void>(`${this.base}/actualizarTesoreria/${id}`, body);
+  }
+
+  deleteTesoreria(id: number) {
+    return this.http.delete<void>(`${this.base}/eliminarTesoreria/${id}`);
+  }
 }

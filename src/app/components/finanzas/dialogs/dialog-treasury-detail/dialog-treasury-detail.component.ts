@@ -17,6 +17,7 @@ import { debounceTime } from 'rxjs/operators';
 import { FinanzasService } from 'src/app/services/finanzas.service';
 import { Movement, Treasury } from 'src/app/models/finanzas.model';
 import { DialogMovementComponent } from '../dialog-movement/dialog-movement.component';
+import Swal from 'sweetalert2';
 
 type TabKey = 'mov' | 'cat' | 'users' | 'edit';
 
@@ -89,7 +90,7 @@ catTypeId: FormControl = new FormControl(null); // 👈 ahora guardamos el ID de
   treasuryStatuses = ['Activo', 'Inactivo'];
   currencies = [
     { value: 'GTQ', label: '(GTQ) Guatemala' },
-    { value: 'USD', label: '(USD) Dólar' },
+    // { value: 'USD', label: '(USD) Dólar' },
   ];
   editForm = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -100,14 +101,36 @@ catTypeId: FormControl = new FormControl(null); // 👈 ahora guardamos el ID de
   /* ---------- Subs ---------- */
   private subs = new Subscription();
 
+  
+
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: { treasuryId: number },
+  @Inject(MAT_DIALOG_DATA) public data: { treasuryId: number; treasuryName?: string },
     private dialogRef: MatDialogRef<DialogTreasuryDetailComponent>,
     private fin: FinanzasService,
     private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
+
+     this.treasuryId = this.data.treasuryId;
+
+  // 👇 inicializa el título inmediatamente con el nombre recibido
+  if (this.data.treasuryName) {
+    this.treasury = { id: this.treasuryId, name: this.data.treasuryName } as any;
+  }
+
+  // luego tu suscripción para refrescar/normalizar desde el servicio
+  this.subs.add(
+    this.fin.treasuries$.subscribe((list: Treasury[]) => {
+      const found = list?.find(t => t.id === this.treasuryId) || null;
+      if (found) {
+        this.treasury = found; // actualizará el título si cambia
+        this.editForm.patchValue({ name: found.name, status: found.status, currency: (found as any).currency || 'GTQ' }, { emitEvent: false });
+      }
+    })
+  );
+
+
     this.treasuryId = this.data.treasuryId;
 
       this.cargarTiposMovimiento(); // 👈 carga opciones del select
@@ -383,28 +406,59 @@ removeCategory(c: any): void {
   }
 
   /* ===== Edit Tesorería ===== */
-  saveTreasury() {
-    if (!this.editForm.valid || !this.treasury) return;
+saveTreasury() {
+  if (!this.editForm.valid || !this.treasury) return;
 
-    const name = (this.editForm.get('name')?.value as string) ?? '';
-    const status =
-      (this.editForm.get('status')?.value as 'Activo' | 'Inactivo') ?? 'Activo';
-    const currency = (this.editForm.get('currency')?.value as string) ?? 'GTQ';
+  const nombre    = (this.editForm.get('name')?.value as string)?.trim();
+  const statusStr = this.editForm.get('status')?.value as ('Activo'|'Inactivo');
+  const estado    = statusStr === 'Activo'; // boolean para backend
 
-    // TODO: integra con tu servicio para persistir (y que emita en treasuries$)
-    this.treasury.name = name;
-    this.treasury.status = status;
-    (this.treasury as any).currency = currency;
+  this.fin.updateTesoreria(this.treasury.id!, { nombre, estado }).subscribe({
+    next: () => this.dialogRef.close(true), // el padre ya recarga lista/resumen
+    error: (err) => console.error('Error actualizando tesorería', err)
+  });
+}
 
-    this.dialogRef.close(true);
-  }
 
-  deleteTreasury() {
-    if (!this.treasury) return;
-    // TODO: fin.deleteTreasury(this.treasury.id) y cerrar
-    this.dialogRef.close(true);
-  }
+deleteTreasury() {
+  if (!this.treasury?.id) return;
 
+  Swal.fire({
+    title: '¿Eliminar esta tesorería?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      this.fin.deleteTesoreria(this.treasury!.id).subscribe({
+        next: () => {
+          Swal.fire({
+            icon: 'success',
+            title: 'Eliminada',
+            text: 'La tesorería se eliminó correctamente.',
+            confirmButtonColor: '#3085d6'
+          }).then(() => {
+            this.dialogRef.close({ deleted: true }); 
+          });
+        },
+        error: (err) => {
+          const msg = err?.error?.message || 'No se pudo eliminar la tesorería.';
+          console.error('Error al eliminar tesorería', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: msg,
+            confirmButtonColor: '#3085d6'
+          });
+        }
+      });
+    }
+  });
+}
   close() {
     this.dialogRef.close();
   }
