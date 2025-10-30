@@ -16,7 +16,7 @@ export class DashboardComponent implements OnInit {
   allTiles: Tile[] = [
     { key: 'roles',         title: 'ROLES',          routerLink: '/roles/home' },
     { key: 'miembros',      title: 'MIEMBROS',       routerLink: '/miembros/home' },
-    // { key: 'finanzas',      title: 'FINANZAS',       routerLink: '/finanzas' },
+    { key: 'finanzas',      title: 'FINANZAS',       routerLink: '/finanzas' },
     { key: 'planificacion', title: 'PLANIFICACIÓN',  routerLink: '/planificacion' },
     { key: 'liderazgo',     title: 'LIDERAZGO',      routerLink: '/liderazgo' },
     { key: 'certificados',  title: 'CERTIFICADOS',   routerLink: '/certificados' },
@@ -36,7 +36,7 @@ export class DashboardComponent implements OnInit {
     if (roles.includes('ROLE_ADMINISTRADOR')) {
       // Administrador ve todo menos finanzas y reportes
       this.tiles = this.allTiles.filter(t =>
-        ['roles', 'miembros', 'planificacion', 'liderazgo', 'certificados'].includes(t.key)
+        ['roles', 'miembros', 'planificacion', 'liderazgo', 'certificados', 'finanzas'].includes(t.key)
       );
     } else if (roles.includes('ROLE_LÍDER')) {
       // Líder ve solo miembros, planificación y liderazgo
