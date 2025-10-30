@@ -1,5 +1,7 @@
 <form class="fin-dialog" [formGroup]="form" (ngSubmit)="save()">
-  <div class="fin-dialog__header">Agregar Ingresos/Egresos</div>
+  <div class="fin-dialog__header">
+    {{ isEdit ? 'Editar movimiento' : 'Agregar Ingresos/Egresos' }}
+  </div>
 
   <div class="fin-dialog__body grid">
     <mat-form-field appearance="outline">
@@ -17,79 +19,86 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
-    <!-- Concepto -> selector de Categoría según tipo -->
+    <!-- Concepto / Categoría -->
     <mat-form-field appearance="outline">
       <mat-label>Concepto</mat-label>
       <mat-select formControlName="categoriaId">
-        <mat-option *ngFor="let c of categorias" [value]="c.id">
-          {{ c.nombre }}
-        </mat-option>
+        <mat-option *ngFor="let c of categorias" [value]="c.id">{{ c.nombre }}</mat-option>
       </mat-select>
       <mat-error *ngIf="form.controls.categoriaId.invalid && form.controls.categoriaId.touched">
         Requerido
       </mat-error>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Total</mat-label>
-      <input matInput type="number" step="0.01" formControlName="amount" />
-      <span matTextSuffix>Q</span>
-    </mat-form-field>
-
-    <mat-form-field appearance="outline">
-      <mat-label>Método de pago</mat-label>
-      <mat-select formControlName="method">
-        <mat-option value="Efectivo">Efectivo</mat-option>
-        <mat-option value="Transferencia">Transferencia</mat-option>
-        <mat-option value="Tarjeta">Tarjeta</mat-option>
-        <mat-option value="Otro">Otro</mat-option>
-      </mat-select>
-    </mat-form-field>
-
-<!-- Persona (autocomplete) -->
-<mat-form-field appearance="outline" class="span-1">
-  <mat-label>Persona</mat-label>
-  <input
-    matInput
-    placeholder="Escribe para buscar (mín. 2 letras)"
-    [formControl]="personaQuery"
-    [matAutocomplete]="autoPersonas"
-  />
-  <button
-    matSuffix
-    mat-icon-button
-    *ngIf="personaSeleccionada"
-    (click)="limpiarPersona()"
-    aria-label="Limpiar"
-  >
-    <mat-icon>close</mat-icon>
-  </button>
-
-  <mat-hint *ngIf="!personaSeleccionada">Escribe y selecciona de la lista</mat-hint>
-  <mat-hint *ngIf="personaSeleccionada">
-    Seleccionado: <strong>{{ personaSeleccionada?.nombre }}</strong>
-  </mat-hint>
+    <!-- Total -->
+<mat-form-field appearance="outline" class="form-total">
+  <mat-label>Total</mat-label>
+  <span matPrefix>Q&nbsp;</span>
+  <input matInput type="number" step="0.01" formControlName="amount" />
+  <mat-error *ngIf="form.controls.amount.invalid && form.controls.amount.touched">
+    Ingresa un monto válido
+  </mat-error>
 </mat-form-field>
 
-<mat-autocomplete
-  #autoPersonas="matAutocomplete"
-  (optionSelected)="seleccionarPersona($event.option.value)"
-  [displayWith]="displayPersona"
->
-  <mat-option *ngFor="let p of (personas$ | async)" [value]="p">
-    {{ p.nombre }}
-  </mat-option>
 
-  <mat-option
-    *ngIf="(personas$ | async)?.length === 0 && (personaQuery.value?.length || 0) >= 2"
-    disabled
-  >
-    Sin resultados
-  </mat-option>
-</mat-autocomplete>
+    <!-- Método de pago (desde BD, requerido) -->
+    <mat-form-field appearance="outline">
+      <mat-label>Método de pago</mat-label>
+      <mat-select formControlName="metodoPagoId">
+        <mat-option *ngFor="let m of metodosPago" [value]="m.id">{{ m.nombre }}</mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.controls.metodoPagoId.invalid && form.controls.metodoPagoId.touched">
+        Selecciona un método de pago
+      </mat-error>
+    </mat-form-field>
 
-<!-- Control oculto para enviar el id de la persona -->
-<input type="hidden" formControlName="personaId" />
+    <!-- Persona (autocomplete obligatorio) -->
+    <mat-form-field appearance="outline" class="span-1">
+      <mat-label>Persona</mat-label>
+      <input
+        matInput
+        placeholder="Escribe para buscar (mín. 2 letras)"
+        [formControl]="personaQuery"
+        [matAutocomplete]="autoPersonas"
+      />
+      <button
+        matSuffix
+        mat-icon-button
+        *ngIf="personaSeleccionada"
+        (click)="limpiarPersona()"
+        aria-label="Limpiar"
+        type="button"
+      >
+        <mat-icon>close</mat-icon>
+      </button>
+
+      <mat-hint *ngIf="!personaSeleccionada">Escribe y selecciona de la lista</mat-hint>
+      <mat-hint *ngIf="personaSeleccionada">
+        Seleccionado: <strong>{{ personaSeleccionada?.nombre }}</strong>
+      </mat-hint>
+
+      <mat-error *ngIf="form.controls.personaId.invalid && form.controls.personaId.touched">
+        Selecciona una persona de la lista
+      </mat-error>
+    </mat-form-field>
+
+    <mat-autocomplete
+      #autoPersonas="matAutocomplete"
+      (optionSelected)="seleccionarPersona($event.option.value)"
+      [displayWith]="displayPersona"
+    >
+      <mat-option *ngFor="let p of (personas$ | async)" [value]="p">
+        {{ p.nombre }}
+      </mat-option>
+
+      <mat-option
+        *ngIf="(personas$ | async)?.length === 0 && (personaQuery.value?.length || 0) >= 2"
+        disabled
+      >Sin resultados</mat-option>
+    </mat-autocomplete>
+
+    <!-- Control oculto (obligatorio) -->
+    <input type="hidden" formControlName="personaId" />
 
     <mat-form-field appearance="outline" class="span-2">
       <mat-label>Observaciones</mat-label>
@@ -98,7 +107,9 @@
   </div>
 
   <div class="fin-dialog__actions">
-    <button mat-raised-button color="primary" type="submit">Guardar</button>
+    <button mat-raised-button color="primary" type="submit">
+      {{ isEdit ? 'Actualizar' : 'Guardar' }}
+    </button>
     <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancelar</button>
   </div>
 </form>

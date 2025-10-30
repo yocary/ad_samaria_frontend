@@ -27,3 +27,50 @@
   justify-content:center;
   padding:0 16px 16px;
 }
+
+/* ====== MDC (Angular Material 15+) ====== */
+/* Centra el wrapper para que prefijo + input compartan el centro */
+.form-total .mat-mdc-text-field-wrapper {
+  align-items: center;
+}
+
+/* Centra el prefijo exactamente al medio del alto disponible */
+.form-total .mat-mdc-form-field-text-prefix {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Quita el efecto de los spinners del number, que cambian la baseline */
+.form-total .mdc-text-field__input[type="number"]::-webkit-outer-spin-button,
+.form-total .mdc-text-field__input[type="number"]::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.form-total .mdc-text-field__input[type="number"] {
+  -moz-appearance: textfield; /* Firefox */
+}
+
+/* Normaliza padding/line-height del input */
+.form-total .mdc-text-field__input {
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1.4;
+  margin: 0;
+  /* 👇 Ajuste fino: baja 1–2px el input para que quede PERFECTO con la Q */
+  transform: translateY(1px);
+}
+
+/* ====== Legacy (por si estás en pre-MDC) ====== */
+.form-total .mat-form-field-prefix {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+.form-total .mat-input-element {
+  padding-top: 0;
+  padding-bottom: 0;
+  line-height: 1.4;
+  margin: 0;
+  transform: translateY(5px);
+}
