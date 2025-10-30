@@ -1,10 +1,10 @@
-import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from '../services/auth.service';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { Router } from '@angular/router';
-import { AlertUtils } from '../utils/alert-utils';
+import Swal from 'sweetalert2';
 
 @Injectable()
 export class RequestInterceptor implements HttpInterceptor {
@@ -15,18 +15,39 @@ export class RequestInterceptor implements HttpInterceptor {
   ) { }
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    return next.handle(req).pipe(catchError(err => {
+    return next.handle(req).pipe(
+      catchError((err: HttpErrorResponse) => {
 
-      if ([401, 403].includes(err.status)) {
-        this.authService.logout();
-        this.router.navigate(["/login"]);
-        AlertUtils.showToast(
-          "error",
-          `No tienes los permisos suficientes para poder realizar esta acción.`
-        );
-      }
+        // 🔐 Sesión expirada o sin permisos
+        if (err.status === 401 || err.status === 403) {
+          // Limpia sesión
+          this.authService.logout?.();
 
-      return throwError(err)
-    }));
+          Swal.fire({
+            icon: 'warning',
+            title: 'Sesión expirada',
+            text: 'Tu sesión ha caducado. Por favor, inicia sesión nuevamente.',
+            confirmButtonText: 'Ir al login',
+            confirmButtonColor: '#3085d6',
+          }).then(() => {
+            this.router.navigate(['/login']);
+          });
+
+          return throwError(() => err);
+        }
+
+        // (Opcional) otros errores globales
+        if (err.status === 500) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error del servidor',
+            text: 'Ocurrió un problema en el servidor. Intenta más tarde.',
+            confirmButtonColor: '#3085d6',
+          });
+        }
+
+        return throwError(() => err);
+      })
+    );
   }
 }

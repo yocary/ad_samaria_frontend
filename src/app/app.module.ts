@@ -56,6 +56,9 @@ import { LoginComponent } from './components/login/login.component';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { CrearUsuarioDialogComponent } from './components/crear-usuario-dialog/crear-usuario-dialog.component';
 import { CambiarPasswordDialogComponent } from './components/cambiar-password-dialog/cambiar-password-dialog.component';
+import { DialogDiezmosComponent } from './components/finanzas/dialogs/dialog-diezmos/dialog-diezmos.component';
+import { DialogAddDiezmoComponent } from './components/finanzas/dialogs/dialog-diezmos/dialog-add-diezmo/dialog-add-diezmo.component';
+import { RequestInterceptor } from './interceptors/request.interceptor';
 
 
 export const MY_DATE_FORMATS = {
@@ -107,6 +110,8 @@ export const MY_DATE_FORMATS = {
     LoginComponent,
     CrearUsuarioDialogComponent,
     CambiarPasswordDialogComponent,
+    DialogDiezmosComponent,
+    DialogAddDiezmoComponent,
   ],
   imports: [
     FormsModule,
@@ -130,9 +135,16 @@ export const MY_DATE_FORMATS = {
   providers: [
     DatePipe,
     SpinnerService,
-  { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
-        { provide: MAT_DATE_LOCALE, useValue: 'es-ES' }, // idioma español
-    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
+{ provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi: true },
+
+  // 🟢 Adjunta Authorization: Bearer <token>
+  { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+
+  // 🔴 Maneja 401/403 con Swal y redirige al login
+  { provide: HTTP_INTERCEPTORS, useClass: RequestInterceptor, multi: true },
+
+  { provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
+  { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
   ],
   bootstrap: [AppComponent]
 })

@@ -9,6 +9,7 @@ import { TesoreriaRow, Treasury } from 'src/app/models/finanzas.model';
 import { DialogAddTreasuryComponent } from './dialogs/dialog-add-treasury/dialog-add-treasury.component';
 import { DialogTreasuryDetailComponent } from './dialogs/dialog-treasury-detail/dialog-treasury-detail.component';
 import * as XLSX from 'xlsx';
+import { DialogDiezmosComponent } from './dialogs/dialog-diezmos/dialog-diezmos.component';
 
 @Component({
   selector: 'app-finanzas',
@@ -150,4 +151,12 @@ export class FinanzasComponent implements OnInit {
   XLSX.writeFile(wb, `tesorerias_${fecha}.xlsx`);
 }
 
+openDiezmos(){
+  this.dialog.open(DialogDiezmosComponent, {
+    width: '980px',
+    maxWidth: '98vw',
+    panelClass: 'dlg-diezmos',
+    disableClose: true
+  });
+}
 }

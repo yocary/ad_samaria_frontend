@@ -1,0 +1,34 @@
+<form [formGroup]="form" (ngSubmit)="save()" class="dz-form">
+  <div class="title">{{ isEdit ? 'Editar' : 'Agregar' }} Ingresos/Egresos</div>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Tipo de movimiento</mat-label>
+    <mat-select formControlName="tipo">
+      <mat-option value="Ingreso">Ingreso</mat-option>
+      <mat-option value="Egreso">Egreso</mat-option>
+    </mat-select>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Nombre</mat-label>
+    <input matInput formControlName="nombre" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Cantidad</mat-label>
+    <span matPrefix>Q&nbsp;</span>
+    <input matInput type="number" step="0.01" formControlName="cantidad" />
+  </mat-form-field>
+
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Fecha</mat-label>
+    <input matInput [matDatepicker]="dp" formControlName="fecha" />
+    <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+    <mat-datepicker #dp></mat-datepicker>
+  </mat-form-field>
+
+  <div class="actions">
+    <button mat-raised-button color="primary" type="submit">Guardar</button>
+    <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancelar</button>
+  </div>
+</form>

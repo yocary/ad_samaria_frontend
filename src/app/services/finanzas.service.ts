@@ -38,12 +38,28 @@ export interface TipoMovimientoMini {
   nombre: string;
 }
 
+export interface DiezmoRow {
+  id: number;
+  nombre: string;
+  cantidad: number;
+  fecha: string;                 // yyyy-MM-dd
+  tipo: 'Ingreso' | 'Egreso';
+}
+
+export interface CrearDiezmoReq {
+  tipo: 'Ingreso' | 'Egreso';
+  nombre: string;
+  cantidad: number;
+  fecha: string;                 // yyyy-MM-dd
+}
+
 @Injectable({ providedIn: 'root' })
 export class FinanzasService {
   private base = `${environment.api}/tesoreria`;
   private baseMov = `${environment.api}/movimiento`;
   private baseMetodoPago = `${environment.api}/metodo-pago`;
   private baseCategoria = `${environment.api}/categoria`;
+  private baseDiez = `${environment.api}/diezmos`;
 
   private treasuries: Treasury[] = [];
   private movements: Movement[] = [];
@@ -278,5 +294,23 @@ export class FinanzasService {
 
   deleteTesoreria(id: number) {
     return this.http.delete<void>(`${this.base}/eliminarTesoreria/${id}`);
+  }
+
+  getDiezmos(params: { periodo?: 'mes'|'mes_anterior'|'anio'|'todos'; q?: string }){
+    let p = new HttpParams().set('periodo', params.periodo || 'mes');
+    if (params.q) p = p.set('q', params.q);
+    return this.http.get<{ items: DiezmoRow[], totales: { ingresos:number; egresos:number } }>(this.baseDiez, { params: p });
+  }
+
+  createDiezmo(body: CrearDiezmoReq){
+    return this.http.post<{ id:number }>(this.baseDiez, body);
+  }
+
+  updateDiezmo(id:number, body: CrearDiezmoReq){
+    return this.http.put<void>(`${this.baseDiez}/${id}`, body);
+  }
+
+  deleteDiezmo(id:number){
+    return this.http.delete<void>(`${this.baseDiez}/${id}`);
   }
 }

@@ -348,3 +348,71 @@
   background: #fff;
   margin: 0 !important;
 }
+
+.toolbar-btn {
+  background-color: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  height: 40px;
+  min-width: 180px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.toolbar-btn:hover {
+  background-color: #1565c0;
+}
+
+/* Normaliza los botones principales */
+.tre__toolbar .btn.btn--primary {
+  min-width: 180px;     /* mismo ancho */
+  height: 40px;         /* altura consistente */
+  font-size: 14px;      /* texto uniforme */
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0 16px;
+  margin-right: 8px;    /* separa entre botones */
+}
+
+/* Si usas Angular Material dentro de estos botones */
+.tre__toolbar .btn.btn--primary mat-icon {
+  font-size: 18px;
+  vertical-align: middle;
+}
+
+/* Ajuste opcional para centrar el grupo de botones */
+.tre__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* === Ajuste final: botones iguales en toolbar === */
+.tre__toolbar {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tre__toolbar .btn--primary {
+  min-width: 160px !important;   /* ancho uniforme */
+  height: 32px !important;       /* altura uniforme */
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  border-radius: 6px !important;
+  padding: 0 10px !important;
+  line-height: 1 !important;
+}
+
+/* Evita que “Diezmos” crezca por flex */
+.tre__toolbar .btn--primary:nth-child(2) {
+  flex: none !important;
+}
+
+/* Mantiene el grupo alineado */
+.tre__toolbar > button.btn--primary {
+  margin-right: 8px !important;
+}

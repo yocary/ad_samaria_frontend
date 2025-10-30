@@ -38,7 +38,9 @@
 
     <!-- fila 2: botón izq + buscador der -->
     <div class="tre__toolbar">
-      <button class="btn btn--primary" (click)="openAddTesoreria()">+ Agregar Tesorería</button>
+<button class="toolbar-btn" (click)="openAddTesoreria()">+ Agregar Tesorería</button>
+<button class="toolbar-btn" (click)="openDiezmos()">Diezmos</button>
+
 
       <div class="right">
 
@@ -56,13 +58,6 @@
 
       </div>
 
-      <div class="search">
-        <mat-icon>search</mat-icon>
-        <input [formControl]="searchTreas" placeholder="Buscar" />
-        <button *ngIf="searchTreas.value" (click)="searchTreas.setValue('')">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
     </div>
 
     <!-- tabla -->

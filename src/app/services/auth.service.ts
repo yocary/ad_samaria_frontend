@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { jwtDecode } from 'jwt-decode';
 
 export interface AuthResponse {
   token: string;
@@ -121,4 +122,15 @@ cambiarPassword(username: string, passwordActual: string, passwordNuevo: string)
       passwordNuevo
     });
   }
+
+isTokenExpired(token: string): boolean {
+  try {
+    const decoded: any = jwtDecode(token);
+    if (!decoded?.exp) return true;
+    return decoded.exp * 1000 < Date.now();
+  } catch {
+    return true; // token inválido o corrupto
+  }
+}
+
 }
