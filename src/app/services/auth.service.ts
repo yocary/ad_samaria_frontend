@@ -129,7 +129,7 @@ isTokenExpired(token: string): boolean {
     if (!decoded?.exp) return true;
     return decoded.exp * 1000 < Date.now();
   } catch {
-    return true; // token inválido o corrupto
+    return true; 
   }
 }
 
