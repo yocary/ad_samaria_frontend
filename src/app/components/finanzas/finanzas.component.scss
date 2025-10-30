@@ -33,13 +33,10 @@
 }
 .kpi{ display:grid; gap:2px !important; }
 .kpi label{ color:#274258; font-weight:700; line-height:1.1; }
-.kinput{
-  height:28px !important;             /* bajo */
-  display:flex; align-items:center;
-  padding:0 8px !important;
-  background:#fff;
-  border:1px solid #d8e4ee; border-radius:6px;
+.kinput {
+  color: #2a3e55 !important;  /* gris oscuro consistente con el tema */
 }
+
 
 /* Tarjeta Tesorerías pegada a KPIs */
 .tre{

@@ -88,11 +88,13 @@ selectTreasury(t: Treasury) {
     maxWidth: '98vw',
     disableClose: false,
     autoFocus: false,
-    data: { treasuryId: t.id }     // <<--- AQUI SE ENVÍA EL ID
-  }).afterClosed().subscribe(changed => {
-    if (changed) this.loadTesorerias(this.searchTreas.value || '');
+    data: { treasuryId: t.id }
+  }).afterClosed().subscribe(() => {
+    // 🔁 Recargar siempre después de cerrar
+    this.loadTesorerias(this.searchTreas.value || '');
   });
 }
+
   // ------- Crear tesorería -------
   openAddTesoreria(): void {
     const ref = this.dialog.open(DialogAddTreasuryComponent, { width: '460px' });
