@@ -2,30 +2,30 @@
   <!-- HEADER -->
   <div class="finz__header">FINANZAS</div>
   <br />
-    <br />
-      <br />
-        <br />
+  <br />
+  <br />
+  <br />
 
-  <!-- KPI superiores -->
+  <!-- KPI superiores (GLOBAL/GENERAL) -->
   <section class="kpis">
     <div class="kpi">
       <label>Total de Ingresos</label>
-      <div class="kinput">Q {{ (selected?.incomes ?? 0) | number:'1.2-2' }}</div>
+      <div class="kinput">Q {{ totIngresos | number:'1.2-2' }}</div>
     </div>
     <div class="kpi">
       <label>Total de Egresos</label>
-      <div class="kinput">Q {{ (selected?.expenses ?? 0) | number:'1.2-2' }}</div>
+      <div class="kinput">Q {{ totEgresos | number:'1.2-2' }}</div>
     </div>
     <div class="kpi">
       <label>Saldo</label>
-      <div class="kinput">Q {{ (((selected?.incomes ?? 0) - (selected?.expenses ?? 0)) | number:'1.2-2') }}</div>
+      <div class="kinput">Q {{ totSaldo | number:'1.2-2' }}</div>
     </div>
   </section>
 
-    <br />
-      <br />
-        <br />
-          <br />
+  <br />
+  <br />
+  <br />
+  <br />
 
   <!-- TESORERÍAS -->
   <section class="tre">
@@ -75,7 +75,7 @@
     </div>
   </section>
 
-    <div class="footer">
+  <div class="footer">
     <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
   </div>
 </div>
