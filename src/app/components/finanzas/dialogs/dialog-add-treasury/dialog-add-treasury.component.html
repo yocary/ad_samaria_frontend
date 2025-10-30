@@ -1,24 +1,25 @@
-<form class="fin-dialog" [formGroup]="form" (ngSubmit)="save()">
-  <div class="fin-dialog__header">Agregar Tesorería</div>
+<h2 mat-dialog-title>Agregar Tesorería</h2>
 
-  <div class="fin-dialog__body">
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Nombre de la tesorería</mat-label>
-      <input matInput formControlName="name" />
-      <mat-error *ngIf="form.get('name')?.touched && form.get('name')?.invalid">Requerido</mat-error>
-    </mat-form-field>
+<mat-dialog-content [formGroup]="form" class="grid gap-3">
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Nombre de la tesorería</mat-label>
+    <input matInput formControlName="nombre" autocomplete="off" />
+    <mat-error *ngIf="form.get('nombre')?.hasError('required')">Requerido</mat-error>
+    <mat-error *ngIf="form.get('nombre')?.hasError('maxlength')">Máx. 120 caracteres</mat-error>
+  </mat-form-field>
 
-    <mat-form-field appearance="outline" class="w-full">
-      <mat-label>Estado</mat-label>
-      <mat-select formControlName="status">
-        <mat-option value="Activo">Activo</mat-option>
-        <mat-option value="Inactivo">Inactivo</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </div>
+  <mat-form-field appearance="outline" class="w-full">
+    <mat-label>Estado</mat-label>
+    <mat-select formControlName="estado">
+      <mat-option [value]="true">Activo</mat-option>
+      <mat-option [value]="false">Inactivo</mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-dialog-content>
 
-  <div class="fin-dialog__actions">
-    <button mat-raised-button color="primary" type="submit">Guardar</button>
-    <button mat-raised-button color="warn" type="button" (click)="cancel()">Cancelar</button>
-  </div>
-</form>
+<mat-dialog-actions align="end">
+  <button mat-stroked-button mat-dialog-close>Cancelar</button>
+  <button mat-flat-button color="primary" (click)="guardar()" [disabled]="form.invalid || saving">
+    Guardar
+  </button>
+</mat-dialog-actions>

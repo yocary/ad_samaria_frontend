@@ -1,100 +1,118 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs/operators';
-import { FinanzasService } from 'src/app/services/finanzas.service';
-import { Treasury, Movement } from 'src/app/models/finanzas.model';
-import { DialogAddTreasuryComponent } from './dialogs/dialog-add-treasury/dialog-add-treasury.component';
-import { DialogMovementComponent } from './dialogs/dialog-movement/dialog-movement.component'; 
-import { DialogTreasuryDetailComponent } from './dialogs/dialog-treasury-detail/dialog-treasury-detail.component';
 import { Router } from '@angular/router';
+
+import { FinanzasService } from 'src/app/services/finanzas.service';
+import { TesoreriaRow, Treasury } from 'src/app/models/finanzas.model';
+import { DialogAddTreasuryComponent } from './dialogs/dialog-add-treasury/dialog-add-treasury.component';
+import { DialogTreasuryDetailComponent } from './dialogs/dialog-treasury-detail/dialog-treasury-detail.component';
+// Si usas el detalle o movimientos, puedes importar sus diálogos cuando los integres
+// import { DialogTreasuryDetailComponent } from './dialogs/dialog-treasury-detail/dialog-treasury-detail.component';
+// import { DialogMovementComponent } from './dialogs/dialog-movement/dialog-movement.component';
 
 @Component({
   selector: 'app-finanzas',
   templateUrl: './finanzas.component.html',
   styleUrls: ['./finanzas.component.scss'],
-  encapsulation: ViewEncapsulation.None 
+  encapsulation: ViewEncapsulation.None
 })
 export class FinanzasComponent implements OnInit {
+
   treasuries: Treasury[] = [];
-  selected?: Treasury | null;
+  selected: Treasury | null = null;
 
   searchTreas = new FormControl('');
-  searchMov = new FormControl('');
 
-  // Movimientos
-  movements: Movement[] = [];
-  kpiIngresos = 0;
-  kpiEgresos = 0;
-  kpiSaldo = 0;
+  // Debe coincidir con tu HTML (matColumnDef="name|ingresos|egresos")
+  displayedTreColumns = ['name', 'ingresos', 'egresos'];
 
-  displayedTreColumns = ['name','ingresos','egresos'];
-  displayedMovColumns = ['index','date','concept','category','amount','actions'];
+  // Filtros actuales
+  estadoActual: 'activas' | 'inactivas' | 'todas' = 'activas';
+  periodoActual: 'mes' | 'mes_anterior' | 'anio' | 'todos' = 'mes';
 
-  tabIndex = 0; // 0=Movimientos
-
-  constructor(private fin: FinanzasService, private dialog: MatDialog, private router: Router) {}
+  constructor(
+    private finanzasSvc: FinanzasService,
+    private dialog: MatDialog,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-    this.fin.treasuries$.subscribe(list => this.treasuries = list);
-    this.fin.selectedTreasuryId$.subscribe(() => {
-      this.selected = this.fin.selectedTreasury ?? null;
-      this.updateKPIs();
-    });
-    this.fin.movements$.subscribe(list => {
-      this.movements = list;
-      this.updateKPIs();
-    });
+    this.loadTesorerias();
 
-    this.searchTreas.valueChanges.pipe(debounceTime(200)).subscribe(q => this.fin.filterByText(q ?? ''));
-    this.searchMov.valueChanges.pipe(debounceTime(200)).subscribe(q => {
-      const id = this.fin.selectedTreasury?.id;
-      if (!id) return;
-      const full = this.fin['movements'].filter((m: Movement) => m.treasuryId === id);
-      const text = (q || '').toLowerCase();
-      this.movements = text ? full.filter(m =>
-        (m.concept || '').toLowerCase().includes(text) ||
-        (m.category || '').toLowerCase().includes(text)
-      ) : full;
-      this.updateKPIs();
+    // Búsqueda (debounced)
+    this.searchTreas.valueChanges
+      .pipe(debounceTime(300))
+      .subscribe(q => this.loadTesorerias(q || ''));
+  }
+
+  // ------- Cargar listado -------
+  loadTesorerias(q: string = ''): void {
+    this.finanzasSvc.getTesorerias({
+      estado: this.estadoActual,
+      q,
+      periodo: this.periodoActual
+    }).subscribe({
+      next: (rows: TesoreriaRow[]) => {
+        const mapped = this.finanzasSvc.mapToUI(rows); // nombre/ingresos/egresos -> name/incomes/expenses
+        // Mantener selección si existe; si no, seleccionar primera
+        const prevId = this.selected?.id ?? null;
+        this.treasuries = mapped;
+        this.selected = prevId
+          ? (this.treasuries.find(t => t.id === prevId) ?? this.treasuries[0] ?? null)
+          : (this.treasuries[0] ?? null);
+      },
+      error: (err) => console.error('Error al cargar tesorerías', err)
     });
   }
 
-  private updateKPIs() {
-    const list = this.movements;
-    this.kpiIngresos = list.filter(m => m.type === 'Ingreso').reduce((a, b) => a + b.amount, 0);
-    this.kpiEgresos  = list.filter(m => m.type === 'Egreso').reduce((a, b) => a + b.amount, 0);
-    this.kpiSaldo    = this.kpiIngresos - this.kpiEgresos;
+  // ------- Filtro por estado desde chips -------
+  setStatusFilter(s: 'Inactivo' | 'Activo' | 'Todos'): void {
+    const map = { Inactivo: 'inactivas', Activo: 'activas', Todos: 'todas' } as const;
+    this.estadoActual = map[s];
+    this.loadTesorerias(this.searchTreas.value || '');
   }
 
-  setStatusFilter(s: 'Inactivo' | 'Activo' | 'Todos') { this.fin.filterByStatus(s === 'Todos' ? 'Todos' : s); }
-
-  openAddTreasury() {
-    this.dialog.open(DialogAddTreasuryComponent, { width: '560px', disableClose: true });
-  }
-
+  // ------- Selección de tesorería (para KPIs) -------
 selectTreasury(t: Treasury) {
-  this.fin.selectTreasury(t.id); // mantiene el estado del servicio
+  if (!t || t.id == null) {
+    console.error('Treasury sin id:', t);
+    return;
+  }
+
+  this.selected = t;
+
   this.dialog.open(DialogTreasuryDetailComponent, {
-    width: '980px',
+    width: '1100px',
     maxWidth: '98vw',
-    disableClose: true,
-    data: { treasuryId: t.id }
+    disableClose: false,
+    autoFocus: false,
+    data: { treasuryId: t.id }     // <<--- AQUI SE ENVÍA EL ID
+  }).afterClosed().subscribe(changed => {
+    if (changed) this.loadTesorerias(this.searchTreas.value || '');
   });
 }
-  openAddMovement() {
-    if (!this.selected) return;
-    this.dialog.open(DialogMovementComponent, {
-      width: '680px',
-      disableClose: true,
-      data: { treasuryId: this.selected.id }
+  // ------- Crear tesorería -------
+  openAddTesoreria(): void {
+    const ref = this.dialog.open(DialogAddTreasuryComponent, { width: '460px' });
+    ref.afterClosed().subscribe(ok => {
+      if (ok) {
+        // refrescar listado; selected se mantiene si coincide el id
+        this.loadTesorerias(this.searchTreas.value || '');
+        this.loadResumen?.();
+      }
     });
   }
 
-  deleteMovement(row: Movement) { this.fin.removeMovement(row.id); }
+  // ------- (Hook opcional si luego usas KPIs globales) -------
+  loadResumen(): void {
+    // Si después necesitas un resumen global:
+    // this.finanzasSvc.getResumenGeneral(this.periodoActual).subscribe(r => { ... });
+  }
 
-    regresar() {
+  // ------- Navegación -------
+  regresar(): void {
     this.router.navigate(['/dashboard']);
   }
 }
-

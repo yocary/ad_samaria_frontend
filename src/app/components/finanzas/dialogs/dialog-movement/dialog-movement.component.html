@@ -17,9 +17,17 @@
       <mat-datepicker #picker></mat-datepicker>
     </mat-form-field>
 
+    <!-- Concepto -> selector de Categoría según tipo -->
     <mat-form-field appearance="outline">
       <mat-label>Concepto</mat-label>
-      <input matInput formControlName="concept" />
+      <mat-select formControlName="categoriaId">
+        <mat-option *ngFor="let c of categorias" [value]="c.id">
+          {{ c.nombre }}
+        </mat-option>
+      </mat-select>
+      <mat-error *ngIf="form.controls.categoriaId.invalid && form.controls.categoriaId.touched">
+        Requerido
+      </mat-error>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
@@ -38,10 +46,50 @@
       </mat-select>
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
-      <mat-label>Miembro</mat-label>
-      <input matInput formControlName="memberName" placeholder="Nombre del miembro" />
-    </mat-form-field>
+<!-- Persona (autocomplete) -->
+<mat-form-field appearance="outline" class="span-1">
+  <mat-label>Persona</mat-label>
+  <input
+    matInput
+    placeholder="Escribe para buscar (mín. 2 letras)"
+    [formControl]="personaQuery"
+    [matAutocomplete]="autoPersonas"
+  />
+  <button
+    matSuffix
+    mat-icon-button
+    *ngIf="personaSeleccionada"
+    (click)="limpiarPersona()"
+    aria-label="Limpiar"
+  >
+    <mat-icon>close</mat-icon>
+  </button>
+
+  <mat-hint *ngIf="!personaSeleccionada">Escribe y selecciona de la lista</mat-hint>
+  <mat-hint *ngIf="personaSeleccionada">
+    Seleccionado: <strong>{{ personaSeleccionada?.nombre }}</strong>
+  </mat-hint>
+</mat-form-field>
+
+<mat-autocomplete
+  #autoPersonas="matAutocomplete"
+  (optionSelected)="seleccionarPersona($event.option.value)"
+  [displayWith]="displayPersona"
+>
+  <mat-option *ngFor="let p of (personas$ | async)" [value]="p">
+    {{ p.nombre }}
+  </mat-option>
+
+  <mat-option
+    *ngIf="(personas$ | async)?.length === 0 && (personaQuery.value?.length || 0) >= 2"
+    disabled
+  >
+    Sin resultados
+  </mat-option>
+</mat-autocomplete>
+
+<!-- Control oculto para enviar el id de la persona -->
+<input type="hidden" formControlName="personaId" />
 
     <mat-form-field appearance="outline" class="span-2">
       <mat-label>Observaciones</mat-label>

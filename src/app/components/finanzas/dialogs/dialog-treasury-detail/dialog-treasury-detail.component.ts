@@ -2,6 +2,7 @@ import { Component, Inject, OnDestroy, OnInit, ViewEncapsulation } from '@angula
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialog } from '@angular/material/dialog';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 
 import { FinanzasService } from 'src/app/services/finanzas.service';
 import { Movement, Treasury } from 'src/app/models/finanzas.model';
@@ -32,15 +33,16 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
   /* ---------- MOVIMIENTOS ---------- */
   searchMov = new FormControl('');
   movements: Movement[] = [];
-  private allMovements: Movement[] = []; // cache desde el servicio
   kpiIngresos = 0;
   kpiEgresos  = 0;
   kpiSaldo    = 0;
 
-  /* ---------- CATEGORÍAS ---------- */
+  /** Periodo actual del backend ('mes' | 'mes_anterior' | 'anio' | 'todos') */
+  private currentPeriod: 'mes'|'mes_anterior'|'anio'|'todos' = 'mes';
+
+  /* ---------- CATEGORÍAS (mock por ahora) ---------- */
   catName = new FormControl('');
   catType = new FormControl(''); // 'Ingreso' | 'Egreso'
-  // Tabla categorías (mock; reemplaza por datos del backend cuando tengas)
   catList: Array<{
     id: number;
     name: string;
@@ -54,7 +56,7 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
   ];
   private catIdSeq = 3;
 
-  /* ---------- USUARIOS ---------- */
+  /* ---------- USUARIOS (mock por ahora) ---------- */
   userRoles = ['Administrador', 'Tesorero', 'Revisor', 'Lector'];
   users: { id:number; name:string; email:string; role:string }[] = [
     { id: 1, name: 'Nombre usuario', email: 'usuario@e.com.gt', role: 'Administrador' }
@@ -62,7 +64,7 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
   userName = new FormControl('');
   userEmail = new FormControl('');
   userRole  = new FormControl('');
-  userEditing = false;                 // muestra la fila de alta/edición
+  userEditing = false;
   private editingId: number|null = null;
 
   /* ---------- EDIT TESORERÍA ---------- */
@@ -90,53 +92,57 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.treasuryId = this.data.treasuryId;
 
-    // 1) Tesorerías (público)
+    // 1) Sincronizar tesorería (del store del servicio si ya está cargada)
     this.subs.add(
-      this.fin.treasuries$.subscribe((list) => {
-        this.treasury = list.find(t => t.id === this.treasuryId) || this.fin.selectedTreasury || null;
+      this.fin.treasuries$.subscribe((list: Treasury[]) => {
+        this.treasury = list?.find(t => t.id === this.treasuryId) || this.treasury || null;
 
         if (this.treasury) {
           this.editForm.patchValue({
             name: this.treasury.name,
             status: this.treasury.status,
-            // si tu modelo guarda moneda, setéala aquí
-            currency: (this as any).treasury.currency || 'GTQ'
+            currency: (this as any).treasury?.currency || 'GTQ'
           }, { emitEvent: false });
         }
       })
     );
 
-    // 2) Movimientos (público)
+    // 2) Buscar → reconsultar backend con q (debounced)
     this.subs.add(
-      this.fin.movements$.subscribe((list) => {
-        this.allMovements = list;
-        this.applyMovementFilters();
+      this.searchMov.valueChanges.pipe(debounceTime(250)).subscribe(() => {
+        this.reloadMovimientos();      // pide al backend con q actual
       })
     );
 
-    // 3) Filtro de texto
-    this.subs.add(
-      this.searchMov.valueChanges.subscribe(() => this.applyMovementFilters())
-    );
+    // 3) Primera carga: movimientos + resumen
+    this.reloadMovimientos();
+    this.cargarResumen(this.currentPeriod);
   }
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
   }
 
-  /* ===== Movimientos ===== */
-  private applyMovementFilters(): void {
-    const base = this.allMovements.filter(m => m.treasuryId === this.treasuryId);
-    const text = ((this.searchMov.value as string) ?? '').toLowerCase().trim();
+  /** Llama al backend para recargar movimientos usando periodo + q actuales */
+  private reloadMovimientos(): void {
+    this.fin.loadMovimientos(this.treasuryId, {
+      periodo: this.currentPeriod,
+      q: (this.searchMov.value || '').toString().trim()
+    }).subscribe(list => {
+      // El backend ya devuelve movimientos de esta tesorería y filtrados por q
+      this.movements = list || [];
+      this.updateKPIs();
+    });
+  }
 
-    this.movements = text
-      ? base.filter(m =>
-          ((m.concept || '').toLowerCase().includes(text)) ||
-          ((m.category || '').toLowerCase().includes(text))
-        )
-      : base;
-
-    this.updateKPIs();
+  /** Llama al backend para traer totales de la tesorería y refrescar KPIs */
+  private cargarResumen(periodo: 'mes'|'mes_anterior'|'anio'|'todos'): void {
+    this.fin.getResumenTesoreria(this.treasuryId, periodo)
+      .subscribe(r => {
+        this.kpiIngresos = r?.totalIngresos ?? 0;
+        this.kpiEgresos  = r?.totalEgresos  ?? 0;
+        this.kpiSaldo    = this.kpiIngresos - this.kpiEgresos;
+      });
   }
 
   private updateKPIs() {
@@ -146,12 +152,30 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
     this.kpiSaldo    = this.kpiIngresos - this.kpiEgresos;
   }
 
+  /** Mapea el select de UI a periodo del backend y recarga */
+  periodChanged(v: string){
+    const map: Record<string, 'mes'|'mes_anterior'|'anio'|'todos'> = {
+      all: 'todos',
+      m1:  'mes',
+      m3:  'mes_anterior',
+      y1:  'anio'
+    };
+    this.currentPeriod = map[v] || 'mes';
+    this.reloadMovimientos();
+    this.cargarResumen(this.currentPeriod);
+  }
+
   addMovement() {
     this.dialog.open(DialogMovementComponent, {
       width: '680px',
       disableClose: true,
       data: { treasuryId: this.treasuryId }
-    }).afterClosed().subscribe(); // movements$ refrescará solo
+    }).afterClosed().subscribe((changed) => {
+      if (changed) {
+        this.reloadMovimientos();
+        this.cargarResumen(this.currentPeriod);
+      }
+    });
   }
 
   editMovement(row: Movement){
@@ -159,23 +183,29 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
       width: '680px',
       disableClose: true,
       data: { treasuryId: this.treasuryId, movement: row }
-    }).afterClosed().subscribe();
+    }).afterClosed().subscribe((changed) => {
+      if (changed) {
+        this.reloadMovimientos();
+        this.cargarResumen(this.currentPeriod);
+      }
+    });
   }
 
   deleteMovement(row: Movement){
-    this.fin.removeMovement(row.id);
+    // Cuando implementes delete en el servicio, refresca:
+    // this.fin.deleteMovement(row.id).subscribe(() => {
+    //   this.reloadMovimientos();
+    //   this.cargarResumen(this.currentPeriod);
+    // });
   }
 
   download(){ /* TODO: exportar CSV */ }
-  periodChanged(_v: string){ /* TODO: filtrar por periodo */ }
 
-  /* ===== Categorías ===== */
+  /* ===== Categorías (mock) ===== */
   addCategory(): void {
     const name = (this.catName.value || '').trim();
     const type = (this.catType.value || '').trim();
-
     if (!name || (type !== 'Ingreso' && type !== 'Egreso')) { return; }
-
     this.catList.push({ id: this.catIdSeq++, name, type: type as any });
     this.catName.reset();
     this.catType.reset();
@@ -208,7 +238,7 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
     this.catList = this.catList.filter(x => x.id !== c.id);
   }
 
-  /* ===== Usuarios ===== */
+  /* ===== Usuarios (mock) ===== */
   startAddUser(){
     this.editingId = null;
     this.userName.reset();
@@ -232,11 +262,9 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
     if (!name || !email || !role) return;
 
     if (this.editingId == null) {
-      // Alta
       const newId = (this.users.length ? Math.max(...this.users.map(u => u.id)) : 0) + 1;
       this.users.push({ id: newId, name, email, role });
     } else {
-      // Edición
       const idx = this.users.findIndex(u => u.id === this.editingId);
       if (idx >= 0) this.users[idx] = { id: this.editingId, name, email, role };
     }
