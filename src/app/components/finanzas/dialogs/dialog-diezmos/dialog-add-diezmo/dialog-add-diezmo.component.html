@@ -1,6 +1,7 @@
 <form [formGroup]="form" (ngSubmit)="save()" class="dz-form">
   <div class="title">{{ isEdit ? 'Editar' : 'Agregar' }} Ingresos/Egresos</div>
 
+  <!-- Tipo -->
   <mat-form-field appearance="outline" class="w-full">
     <mat-label>Tipo de movimiento</mat-label>
     <mat-select formControlName="tipo">
@@ -9,22 +10,74 @@
     </mat-select>
   </mat-form-field>
 
+  <!-- Persona (autocomplete obligatorio) -->
   <mat-form-field appearance="outline" class="w-full">
-    <mat-label>Nombre</mat-label>
-    <input matInput formControlName="nombre" />
+    <mat-label>Persona</mat-label>
+    <input
+      matInput
+      placeholder="Escribe para buscar (mín. 2 letras)"
+      [formControl]="personaQuery"
+      [matAutocomplete]="autoPersonas"
+    />
+    <button
+      matSuffix
+      mat-icon-button
+      *ngIf="personaSeleccionada"
+      (click)="limpiarPersona()"
+      aria-label="Limpiar"
+      type="button"
+    >
+      <mat-icon>close</mat-icon>
+    </button>
+
+    <mat-hint *ngIf="!personaSeleccionada">Escribe y selecciona de la lista</mat-hint>
+    <mat-hint *ngIf="personaSeleccionada">
+      Seleccionado: <strong>{{ personaSeleccionada?.nombre }}</strong>
+    </mat-hint>
+
+    <mat-error *ngIf="form.controls.personaId.invalid && form.controls.personaId.touched">
+      Selecciona una persona de la lista
+    </mat-error>
   </mat-form-field>
 
+  <mat-autocomplete
+    #autoPersonas="matAutocomplete"
+    (optionSelected)="seleccionarPersona($event.option.value)"
+    [displayWith]="displayPersona"
+  >
+    <mat-option *ngFor="let p of (personas$ | async)" [value]="p">
+      {{ p.nombre }}
+    </mat-option>
+    <mat-option
+      *ngIf="(personas$ | async)?.length === 0 && (personaQuery.value?.length || 0) >= 2"
+      disabled
+    >
+      Sin resultados
+    </mat-option>
+  </mat-autocomplete>
+
+  <!-- Control oculto obligatorio para enviar el id -->
+  <input type="hidden" formControlName="personaId" />
+
+  <!-- Cantidad -->
   <mat-form-field appearance="outline" class="w-full">
     <mat-label>Cantidad</mat-label>
     <span matPrefix>Q&nbsp;</span>
     <input matInput type="number" step="0.01" formControlName="cantidad" />
+    <mat-error *ngIf="form.controls.cantidad.invalid && form.controls.cantidad.touched">
+      Ingresa un monto válido
+    </mat-error>
   </mat-form-field>
 
+  <!-- Fecha -->
   <mat-form-field appearance="outline" class="w-full">
     <mat-label>Fecha</mat-label>
     <input matInput [matDatepicker]="dp" formControlName="fecha" />
     <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
     <mat-datepicker #dp></mat-datepicker>
+    <mat-error *ngIf="form.controls.fecha.invalid && form.controls.fecha.touched">
+      Selecciona una fecha
+    </mat-error>
   </mat-form-field>
 
   <div class="actions">

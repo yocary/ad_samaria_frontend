@@ -1,13 +1,9 @@
 <div class="finz">
   <!-- HEADER -->
-  <div class="finz__header">FINANZAS</div>
-  <br />
-  <br />
-  <br />
-  <br />
+  <header class="finz__header" role="heading" aria-level="1">FINANZAS</header>
 
   <!-- KPI superiores (GLOBAL/GENERAL) -->
-  <section class="kpis">
+  <section class="kpis" aria-label="Indicadores globales">
     <div class="kpi">
       <label>Total de Ingresos</label>
       <div class="kinput">Q {{ totIngresos | number:'1.2-2' }}</div>
@@ -22,71 +18,71 @@
     </div>
   </section>
 
-  <br />
-  <br />
-  <br />
-  <br />
-
   <!-- TESORERÍAS -->
-  <section class="tre">
-    <!-- fila 1: chips centrados -->
-    <div class="tre__chips">
-      <button class="chip chip--gray" (click)="setStatusFilter('Inactivo')">Inactivo</button>
-      <button class="chip chip--green" (click)="setStatusFilter('Activo')">Activo</button>
-      <button class="chip chip--light" (click)="setStatusFilter('Todos')">Todo</button>
+  <section class="tre" aria-label="Tesorerías">
+    <!-- Fila 1: chips centrados -->
+    <div class="tre__chips" role="tablist" aria-label="Filtro por estado">
+      <button class="chip chip--gray"  (click)="setStatusFilter('Inactivo')" aria-label="Mostrar inactivos">Inactivo</button>
+      <button class="chip chip--green" (click)="setStatusFilter('Activo')"   aria-label="Mostrar activos">Activo</button>
+      <button class="chip chip--light" (click)="setStatusFilter('Todos')"    aria-label="Mostrar todos">Todo</button>
     </div>
 
-    <!-- fila 2: botón izq + buscador der -->
+    <!-- Fila 2: Acciones + búsqueda -->
     <div class="tre__toolbar">
-<button class="toolbar-btn" (click)="openAddTesoreria()">+ Agregar Tesorería</button>
-<button class="toolbar-btn" (click)="openDiezmos()">Diezmos</button>
-
-
-      <div class="right">
-
-        <button class="btn btn--secondary" (click)="downloadExcel()">
-          <mat-icon>download</mat-icon>&nbsp;Descargar Excel
+      <div class="toolbar-left">
+        <button class="toolbar-btn" type="button" (click)="openAddTesoreria()" aria-label="Agregar tesorería">
+          + Agregar Tesorería
         </button>
-        <div class="search">
-          <mat-icon>search</mat-icon>
-          <input [formControl]="searchTreas" placeholder="Buscar" />
-          <button *ngIf="searchTreas.value" (click)="searchTreas.setValue('')">
-            <mat-icon>close</mat-icon>
-          </button>
-        </div>
 
-
+        <button class="toolbar-btn" type="button" (click)="openDiezmos()" aria-label="Abrir diezmos">
+          Diezmos
+        </button>
       </div>
 
+      <div class="right">
+        <button class="btn btn--excel" type="button" (click)="downloadExcel()" aria-label="Descargar Excel">
+          <mat-icon aria-hidden="true">download</mat-icon>
+          <span>Descargar Excel</span>
+        </button>
+
+        <label class="search" aria-label="Buscar tesorería">
+          <mat-icon aria-hidden="true">search</mat-icon>
+          <input [formControl]="searchTreas" placeholder="Buscar" aria-label="Buscar" />
+          <button type="button" *ngIf="searchTreas.value" (click)="searchTreas.setValue('')" aria-label="Limpiar búsqueda">
+            <mat-icon aria-hidden="true">close</mat-icon>
+          </button>
+        </label>
+      </div>
     </div>
 
-    <!-- tabla -->
-    <div class="tre__table">
-      <table mat-table [dataSource]="treasuries">
+    <!-- Tabla -->
+    <div class="tre__table" role="region" aria-label="Listado de tesorerías">
+      <table mat-table [dataSource]="treasuries" class="mat-elevation-z0" aria-label="Tabla de tesorerías">
         <ng-container matColumnDef="name">
-          <th mat-header-cell *matHeaderCellDef></th>
+          <th mat-header-cell *matHeaderCellDef> Tesorería </th>
           <td mat-cell *matCellDef="let t">
             <a class="tre-link" (click)="selectTreasury(t)">{{ t.name }}</a>
           </td>
         </ng-container>
 
         <ng-container matColumnDef="ingresos">
-          <th mat-header-cell *matHeaderCellDef>Ingresos</th>
+          <th mat-header-cell *matHeaderCellDef> Ingresos </th>
           <td mat-cell *matCellDef="let t">Q {{ t.incomes | number:'1.2-2' }}</td>
         </ng-container>
 
         <ng-container matColumnDef="egresos">
-          <th mat-header-cell *matHeaderCellDef>Egresos</th>
+          <th mat-header-cell *matHeaderCellDef> Egresos </th>
           <td mat-cell *matCellDef="let t">Q {{ t.expenses | number:'1.2-2' }}</td>
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedTreColumns"></tr>
-        <tr mat-row *matRowDef="let row; columns: displayedTreColumns"></tr>
+        <tr mat-row         *matRowDef="let row; columns: displayedTreColumns"></tr>
       </table>
     </div>
   </section>
 
-  <div class="footer">
-    <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
-  </div>
+  <!-- Footer -->
+  <footer class="footer">
+    <button mat-stroked-button color="primary" type="button" (click)="regresar()">Regresar</button>
+  </footer>
 </div>

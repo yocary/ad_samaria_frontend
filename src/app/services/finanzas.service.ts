@@ -40,17 +40,18 @@ export interface TipoMovimientoMini {
 
 export interface DiezmoRow {
   id: number;
-  nombre: string;
+  personaId: number;              // 👈 agregado: id de persona
+  nombre: string;                 // devuelto por el backend para mostrar
   cantidad: number;
-  fecha: string;                 // yyyy-MM-dd
+  fecha: string;                  // yyyy-MM-dd
   tipo: 'Ingreso' | 'Egreso';
 }
 
 export interface CrearDiezmoReq {
   tipo: 'Ingreso' | 'Egreso';
-  nombre: string;
+  personaId: number;              // 👈 ahora enviamos personaId
   cantidad: number;
-  fecha: string;                 // yyyy-MM-dd
+  fecha: string;                  // yyyy-MM-dd
 }
 
 @Injectable({ providedIn: 'root' })
@@ -296,7 +297,7 @@ export class FinanzasService {
     return this.http.delete<void>(`${this.base}/eliminarTesoreria/${id}`);
   }
 
-  getDiezmos(params: { periodo?: 'mes'|'mes_anterior'|'anio'|'todos'; q?: string }){
+   getDiezmos(params: { periodo?: 'mes'|'mes_anterior'|'anio'|'todos'; q?: string }){
     let p = new HttpParams().set('periodo', params.periodo || 'mes');
     if (params.q) p = p.set('q', params.q);
     return this.http.get<{ items: DiezmoRow[], totales: { ingresos:number; egresos:number } }>(this.baseDiez, { params: p });

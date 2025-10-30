@@ -1,418 +1,258 @@
-/* ===== HARD OVERRIDES PARA QUITAR ESPACIOS ===== */
-
-/* Contenedor general */
-.finz{
-  --w: min(1180px, 96%);
-  background:#f3f6f9;
-  min-height:100vh;
-  padding:6px 0 12px !important;     /* MUY poco padding vertical */
-  display:grid;
-  row-gap:209px !important;             /* poco espacio entre bloques */
-  column-gap:0;
-  place-items:start center;
-}
-
-/* Elimina márgenes de todos los hijos directos (header, sections, etc.) */
-.finz > * { margin:0 !important; }
-
-/* Título */
-.finz__header{
-  width:var(--w);
-  height:34px !important;             /* más bajo */
-  display:grid; place-items:center;
-  background:#244b6b; color:#fff; font-weight:800;
-  border-radius:10px; box-shadow:0 3px 8px rgba(0,0,0,.05);
-}
-
-/* KPIs (3 columnas pegadas) */
-.kpis{
-  width:var(--w);
-  display:grid; grid-template-columns:repeat(3,1fr);
-  gap:8px !important;                 /* menos separación entre KPIs */
-  margin:0 !important;
-}
-.kpi{ display:grid; gap:2px !important; }
-.kpi label{ color:#274258; font-weight:700; line-height:1.1; }
-.kinput {
-  color: #2a3e55 !important;  /* gris oscuro consistente con el tema */
-}
-
-
-/* Tarjeta Tesorerías pegada a KPIs */
-.tre{
-  width:var(--w);
-  background:#fff;
-  border:1px solid #cfdbe6;
-  border-radius:8px;
-  padding:8px !important;             /* menos padding */
-  box-shadow:0 4px 10px rgba(25,55,100,.05);
-  display:grid;
-  gap:6px !important;                 /* compacta contenido interno */
-  margin-top:4px !important;
-}
-
-/* Chips centrados */
-.tre__chips{
-  display:flex; justify-content:center; gap:6px !important; margin:0 !important;
-}
-.chip{
-  border:0; height:24px !important; padding:0 10px !important;
-  border-radius:14px; font-weight:800; color:#fff; cursor:pointer; font-size:12px;
-}
-.chip--gray{  background:#7e8086; }
-.chip--green{ background:#8fd18a; }
-.chip--light{ background:#edf1f5; color:#2a3e55; }
-
-/* Toolbar: botón izq + buscador der */
-.tre__toolbar{
-  display:grid !important;
-  grid-template-columns:auto 1fr !important;
-  align-items:center;
-  gap:8px !important;
-  margin:0 !important;
-}
-.btn{
-  border:0; border-radius:6px; padding:6px 10px !important; font-weight:800; cursor:pointer; font-size:13px;
-}
-.btn--primary{ background:#2a67a6; color:#fff; }
-
-/* Buscador pequeño */
-.search{
-  justify-self:end;
-  width:100%; max-width:380px; height:28px !important;
-  display:flex; align-items:center; gap:6px;
-  background:#fff; border:1px solid #cfd9e6; border-radius:16px; padding:0 8px !important;
-}
-.search mat-icon{ font-size:16px !important; width:16px; height:16px; color:#7b8a9c; }
-.search input{ flex:1; border:0; outline:0; background:transparent; font-size:13px; line-height:1; }
-.search button{ border:0; background:transparent; display:grid; place-items:center; cursor:pointer; }
-
-/* Tabla: compactar filas y celdas (Angular Material MDC) */
-.tre__table{
-  border:1px solid #bfe3ed;
-  border-radius:6px;
-  overflow:hidden;
-}
-
-/* Altura de filas/encabezados */
-.tre__table .mat-mdc-header-row,
-.tre__table .mat-mdc-row{
-  height:32px !important;             /* reduce altura por fila */
-  min-height:32px !important;
-}
-
-/* Padding de celdas */
-.tre__table .mat-mdc-header-cell,
-.tre__table .mat-mdc-cell{
-  padding:0 8px !important;           /* celdas más compactas */
-}
-
-/* Estilos de colores de tabla */
-.tre__table .mat-mdc-header-cell{
-  background:#f5fbff !important; color:#517089 !important; font-weight:700;
-  border-bottom:1px solid #e3f2f7 !important;
-}
-.tre__table .mat-mdc-cell{
-  border-top:1px solid #eef6fa;
-}
-
-/* Ancho de primera columna */
-.tre__table th:first-child{ width:40%; }
-
-/* Link de tesorería */
-.tre-link{ color:#1f5d84; font-weight:800; text-decoration:none; }
-.tre-link:hover{ text-decoration:underline; }
-
-/* Responsive */
-@media (max-width: 900px){
-  .kpis{ grid-template-columns:1fr; }
-  .tre__toolbar{ grid-template-columns:1fr !important; }
-  .search{ justify-self:stretch; max-width:none; }
-}
-
-/* ================== MODO ULTRA-COMPACTO (pegado al final) ================== */
-/* 1) Reset duro dentro de .finz */
-:host .finz,
-:host .finz * {
-  box-sizing: border-box;
-}
-
+/* =========================
+   FINANZAS – DISEÑO COMPACTO Y LIMPIO (VERSIÓN FINAL)
+   ========================= */
 
 .finz {
   --w: min(1180px, 96%);
-  background: #f3f6f9;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --bg: #f5f7fb;
+  --card: #ffffff;
+  --ink: #1d2b3a;
+  --muted: #6b7c93;
+  --primary: #1976d2;
+  --primary-600: #1565c0;
+  --border: #dbe5ef;
+  --border-soft: #e8eef6;
+  background: var(--bg);
   min-height: 100vh;
-  padding: 6px 0 !important;     /* quita aire vertical global */
-  display: block !important;      /* NO grid, NO gap */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem; /* 🔹 antes 1rem → menos espacio vertical */
+  padding: 1rem 0 1.5rem;
+  color: var(--ink);
 }
 
-/* 2) Quita márgenes/paddings “fantasmas” de hijos directos */
-.finz > * {
-  margin: 0 !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-/* 3) Espaciado controlado entre bloques (sólo 4px) */
-.finz > * + * {
-  margin-top: 4px !important;
-}
-
-/* 4) Header compacto */
+/* HEADER */
 .finz__header {
   width: var(--w);
-  height: 32px !important;
+  height: 40px;
   display: grid;
   place-items: center;
   background: #244b6b;
   color: #fff;
   font-weight: 800;
-  border-radius: 10px;
-  box-shadow: 0 3px 8px rgba(0,0,0,.05);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 10px rgba(17, 41, 85, 0.1);
 }
 
-/* 5) KPIs en 3 columnas pero SIN márgenes ni gaps grandes */
+/* =========================
+   KPIs – COMPACTOS Y CENTRADOS
+   ========================= */
 .kpis {
   width: var(--w);
-  display: grid !important;
-  grid-template-columns: repeat(3, 1fr) !important;
-  gap: 6px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-.kpi { display: grid; gap: 2px !important; margin: 0 !important; }
-.kpi label { font-weight: 700; color: #274258; line-height: 1.1; margin: 0 !important; }
-.kinput {
-  height: 28px !important;
-  border: 1px solid #d8e4ee;
-  border-radius: 6px;
-  background: #fff;
-  padding: 0 8px !important;
-  display: flex; align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.6rem;
+  margin-top: 0.2rem; /* 🔹 separa ligeramente del header */
 }
 
-/* 6) Tarjeta Tesorerías: sin márgenes extra */
+.kpi {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.7rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  box-shadow: 0 2px 4px rgba(25, 55, 100, 0.05);
+  min-height: 52px; /* 🔹 más compacto */
+}
+
+.kpi label {
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.kinput {
+  font-size: 0.85rem;
+  border-radius: 5px;
+  background: #f9fafb;
+  border: 1px solid var(--border-soft);
+  padding: 2px 6px;
+  color: #1f5d84;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* =========================
+   TARJETA PRINCIPAL
+   ========================= */
 .tre {
   width: var(--w);
-  margin: 0 !important;
-  padding: 8px !important;
-  border: 1px solid #cfdbe6;
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 4px 10px rgba(25,55,100,.05);
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 0.8rem;
+  box-shadow: 0 6px 14px rgba(25, 55, 100, 0.08);
+  display: grid;
+  gap: 0.8rem;
 }
 
-/* Chips centrados, compactos */
+/* =========================
+   CHIPS DE ESTADO
+   ========================= */
 .tre__chips {
-  display: flex !important;
+  display: flex;
   justify-content: center;
   align-items: center;
-  gap: 6px !important;
-  margin: 0 !important;
-  padding: 0 !important;
+  gap: 0.5rem;
 }
+
 .chip {
-  height: 24px !important;
-  padding: 0 10px !important;
-  border-radius: 14px;
-  font-weight: 800;
-  font-size: 12px;
-  border: 0;
+  border: none;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.75rem;
   cursor: pointer;
-  color: #fff;
+  transition: transform 0.06s ease;
 }
-.chip--gray  { background:#7e8086; }
-.chip--green { background:#8fd18a; }
-.chip--light { background:#edf1f5; color:#2a3e55; }
+.chip:active { transform: translateY(1px); }
+.chip--gray  { background: #8a93a4; color: #fff; }
+.chip--green { background: #6cc090; color: #0e3a27; }
+.chip--light { background: #edf2f7; color: #2a3e55; }
 
-/* Toolbar: botón izquierda + buscador derecha, sin aire */
+/* =========================
+   TOOLBAR
+   ========================= */
 .tre__toolbar {
-  display: grid !important;
-  grid-template-columns: auto 1fr !important;
-  align-items: center;
-  gap: 8px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-.btn {
-  border: 0;
-  border-radius: 6px;
-  padding: 6px 10px !important;
-  font-weight: 800;
-  font-size: 13px;
-  cursor: pointer;
-}
-.btn--primary { background:#2a67a6; color:#fff; }
-
-/* Buscador mini */
-.search {
-  justify-self: end;
-  width: 100%;
-  max-width: 360px;
-  height: 28px !important;
-  display: flex; align-items: center; gap: 6px;
-  padding: 0 8px !important;
-  border: 1px solid #cfd9e6; border-radius: 16px;
-  background: #fff;
-  margin: 0 !important;
-}
-.search mat-icon { font-size: 16px !important; width: 16px; height: 16px; color:#7b8a9c; }
-.search input { flex: 1; border: 0; outline: 0; background: transparent; font-size: 13px; line-height: 1; }
-.search button { border: 0; background: transparent; display: grid; place-items: center; cursor: pointer; }
-
-/* 7) Tabla Material: sin espacios extras y filas compactas */
-.tre__table {
-  border: 1px solid #bfe3ed;
-  border-radius: 6px;
-  overflow: hidden;
-  margin: 0 !important;
-  padding: 0 !important;
-}
-.tre__table .mat-mdc-table { margin: 0 !important; }
-
-.tre__table .mat-mdc-header-row,
-.tre__table .mat-mdc-row {
-  height: 30px !important;
-  min-height: 30px !important;
-}
-:host .tre__table .mat-mdc-header-cell,
-:host .tre__table .mat-mdc-cell { padding: 0 8px !important; }
-
-
-.tre__table .mat-mdc-header-cell {
-  background: #f5fbff !important;
-  color: #517089 !important;
-  font-weight: 700;
-  border-bottom: 1px solid #e3f2f7 !important;
-}
-.tre__table .mat-mdc-cell { border-top: 1px solid #eef6fa; }
-.tre__table th:first-child { width: 40%; }
-.tre-link { color:#1f5d84; font-weight:800; text-decoration:none; }
-.tre-link:hover { text-decoration: underline; }
-
-/* 8) Responsive: sin aire adicional */
-@media (max-width: 900px) {
-  .kpis { grid-template-columns: 1fr !important; }
-  .tre__toolbar { grid-template-columns: 1fr !important; }
-  .search { justify-self: stretch; max-width: none; }
-}
-
-/* Alinea botón + buscador a la derecha */
-.tre__toolbar .right {
-  display: flex !important;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  width: 100%;
-}
-
-/* Botón Descargar Excel */
-.btn--excel {
   display: flex;
   align-items: center;
-  gap: 4px;
-  background: #e8f3ff;              /* azul muy claro */
-  color: #1f5d84;                   /* azul oscuro del tema */
-  border: 1px solid #b5d5f5;
-  border-radius: 6px;
-  padding: 6px 10px !important;
-  font-weight: 700;
-  font-size: 13px;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.6rem;
 }
 
-.btn--excel mat-icon {
-  font-size: 16px;
-  height: 16px;
-  width: 16px;
-}
-
-.btn--excel:hover {
-  background: #d7ebff;              /* un poco más fuerte al hover */
-  border-color: #9ccaf3;
-}
-
-/* Mantén el buscador igual */
-.search {
-  justify-self: end;
-  width: 100%;
-  max-width: 360px;
-  height: 28px !important;
+.toolbar-left {
   display: flex;
   align-items: center;
-  gap: 6px;
-  padding: 0 8px !important;
-  border: 1px solid #cfd9e6;
-  border-radius: 16px;
-  background: #fff;
-  margin: 0 !important;
+  gap: 0.5rem;
 }
 
 .toolbar-btn {
-  background-color: #1976d2;
-  color: white;
+  background: var(--primary);
+  color: #fff;
   border: none;
-  border-radius: 8px;
-  height: 40px;
-  min-width: 180px;
-  font-size: 14px;
-  font-weight: 500;
+  border-radius: 6px;
+  height: 32px;
+  min-width: 150px;
+  padding: 0 12px;
+  font-size: 0.85rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background 0.2s ease;
 }
+.toolbar-btn:hover { background: var(--primary-600); }
 
-.toolbar-btn:hover {
-  background-color: #1565c0;
-}
-
-/* Normaliza los botones principales */
-.tre__toolbar .btn.btn--primary {
-  min-width: 180px;     /* mismo ancho */
-  height: 40px;         /* altura consistente */
-  font-size: 14px;      /* texto uniforme */
-  font-weight: 500;
-  border-radius: 8px;
-  padding: 0 16px;
-  margin-right: 8px;    /* separa entre botones */
-}
-
-/* Si usas Angular Material dentro de estos botones */
-.tre__toolbar .btn.btn--primary mat-icon {
-  font-size: 18px;
-  vertical-align: middle;
-}
-
-/* Ajuste opcional para centrar el grupo de botones */
-.tre__toolbar {
+.right {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-/* === Ajuste final: botones iguales en toolbar === */
-.tre__toolbar {
-  display: flex !important;
+.btn--excel {
+  display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.3rem;
+  background: #eaf3ff;
+  color: #1f5d84;
+  border: 1px solid #c8dcfb;
+  border-radius: 6px;
+  height: 32px;
+  padding: 0 10px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+.btn--excel:hover { background: #d9eaff; border-color: #b0cffc; }
+
+/* =========================
+   BUSCADOR
+   ========================= */
+.search {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  height: 32px;
+  padding: 0 8px;
+}
+.search mat-icon { color: #7b8a9c; font-size: 16px; }
+.search input {
+  border: none;
+  outline: none;
+  font-size: 0.85rem;
+  min-width: 150px;
+  background: transparent;
+}
+.search button {
+  border: none;
+  background: transparent;
+  cursor: pointer;
 }
 
-.tre__toolbar .btn--primary {
-  min-width: 160px !important;   /* ancho uniforme */
-  height: 32px !important;       /* altura uniforme */
-  font-size: 13px !important;
-  font-weight: 700 !important;
-  border-radius: 6px !important;
-  padding: 0 10px !important;
-  line-height: 1 !important;
+/* =========================
+   TABLA
+   ========================= */
+.tre__table {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.tre__table .mat-mdc-header-row,
+.tre__table .mat-mdc-row {
+  height: 30px;
+}
+.tre__table .mat-mdc-header-cell,
+.tre__table .mat-mdc-cell {
+  padding: 0 8px;
+  font-size: 0.85rem;
+}
+.tre__table .mat-mdc-header-cell {
+  background: #f7fbff;
+  color: #4b6a86;
+  font-weight: 700;
+  border-bottom: 1px solid #e6f0f7;
+}
+.tre__table .mat-mdc-cell {
+  border-top: 1px solid #f1f5fa;
+}
+.tre-link {
+  color: #1f5d84;
+  font-weight: 700;
+  text-decoration: none;
+}
+.tre-link:hover { text-decoration: underline; }
+
+/* =========================
+   FOOTER – REGRESAR
+   ========================= */
+.footer {
+  width: var(--w);
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 0.3rem; /* 🔹 más corto */
+}
+.footer button[mat-stroked-button] {
+  font-size: 0.8rem;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 6px;
 }
 
-/* Evita que “Diezmos” crezca por flex */
-.tre__toolbar .btn--primary:nth-child(2) {
-  flex: none !important;
-}
-
-/* Mantiene el grupo alineado */
-.tre__toolbar > button.btn--primary {
-  margin-right: 8px !important;
+/* =========================
+   RESPONSIVE
+   ========================= */
+@media (max-width: 900px) {
+  .kpis { grid-template-columns: 1fr; }
+  .toolbar-btn { flex: 1; }
+  .right { flex-wrap: wrap; justify-content: flex-end; }
 }
