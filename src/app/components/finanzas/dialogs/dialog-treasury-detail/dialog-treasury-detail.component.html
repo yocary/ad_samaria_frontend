@@ -32,7 +32,10 @@
             <input [formControl]="searchMov" placeholder="Buscar" />
           </div>
 
-          <button mat-stroked-button (click)="download()">Descargar</button>
+          <button mat-stroked-button (click)="downloadMovimientosExcel()">
+  <mat-icon>download</mat-icon>
+  Descargar Excel
+</button>
 
           <mat-form-field appearance="outline" class="period">
             <mat-label>Periodo</mat-label>

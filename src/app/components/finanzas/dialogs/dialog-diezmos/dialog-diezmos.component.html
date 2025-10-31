@@ -1,25 +1,31 @@
 <div class="dz">
   <div class="dz__header">DIEZMOS</div>
 
-<section class="kpis-row">
-  <div class="kpi purple">
-    <div class="kpi-title">Total Ingresos</div>
-    <div class="kpi-val">Q {{ totIngresos | number:'1.2-2' }}</div>
-  </div>
-  <div class="kpi teal">
-    <div class="kpi-title">Total Egresos</div>
-    <div class="kpi-val">Q {{ totEgresos | number:'1.2-2' }}</div>
-  </div>
-  <div class="kpi orange">
-    <div class="kpi-title">Saldo disponible</div>
-    <div class="kpi-val">Q {{ totSaldo | number:'1.2-2' }}</div>
-  </div>
-</section>
+  <section class="kpis-row">
+    <div class="kpi purple">
+      <div class="kpi-title">Total Ingresos</div>
+      <div class="kpi-val">Q {{ totIngresos | number:'1.2-2' }}</div>
+    </div>
+    <div class="kpi teal">
+      <div class="kpi-title">Total Egresos</div>
+      <div class="kpi-val">Q {{ totEgresos | number:'1.2-2' }}</div>
+    </div>
+    <div class="kpi orange">
+      <div class="kpi-title">Saldo disponible</div>
+      <div class="kpi-val">Q {{ totSaldo | number:'1.2-2' }}</div>
+    </div>
+  </section>
 
+<div class="toolbar">
+  <button class="btn btn--primary" (click)="openAdd()">
+    + Agregar Ingresos / Egresos
+  </button>
 
-  <div class="toolbar">
-    <button class="btn btn--primary" (click)="openAdd()">+ Agregar Ingresos / Egresos</button>
-  </div>
+  <button class="btn btn--excel" (click)="downloadExcel()">
+    <mat-icon aria-hidden="true">download</mat-icon>
+    <span>Descargar Excel</span>
+  </button>
+</div>
 
   <div class="table">
     <table mat-table [dataSource]="rows">

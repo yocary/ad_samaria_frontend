@@ -68,6 +68,24 @@ export class DialogMovementComponent implements OnInit {
     public data: { treasuryId: number; movement?: Movement }
   ) {}
 
+  // ===== Helpers de fecha (evitar off-by-one por TZ) =====
+  private parseLocalYmd(s: string): Date {
+    // s esperado: 'YYYY-MM-DD'
+    const [y, m, d] = s.split('-').map(Number);
+    return new Date(y, (m - 1), d);
+  }
+
+  private normalizeToLocalMidnight(d: Date): Date {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+
+  private formatLocalYmd(date: Date): string {
+    const y = date.getFullYear();
+    const m = (date.getMonth() + 1).toString().padStart(2, '0');
+    const d = date.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
   ngOnInit(): void {
     this.isEdit = !!this.data?.movement;
 
@@ -93,8 +111,22 @@ export class DialogMovementComponent implements OnInit {
         if (this.isEdit && this.data.movement) {
           const mv = this.data.movement;
 
-          // Fecha / monto / notas
-          const fecha = mv.date ? new Date(mv.date) : new Date();
+          // ===== Fecha sin desfase =====
+          let fecha: Date;
+          if (mv.date) {
+            if (typeof mv.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(mv.date)) {
+              // Llega 'YYYY-MM-DD' → parseo local
+              fecha = this.parseLocalYmd(mv.date);
+            } else {
+              // Llega Date o ISO con hora → normalizo a medianoche local
+              const tmp = new Date(mv.date as any);
+              fecha = this.normalizeToLocalMidnight(tmp);
+            }
+          } else {
+            const today = new Date();
+            fecha = this.normalizeToLocalMidnight(today);
+          }
+
           this.form.patchValue(
             {
               date: fecha,
@@ -132,28 +164,7 @@ export class DialogMovementComponent implements OnInit {
             this.personaQuery.setValue(personaNombre, { emitEvent: false });
             this.form.get('personaId')?.setValue(personaId);
           } else if (personaId && !personaNombre) {
-            // Caso opcional: si algún día te llega solo id, resuélvelo por id (si tienes endpoint)
-            // Descomenta si MiembrosService expone este método:
-            // this.miembrosSvc.getMiniById$(personaId).pipe(take(1)).subscribe({
-            //   next: (p: PersonaMini) => {
-            //     if (p) {
-            //       this.personaSeleccionada = p;
-            //       this.personaQuery.setValue(p.nombre, { emitEvent: false });
-            //       this.form.get('personaId')?.setValue(p.id);
-            //     } else {
-            //       this.personaSeleccionada = null;
-            //       this.personaQuery.setValue('', { emitEvent: false });
-            //       this.form.get('personaId')?.reset();
-            //     }
-            //   },
-            //   error: () => {
-            //     this.personaSeleccionada = null;
-            //     this.personaQuery.setValue('', { emitEvent: false });
-            //     this.form.get('personaId')?.reset();
-            //   }
-            // });
-
-            // Mientras no exista el método por id, dejamos requerido:
+            // Sin nombre (si más adelante tienes endpoint por id, colócalo aquí)
             this.personaSeleccionada = null;
             this.personaQuery.setValue('', { emitEvent: false });
             this.form.get('personaId')?.reset();
@@ -166,7 +177,6 @@ export class DialogMovementComponent implements OnInit {
               .pipe(take(1))
               .subscribe({
                 next: (lista: PersonaMini[]) => {
-                  // match EXACTO por nombre (case-insensitive)
                   const match = lista.find(
                     (p) =>
                       (p.nombre || '').trim().toLowerCase() ===
@@ -176,11 +186,9 @@ export class DialogMovementComponent implements OnInit {
                     this.personaSeleccionada = match;
                     this.form.get('personaId')?.setValue(match.id);
                   } else if (lista.length === 1) {
-                    // opcional: si hay un solo resultado, podrías asumirlo
                     this.personaSeleccionada = lista[0];
                     this.form.get('personaId')?.setValue(lista[0].id);
                   } else {
-                    // sin match -> que el usuario elija
                     this.personaSeleccionada = null;
                     this.form.get('personaId')?.reset();
                   }
@@ -235,23 +243,22 @@ export class DialogMovementComponent implements OnInit {
     });
   }
 
-private loadCategorias(tipo: 'Ingreso' | 'Egreso', afterLoad?: () => void) {
-  this.fin.getCategoriasPorTipo(tipo).subscribe({
-    next: (list) => {
-      this.categorias = (list || []).filter(
-        c => !['diezmo', 'diezmos'].includes((c.nombre || '').trim().toLowerCase())
-      );
-      afterLoad?.();
-    },
-    error: (e) => {
-      console.error('Error cargando categorías', e);
-      this.categorias = [];
-      afterLoad?.();
-    },
-  });
-}
-
-
+  private loadCategorias(tipo: 'Ingreso' | 'Egreso', afterLoad?: () => void) {
+    this.fin.getCategoriasPorTipo(tipo).subscribe({
+      next: (list) => {
+        this.categorias = (list || []).filter(
+          c =>
+            !['diezmo', 'diezmos'].includes((c.nombre || '').trim().toLowerCase())
+        );
+        afterLoad?.();
+      },
+      error: (e) => {
+        console.error('Error cargando categorías', e);
+        this.categorias = [];
+        afterLoad?.();
+      },
+    });
+  }
 
   // ========= personas =========
 
@@ -280,7 +287,8 @@ private loadCategorias(tipo: 'Ingreso' | 'Egreso', afterLoad?: () => void) {
     const v = this.form.value;
     const payload: CrearMovimientoReq = {
       tipo: v.type!,
-      fecha: (v.date as Date).toISOString().slice(0, 10),
+      // 👇 evita usar toISOString(); formatea como YYYY-MM-DD en local
+      fecha: this.formatLocalYmd(v.date as Date),
       concepto: '', // seguimos usando notas para el detalle libre
       cantidad: Number(v.amount),
       metodoPagoId: v.metodoPagoId!, // 👈 ahora sale del select (ID)

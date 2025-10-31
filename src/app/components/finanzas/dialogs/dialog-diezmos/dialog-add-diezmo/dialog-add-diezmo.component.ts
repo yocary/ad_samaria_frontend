@@ -9,6 +9,22 @@ import { startWith, debounceTime, map, distinctUntilChanged, switchMap } from 'r
 
 interface PersonaMini { id: number; nombre: string; }
 
+/** ========= HELPERS DE FECHA (LOCAL) =========
+ * Evitan el corrimiento de -1 día por UTC.
+ */
+function ymdToLocalDate(ymd: string): Date {
+  // ymd esperado "YYYY-MM-DD"
+  const [y, m, d] = (ymd || '').split('-').map(Number);
+  return new Date(y, (m ?? 1) - 1, d ?? 1); // Fecha LOCAL (no UTC)
+}
+
+function dateToYmdLocal(d: Date): string {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 @Component({
   selector: 'app-dialog-add-diezmo',
   templateUrl: './dialog-add-diezmo.component.html',
@@ -46,7 +62,8 @@ export class DialogAddDiezmoComponent implements OnInit {
         tipo: data.tipo,
         personaId: data.personaId,
         cantidad: data.cantidad,
-        fecha: new Date(data.fecha),
+        // ⬇️ CAMBIO: parseo local en lugar de new Date(YYYY-MM-DD) (UTC)
+        fecha: ymdToLocalDate(data.fecha),
       });
       // muestra el nombre en el input de búsqueda
       this.personaSeleccionada = { id: data.personaId, nombre: data.nombre };
@@ -91,9 +108,10 @@ export class DialogAddDiezmoComponent implements OnInit {
     const v = this.form.value;
     const payload: CrearDiezmoReq = {
       tipo: v.tipo!,
-      personaId: v.personaId!,                 // 👈 ahora enviamos personaId
+      personaId: v.personaId!,
       cantidad: Number(v.cantidad),
-      fecha: (v.fecha as Date).toISOString().slice(0, 10),
+      // ⬇️ CAMBIO: serialización local "YYYY-MM-DD" (sin toISOString)
+      fecha: dateToYmdLocal(v.fecha as Date),
     };
 
     const req$ = this.isEdit

@@ -18,6 +18,7 @@ import { FinanzasService } from 'src/app/services/finanzas.service';
 import { Movement, Treasury } from 'src/app/models/finanzas.model';
 import { DialogMovementComponent } from '../dialog-movement/dialog-movement.component';
 import Swal from 'sweetalert2';
+import * as XLSX from 'xlsx';
 
 type TabKey = 'mov' | 'cat' | 'users' | 'edit';
 
@@ -462,4 +463,39 @@ deleteTreasury() {
   close() {
     this.dialogRef.close();
   }
+
+  downloadMovimientosExcel(): void {
+  // Arma las filas como están visibles en la tabla
+  const rows = (this.movements || []).map((r, idx) => ({
+    'No.': idx + 1,
+    'Fecha': r.date ? new Date(r.date) : null,         // se exporta como fecha
+    'Concepto': r.category || r.concept || '',
+    'Tipo': r.type || '',
+    'Cantidad': Number(r.amount || 0)
+  }));
+
+  // Hoja
+  const ws = XLSX.utils.json_to_sheet(rows);
+
+  // Ancho de columnas opcional (mejor legibilidad)
+  ws['!cols'] = [
+    { wch: 6 },   // No.
+    { wch: 12 },  // Fecha
+    { wch: 40 },  // Concepto
+    { wch: 12 },  // Tipo
+    { wch: 14 },  // Cantidad
+  ];
+
+  // Libro
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Movimientos');
+
+  // Nombre de archivo: tesorería + periodo + fecha actual
+  const safeName = (this.treasury?.name || 'tesoreria').replace(/[^\w\-]+/g, '_');
+  const hoy = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
+  const file = `movimientos_${safeName}_${this.currentPeriod}_${hoy}.xlsx`;
+
+  XLSX.writeFile(wb, file, { cellDates: true });
+}
+
 }
