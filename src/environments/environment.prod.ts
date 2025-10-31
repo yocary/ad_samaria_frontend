@@ -4,7 +4,7 @@
 
 export const environment = {
   production: true,
-  api: "",
+  api: "https://adsamaria-backend-production.up.railway.app",
 };
 
 /*

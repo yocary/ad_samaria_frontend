@@ -3,8 +3,8 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false,
-  seguridad: false,
+  production: true,
+  seguridad: true,
    api: "https://adsamaria-backend-production.up.railway.app",
  //api: "http://localhost:8080"
 };
