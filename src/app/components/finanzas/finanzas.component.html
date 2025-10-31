@@ -34,9 +34,9 @@
           + Agregar Tesorería
         </button>
 
-        <button class="toolbar-btn" type="button" (click)="openDiezmos()" aria-label="Abrir diezmos">
-          Diezmos
-        </button>
+  <button class="toolbar-btn" type="button" *ngIf="isPastor" (click)="openDiezmos()" aria-label="Abrir diezmos">
+    Diezmos
+  </button>
       </div>
 
       <div class="right">

@@ -1,24 +1,14 @@
-// spinner.component.ts
-import { Component, OnInit } from '@angular/core';
-import { SpinnerService } from '../../services/spinner.service';  // Asegúrate de que la ruta es correcta
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { SpinnerService } from '../../services/spinner.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-spinner',
-  template: `
-    <div *ngIf="isLoading" class="spinner-overlay">
-      <div class="spinner"></div>
-    </div>
-  `,
+  templateUrl: './spinner.component.html',
   styleUrls: ['./spinner.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SpinnerComponent implements OnInit {
-  isLoading = false;
-
-  constructor(private spinnerService: SpinnerService) {}
-
-  ngOnInit() {
-    this.spinnerService.spinnerState.subscribe((state: boolean) => {
-      this.isLoading = state;
-    });
-  }
+export class SpinnerComponent {
+  loading$: Observable<boolean> = this.spinner.loading$;
+  constructor(private spinner: SpinnerService) {}
 }

@@ -1,7 +1,32 @@
-.dz__header{ background:#1f5379; color:#fff; font-weight:800; padding:12px 16px; border-radius:8px; }
-.kpis{ display:grid; grid-template-columns: repeat(3, minmax(180px,1fr)); gap:12px; margin:16px 0; }
-.kpi{ background:#f7f9fc; padding:12px; border-radius:10px; border:1px solid #dce6f0; }
-.kpi .val{ font-weight:700; font-size:18px; }
-.toolbar{ display:flex; justify-content:flex-start; margin:8px 0 12px; }
-.table{ max-height: 56vh; overflow:auto; border:1px solid #e0e6ee; border-radius:8px; }
-.btn-sm{ margin-right:6px; }
+/* ===== KPIs estilo del diálogo de tesorería ===== */
+.dz .kpis-row{
+  display: grid;
+  grid-template-columns: repeat(3, 220px);
+  gap: 12px;
+  margin: 6px 0 12px;
+}
+
+.dz .kpi{
+  color: #fff;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-weight: 800;
+  /* anula estilos previos de .dz .kpi si existían */
+  background: transparent; 
+  border: 0;
+}
+
+.dz .kpi .kpi-title{ opacity: .85; font-size: 13px; }
+.dz .kpi .kpi-val  { font-size: 16px; margin-top: 4px; }
+
+/* colores iguales al otro diálogo */
+.dz .kpi.purple { background: #5a54d6; }
+.dz .kpi.teal   { background: #1bb6b0; }
+.dz .kpi.orange { background: #f2a24b; }
+
+/* Responsivo opcional */
+@media (max-width: 800px){
+  .dz .kpis-row{
+    grid-template-columns: 1fr;
+  }
+}

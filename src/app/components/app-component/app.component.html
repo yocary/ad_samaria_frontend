@@ -1,7 +1,12 @@
-<ngx-spinner bdColor="rgba(43, 49, 127,0.8)" size="medium" color="#fdbf21" type="ball-climbing-dot" [fullScreen]="true">
-  <p style="color: #fdbf21">Cargando...</p>
+<!-- Spinner global controlado por NgxSpinnerService -->
+<ngx-spinner
+  bdColor="rgba(0,0,0,0.4)"
+  size="medium"
+  color="#fff"
+  type="ball-spin-clockwise"
+  [fullScreen]="true">
+  <p style="color:#fff;margin-top:10px;">Cargando...</p>
 </ngx-spinner>
 
-<app-spinner></app-spinner>
+<!-- Tu app -->
 <router-outlet></router-outlet>
-

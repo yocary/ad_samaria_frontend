@@ -1,8 +1,9 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs/operators';
 import { Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 import { FinanzasService } from 'src/app/services/finanzas.service';
 import { TesoreriaRow, Treasury } from 'src/app/models/finanzas.model';
@@ -10,14 +11,15 @@ import { DialogAddTreasuryComponent } from './dialogs/dialog-add-treasury/dialog
 import { DialogTreasuryDetailComponent } from './dialogs/dialog-treasury-detail/dialog-treasury-detail.component';
 import * as XLSX from 'xlsx';
 import { DialogDiezmosComponent } from './dialogs/dialog-diezmos/dialog-diezmos.component';
+import { AuthService } from 'src/app/services/auth.service';
 
 @Component({
   selector: 'app-finanzas',
   templateUrl: './finanzas.component.html',
   styleUrls: ['./finanzas.component.scss'],
-  encapsulation: ViewEncapsulation.Emulated   
+  encapsulation: ViewEncapsulation.Emulated
 })
-export class FinanzasComponent implements OnInit {
+export class FinanzasComponent implements OnInit, OnDestroy {
 
   treasuries: Treasury[] = [];
   selected: Treasury | null = null;
@@ -35,10 +37,15 @@ export class FinanzasComponent implements OnInit {
   estadoActual: 'activas' | 'inactivas' | 'todas' = 'activas';
   periodoActual: 'mes' | 'mes_anterior' | 'anio' | 'todos' = 'mes';
 
+  // 👇 visibilidad del botón Diezmos
+  isPastor = false;
+  private authSub?: Subscription;
+
   constructor(
     private finanzasSvc: FinanzasService,
     private dialog: MatDialog,
-    private router: Router
+    private router: Router,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -48,6 +55,16 @@ export class FinanzasComponent implements OnInit {
     this.searchTreas.valueChanges
       .pipe(debounceTime(300))
       .subscribe(q => this.loadTesorerias(q || ''));
+
+    // 👇 detectar rol PASTOR (ROLE_PASTOR también)
+    this.authSub = this.auth.usuario.subscribe(u => {
+      const roles = (u?.roles || []).map(r => (r || '').toUpperCase());
+      this.isPastor = roles.includes('PASTOR') || roles.includes('ROLE_PASTOR');
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.authSub?.unsubscribe();
   }
 
   // ------- Cargar listado -------
@@ -62,38 +79,30 @@ export class FinanzasComponent implements OnInit {
         const prevId = this.selected?.id ?? null;
 
         this.treasuries = mapped;
-        // Selección opcional (aunque los KPI ya no dependen del seleccionado)
         this.selected = prevId
           ? (this.treasuries.find(t => t.id === prevId) ?? this.treasuries[0] ?? null)
           : (this.treasuries[0] ?? null);
 
-        // Recalcular KPI GLOBAL
         this.recalcTotals();
       },
       error: (err) => console.error('Error al cargar tesorerías', err)
     });
   }
 
-  // ------- Recalcular totales globales -------
   private recalcTotals(): void {
     const list = this.treasuries || [];
     this.totIngresos = list.reduce((acc, t) => acc + (t.incomes  || 0), 0);
     this.totEgresos  = list.reduce((acc, t) => acc + (t.expenses || 0), 0);
   }
 
-  // ------- Filtro por estado desde chips -------
   setStatusFilter(s: 'Inactivo' | 'Activo' | 'Todos'): void {
     const map = { Inactivo: 'inactivas', Activo: 'activas', Todos: 'todas' } as const;
     this.estadoActual = map[s];
     this.loadTesorerias(this.searchTreas.value || '');
   }
 
-  // ------- Selección de tesorería (abre detalle) -------
   selectTreasury(t: Treasury) {
-    if (!t || t.id == null) {
-      console.error('Treasury sin id:', t);
-      return;
-    }
+    if (!t || t.id == null) return;
     this.selected = t;
 
     this.dialog.open(DialogTreasuryDetailComponent, {
@@ -101,62 +110,42 @@ export class FinanzasComponent implements OnInit {
       maxWidth: '98vw',
       disableClose: false,
       autoFocus: false,
-  data: { treasuryId: t.id, treasuryName: t.name }   // 👈 agrega esto
+      data: { treasuryId: t.id, treasuryName: t.name }
     }).afterClosed().subscribe(() => {
-      // 🔁 Recargar listado y totales globales al cerrar el detalle
       this.loadTesorerias(this.searchTreas.value || '');
     });
   }
 
-  // ------- Crear tesorería -------
   openAddTesoreria(): void {
     const ref = this.dialog.open(DialogAddTreasuryComponent, { width: '460px' });
-    ref.afterClosed().subscribe(ok => {
-      if (ok) {
-        this.loadTesorerias(this.searchTreas.value || '');
-      }
-    });
+    ref.afterClosed().subscribe(ok => ok && this.loadTesorerias(this.searchTreas.value || ''));
   }
 
-  // ------- Navegación -------
   regresar(): void {
     this.router.navigate(['/dashboard']);
   }
 
   downloadExcel(): void {
-  // 1) Prepara los datos tal como se ven en la tabla
-  const rows = (this.treasuries || []).map(t => ({
-    'Tesorería': t.name,
-    'Ingresos': t.incomes,     // numérico
-    'Egresos': t.expenses,     // numérico
-    'Saldo': (t.incomes || 0) - (t.expenses || 0)
-  }));
+    const rows = (this.treasuries || []).map(t => ({
+      'Tesorería': t.name,
+      'Ingresos': t.incomes,
+      'Egresos': t.expenses,
+      'Saldo': (t.incomes || 0) - (t.expenses || 0)
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols'] = [{ wch: 28 }, { wch: 14 }, { wch: 14 }, { wch: 14 }];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Tesorerías');
+    const fecha = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `tesorerias_${fecha}.xlsx`);
+  }
 
-  // 2) Crea hoja y libro
-  const ws = XLSX.utils.json_to_sheet(rows);
-
-  // (opcional) ancho de columnas
-  ws['!cols'] = [
-    { wch: 28 }, // Tesorería
-    { wch: 14 }, // Ingresos
-    { wch: 14 }, // Egresos
-    { wch: 14 }, // Saldo
-  ];
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Tesorerías');
-
-  // 3) Nombre de archivo con fecha
-  const fecha = new Date().toISOString().slice(0,10); // yyyy-mm-dd
-  XLSX.writeFile(wb, `tesorerias_${fecha}.xlsx`);
-}
-
-openDiezmos(){
-  this.dialog.open(DialogDiezmosComponent, {
-    width: '980px',
-    maxWidth: '98vw',
-    panelClass: 'dlg-diezmos',
-    disableClose: true
-  });
-}
+  openDiezmos(){
+    this.dialog.open(DialogDiezmosComponent, {
+      width: '980px',
+      maxWidth: '98vw',
+      panelClass: 'dlg-diezmos',
+      disableClose: true
+    });
+  }
 }

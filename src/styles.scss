@@ -193,3 +193,5 @@ button:focus {
   background-position: center;       
   background-color: #ffffff;       
 }
+
+::ng-deep .ngx-spinner-overlay { z-index: 2000 !important; }

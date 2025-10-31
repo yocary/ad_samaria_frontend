@@ -51,13 +51,18 @@ export class DialogDiezmosComponent implements OnInit {
     }).afterClosed().subscribe(ok => ok && this.reload());
   }
 
-  remove(row: DiezmoRow){
-    if(!confirm('¿Eliminar registro?')) return;
-    this.fin.deleteDiezmo(row.id).subscribe({
-      next: () => { this.snack.open('Eliminado', 'OK', {duration: 1500}); this.reload(); },
-      error: () => this.snack.open('No se pudo eliminar', 'OK', {duration: 2000})
-    });
-  }
+remove(row: DiezmoRow) {
+  this.fin.deleteDiezmo(row.id).subscribe({
+    next: () => {
+      this.snack.open('Eliminado', 'OK', { duration: 1500 });
+      this.reload();
+    },
+    error: () => {
+      this.snack.open('No se pudo eliminar', 'OK', { duration: 2000 });
+    }
+  });
+}
+
 
   close(){ this.ref.close(); }
 }
