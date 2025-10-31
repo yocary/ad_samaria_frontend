@@ -62,6 +62,7 @@ import { RequestInterceptor } from './interceptors/request.interceptor';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AnalyticsService } from './services/analytics.service';
 import { AnalyticsInterceptor } from './core/interceptors/analytics.interceptor';
+import { AnalyticsApiInterceptor } from './interceptors/analytics-api.interceptor';
 
 
 export const MY_DATE_FORMATS = {
@@ -156,6 +157,11 @@ export const MY_DATE_FORMATS = {
       useClass: AnalyticsInterceptor,
       multi: true,
     },
+     {
+    provide: HTTP_INTERCEPTORS,
+    useClass: AnalyticsApiInterceptor,
+    multi: true
+  }
   ],
   bootstrap: [AppComponent]
 })
