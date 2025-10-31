@@ -40,7 +40,7 @@ export interface TipoMovimientoMini {
 
 export interface DiezmoRow {
   id: number;
-  personaId: number;              // 👈 agregado: id de persona
+  personaId: number;              
   nombre: string;                 // devuelto por el backend para mostrar
   cantidad: number;
   fecha: string;                  // yyyy-MM-dd
@@ -49,7 +49,7 @@ export interface DiezmoRow {
 
 export interface CrearDiezmoReq {
   tipo: 'Ingreso' | 'Egreso';
-  personaId: number;              // 👈 ahora enviamos personaId
+  personaId: number;       
   cantidad: number;
   fecha: string;                  // yyyy-MM-dd
 }
