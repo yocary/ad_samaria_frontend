@@ -1,6 +1,8 @@
 import { Component, OnInit } from "@angular/core";
-import { NavigationExtras, Router } from "@angular/router";
+import { NavigationEnd, NavigationExtras, Router } from "@angular/router";
+import { filter } from "rxjs/operators";
 import { AuthService } from "src/app/services/auth.service";
+import { GoogleAnalyticsService } from "src/app/services/google-analytics.service";
 
 @Component({
   selector: "app-root",
@@ -15,12 +17,20 @@ export class AppComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
+        private gaService: GoogleAnalyticsService
   ) {
     localStorage.setItem("section", "home");
   }
 
   ngOnInit() {
     document.body.addEventListener("scroll", event => this.onScroll(event));
+
+    this.router.events
+      .pipe(filter(event => event instanceof NavigationEnd))
+      .subscribe((event: any) => {
+        this.gaService.sendPageView(event.urlAfterRedirects);
+      });
+  
   }
 
   onScroll(event: any) {
