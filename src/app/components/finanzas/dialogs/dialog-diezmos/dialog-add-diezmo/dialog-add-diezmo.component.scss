@@ -1,4 +1,74 @@
-.dz-form{ display:flex; flex-direction:column; gap:12px; }
-.title{ font-weight:800; font-size:20px; margin-bottom:6px; }
-.actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:6px; }
-.w-full{ width:100%; }
+.dz-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.title {
+    font-weight: 800;
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 6px;
+}
+
+.w-full {
+    width: 100%;
+}
+
+/* ===== Alineación cantidad (MDC) ===== */
+.amt-field .mat-mdc-text-field-wrapper {
+    align-items: center;
+    /* centra prefijo + input */
+}
+
+/* Prefijo "Q" centrado a la mitad del alto */
+.amt-field .mat-mdc-form-field-text-prefix {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+}
+
+/* Quita spinners que alteran baseline en number */
+.amt-field .mdc-text-field__input[type="number"]::-webkit-outer-spin-button,
+.amt-field .mdc-text-field__input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.amt-field .mdc-text-field__input[type="number"] {
+    -moz-appearance: textfield;
+    /* Firefox */
+}
+
+/* Normaliza padding/line-height y baja un pelín el input */
+.amt-field .mdc-text-field__input {
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 1.4;
+    margin: 0;
+    transform: translateY(1px);
+    /* ajuste fino; prueba 0–2px según la fuente */
+    font-variant-numeric: tabular-nums;
+}
+
+/* ===== (Fallback legacy pre-MDC, por si aplica) ===== */
+.amt-field .mat-form-field-prefix {
+    display: inline-flex;
+    align-items: center;
+    height: 100%;
+}
+
+.amt-field .mat-input-element {
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 1.4;
+    margin: 0;
+    transform: translateY(5px);
+    /* mismo truco que ya usabas en legacy */
+}

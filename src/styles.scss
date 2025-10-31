@@ -195,3 +195,27 @@ button:focus {
 }
 
 ::ng-deep .ngx-spinner-overlay { z-index: 2000 !important; }
+
+/* En styles.css - Solución global */
+td.mat-column-cantidad {
+  vertical-align: middle !important;
+}
+
+.amt-tbl {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px;
+  font-size: 14px;
+  color: #111827;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.amt-tbl__q {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.amt-tbl__n {
+  font-size: 14px;
+}

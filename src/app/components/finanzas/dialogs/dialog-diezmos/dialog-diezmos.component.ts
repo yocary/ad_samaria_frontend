@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { FinanzasService, DiezmoRow } from 'src/app/services/finanzas.service';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -25,6 +25,7 @@ function parseToLocalDate(input?: string | Date | null): Date | null {
   selector: 'app-dialog-diezmos',
   templateUrl: './dialog-diezmos.component.html',
   styleUrls: ['./dialog-diezmos.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class DialogDiezmosComponent implements OnInit {
 

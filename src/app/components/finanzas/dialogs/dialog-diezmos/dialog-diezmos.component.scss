@@ -55,26 +55,26 @@
   font-size: 14px;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
-/* Botón principal (Agregar Ingresos / Egresos) — azul fuerte pero no brillante */
+/* Botón principal (Agregar Ingresos / Egresos) — ahora más suave */
 .btn--primary {
-  background: #1e63c4;         /* Azul vivo pero equilibrado */
+  background: #1976d2;          /* Azul medio */
   color: #fff;
-  border-color: #1e63c4;
-  box-shadow: 0 2px 6px rgba(30, 99, 196, 0.25);
+  border-color: #1976d2;
+  box-shadow: 0 2px 8px rgba(25, 118, 210, 0.2);
 }
 .btn--primary:hover {
-  background: #1957ac;         /* Un poco más oscuro al hover */
-  border-color: #1957ac;
-  box-shadow: 0 3px 10px rgba(25, 87, 172, 0.3);
+  background: #1565c0;          /* Azul más oscuro */
+  border-color: #1565c0;
+  box-shadow: 0 3px 10px rgba(21, 101, 192, 0.25);
 }
 .btn--primary:active {
   transform: translateY(1px);
 }
 
-/* Botón secundario (Descargar Excel) — igual que Finanzas */
+/* Botón secundario (Descargar Excel) — estilo igual al módulo Finanzas */
 .btn--excel {
   display: flex;
   align-items: center;
@@ -152,3 +152,4 @@ tr:hover td           { background: #f6faff; }
   .toolbar { justify-content: space-between; }
   th, td { padding: 8px 10px !important; }
 }
+
