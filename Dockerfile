@@ -1,28 +1,35 @@
-# ---- Build Angular ----
-FROM node:20-alpine AS build
+# Etapa 1: Construir la aplicación Angular
+FROM node:14 AS build
+
+# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
-# Fix OpenSSL (Angular/Webpack viejos con Node 18/20)
-ENV NODE_OPTIONS=--openssl-legacy-provider
-COPY package*.json ./
-RUN npm ci
+
+# Copia package.json y package-lock.json al directorio de trabajo
+COPY package.json package-lock.json ./
+
+# Instala las dependencias
+RUN npm install
+
+# Copia el resto del código fuente de la aplicación al directorio de trabajo
 COPY . .
-# Build prod (usa environment.prod.ts por tu angular.json)
+
+# Construye la aplicación Angular en modo producción
 RUN npm run build -- --configuration production
 
-# ---- Runtime ----
-FROM node:20-alpine
-WORKDIR /app
-RUN npm i -g serve
-# Copiamos TODO dist y luego elegimos la carpeta correcta en CMD
-COPY --from=build /app/dist /dist
+# Etapa 2: Servir la aplicación Angular con Node.js
+FROM node:14
 
-ENV NODE_ENV=production
-EXPOSE 8080
-# Detecta si el build quedó en /dist/ad_samaria/browser (Angular +15) o /dist/ad_samaria (más viejo)
-CMD sh -c '\
-  ROOT_DIR="/dist/ad_samaria"; \
-  if [ -d "/dist/ad_samaria/browser" ]; then ROOT_DIR="/dist/ad_samaria/browser"; fi; \
-  echo "Serving from: $ROOT_DIR"; \
-  # MUY IMPORTANTE: bind a 0.0.0.0 y al $PORT de Railway
-  serve -s -l tcp://0.0.0.0:${PORT:-8080} "$ROOT_DIR" \
-'
+# Establece el directorio de trabajo dentro del contenedor
+WORKDIR /app
+
+# Copia los archivos estáticos generados por la construcción de la aplicación Angular desde la etapa anterior
+COPY --from=build /app/dist/ad_samaria /app
+
+# Instala un servidor http simple para servir la aplicación Angular
+RUN npm install -g http-server
+
+# Expone el puerto 4200 al mundo exterior
+EXPOSE 4200
+
+# Comando para iniciar el servidor http para servir la aplicación Angular en el puerto 4200
+CMD ["http-server", "-p", "4200"]
