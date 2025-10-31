@@ -256,3 +256,83 @@
   .toolbar-btn { flex: 1; }
   .right { flex-wrap: wrap; justify-content: flex-end; }
 }
+
+.visually-hidden-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.month-display-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  background: transparent;
+  font: inherit;
+  padding: 0;
+  cursor: pointer;
+}
+/* --- Ajuste visual del selector de mes --- */
+.month-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.month-field .mat-form-field-flex {
+  align-items: flex-start;
+}
+
+.month-display-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1d2b3a;
+  margin-top: 4px; /* separa texto del label */
+  cursor: pointer;
+}
+
+.visually-hidden-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* --- Ajuste visual final del selector de mes --- */
+
+/* Asegura que el label se mantenga arriba y no se superponga con el valor */
+.month-field .mat-form-field-flex {
+  flex-direction: column;
+  align-items: stretch;
+  padding-top: 4px; /* 🔹 empuja el valor hacia abajo */
+}
+
+/* Label “Mes” arriba y valor con separación correcta */
+.month-field .mat-form-field-label-wrapper {
+  top: -8px; /* 🔹 sube un poco el label */
+}
+
+/* Valor del mes (MM/yyyy) más separado del label */
+.month-display-input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1d2b3a;
+  margin-top: 8px; /* 🔹 antes 4px → ahora mayor separación */
+  cursor: pointer;
+}
+
+/* Input invisible anclado al mat-datepicker */
+.visually-hidden-input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}

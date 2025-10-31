@@ -34,17 +34,57 @@
           + Agregar Tesorería
         </button>
 
-  <button class="toolbar-btn" type="button" *ngIf="isPastor" (click)="openDiezmos()" aria-label="Abrir diezmos">
-    Diezmos
-  </button>
+        <button class="toolbar-btn" type="button" *ngIf="isPastor" (click)="openDiezmos()" aria-label="Abrir diezmos">
+          Diezmos
+        </button>
       </div>
 
       <div class="right">
-        <button class="btn btn--excel" type="button" (click)="downloadExcel()" aria-label="Descargar Excel">
+        <!-- Selector de Mes (solo MM/yyyy) -->
+        <mat-form-field appearance="outline" class="month-field" style="width: 140px;">
+          <mat-label>Mes</mat-label>
+
+          <!-- Input visible -->
+          <input
+            class="month-display-input"
+            [value]="displayMonth"
+            aria-label="Mes seleccionado"
+            placeholder="MM/AAAA"
+            readonly
+            (click)="pickerMes.open()"
+          />
+
+          <!-- Botón para abrir el calendario -->
+          <button mat-icon-button matSuffix type="button" (click)="pickerMes.open()" aria-label="Abrir selector de mes">
+            <mat-icon>event</mat-icon>
+          </button>
+
+          <!-- Input oculto al que se ancla el mat-datepicker -->
+          <input
+            matInput
+            [matDatepicker]="pickerMes"
+            class="visually-hidden-input"
+            [max]="maxMonth"
+            tabindex="-1"
+            aria-hidden="true"
+          />
+
+          <!-- Calendario de selección de mes -->
+          <mat-datepicker
+            #pickerMes
+            startView="multi-year"
+            [startAt]="monthCtrl.value"
+            (monthSelected)="chosenMonthHandler($event, pickerMes)">
+          </mat-datepicker>
+        </mat-form-field>
+
+        <!-- Botón de descarga -->
+        <button class="btn btn--excel" type="button" (click)="downloadReporte()" aria-label="Descargar reporte PDF">
           <mat-icon aria-hidden="true">download</mat-icon>
-          <span>Descargar Excel</span>
+          <span>Descargar Reporte</span>
         </button>
 
+        <!-- Buscador -->
         <label class="search" aria-label="Buscar tesorería">
           <mat-icon aria-hidden="true">search</mat-icon>
           <input [formControl]="searchTreas" placeholder="Buscar" aria-label="Buscar" />
@@ -76,7 +116,7 @@
         </ng-container>
 
         <tr mat-header-row *matHeaderRowDef="displayedTreColumns"></tr>
-        <tr mat-row         *matRowDef="let row; columns: displayedTreColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedTreColumns"></tr>
       </table>
     </div>
   </section>

@@ -13,6 +13,8 @@ import * as XLSX from 'xlsx';
 import { DialogDiezmosComponent } from './dialogs/dialog-diezmos/dialog-diezmos.component';
 import { AuthService } from 'src/app/services/auth.service';
 
+import { MatDatepicker } from '@angular/material/datepicker';
+
 @Component({
   selector: 'app-finanzas',
   templateUrl: './finanzas.component.html',
@@ -29,17 +31,19 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   totEgresos  = 0;
   get totSaldo(): number { return this.totIngresos - this.totEgresos; }
 
+  // Búsqueda y filtros
   searchTreas = new FormControl('');
-
   displayedTreColumns = ['name', 'ingresos', 'egresos'];
-
-  // Filtros actuales
   estadoActual: 'activas' | 'inactivas' | 'todas' = 'activas';
   periodoActual: 'mes' | 'mes_anterior' | 'anio' | 'todos' = 'mes';
 
-  // 👇 visibilidad del botón Diezmos
+  // Rol Pastor → muestra botón Diezmos
   isPastor = false;
   private authSub?: Subscription;
+
+  // Selector de mes para el reporte (guardamos el 1er día del mes)
+  monthCtrl: FormControl = new FormControl(new Date());
+  maxMonth = new Date(); // tope: mes actual
 
   constructor(
     private finanzasSvc: FinanzasService,
@@ -49,6 +53,10 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    // Normaliza el valor inicial al 1 del mes actual
+    const now = new Date();
+    this.monthCtrl.setValue(new Date(now.getFullYear(), now.getMonth(), 1));
+
     this.loadTesorerias();
 
     // Búsqueda (debounced)
@@ -56,7 +64,7 @@ export class FinanzasComponent implements OnInit, OnDestroy {
       .pipe(debounceTime(300))
       .subscribe(q => this.loadTesorerias(q || ''));
 
-    // 👇 detectar rol PASTOR (ROLE_PASTOR también)
+    // Detectar rol PASTOR / ROLE_PASTOR
     this.authSub = this.auth.usuario.subscribe(u => {
       const roles = (u?.roles || []).map(r => (r || '').toUpperCase());
       this.isPastor = roles.includes('PASTOR') || roles.includes('ROLE_PASTOR');
@@ -140,12 +148,61 @@ export class FinanzasComponent implements OnInit, OnDestroy {
     XLSX.writeFile(wb, `tesorerias_${fecha}.xlsx`);
   }
 
-  openDiezmos(){
+  openDiezmos(): void {
     this.dialog.open(DialogDiezmosComponent, {
       width: '980px',
       maxWidth: '98vw',
       panelClass: 'dlg-diezmos',
       disableClose: true
+    });
+  }
+
+  // ====== Selector de Mes ======
+
+  // Texto a mostrar: "MM/yyyy"
+  get displayMonth(): string {
+    const d = this.monthCtrl.value;
+    if (!d) return '';
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    return `${mm}/${yyyy}`;
+  }
+
+  // El usuario elige un mes en el calendario
+  chosenMonthHandler(date: Date, datepicker: MatDatepicker<Date>) {
+    const normalized = new Date(date.getFullYear(), date.getMonth(), 1);
+    const max = new Date(this.maxMonth.getFullYear(), this.maxMonth.getMonth(), 1);
+
+    // Evitar meses futuros
+    if (normalized <= max) {
+      this.monthCtrl.setValue(normalized);
+      // (Opcional) refrescar listado si lo quieres dependiente del mes:
+      // this.loadTesorerias(this.searchTreas.value || '');
+    }
+    datepicker.close();
+  }
+
+  private formatMonthISO(d: Date): string {
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  }
+
+  // ====== Reporte por Mes Seleccionado ======
+  downloadReporte(): void {
+    const selected = this.monthCtrl.value ?? new Date();
+    const mesISO = this.formatMonthISO(selected);
+
+    this.finanzasSvc.downloadFinanzasPdfTodas(mesISO).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `finanzas_${mesISO}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (e) => console.error('No se pudo descargar el PDF', e),
     });
   }
 }

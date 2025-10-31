@@ -61,6 +61,7 @@ export class FinanzasService {
   private baseMetodoPago = `${environment.api}/metodo-pago`;
   private baseCategoria = `${environment.api}/categoria`;
   private baseDiez = `${environment.api}/diezmos`;
+    private baseReport = `${environment.api}/reportes`;
 
   private treasuries: Treasury[] = [];
   private movements: Movement[] = [];
@@ -314,4 +315,22 @@ export class FinanzasService {
   deleteDiezmo(id:number){
     return this.http.delete<void>(`${this.baseDiez}/${id}`);
   }
+
+  downloadFinanzasPdf(tesoreriaId: number, mesISO: string) {
+  // mesISO: "2025-10"
+  const url = `${this.baseReport}/finanzas/tesorerias/${tesoreriaId}`;
+  return this.http.get(url, {
+    params: new HttpParams().set('mes', mesISO),
+    responseType: 'blob'
+  });
+}
+
+  downloadFinanzasPdfTodas(mesISO: string) {
+  // mesISO: "2025-10"
+  const url = `${this.baseReport}/finanzas/tesoreriasTodas`;
+  return this.http.get(url, {
+    params: new HttpParams().set('mes', mesISO),
+    responseType: 'blob'
+  });
+}
 }

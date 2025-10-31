@@ -19,7 +19,7 @@ import { MiembrosFormComponent } from './components/miembros-form/miembros-form.
 import { RolesComponent } from './components/roles/roles.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { RouterModule } from '@angular/router';
-import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatRippleModule } from '@angular/material/core';
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { FamiliasComponent } from './components/familias/familias.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -59,6 +59,8 @@ import { CambiarPasswordDialogComponent } from './components/cambiar-password-di
 import { DialogDiezmosComponent } from './components/finanzas/dialogs/dialog-diezmos/dialog-diezmos.component';
 import { DialogAddDiezmoComponent } from './components/finanzas/dialogs/dialog-diezmos/dialog-add-diezmo/dialog-add-diezmo.component';
 import { RequestInterceptor } from './interceptors/request.interceptor';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { AnalyticsService } from './services/analytics.service';
 
 
 export const MY_DATE_FORMATS = {
@@ -130,11 +132,14 @@ export const MY_DATE_FORMATS = {
     MatFormFieldModule,
     MatInputModule,
     MatTableModule,
-    MatIconModule 
+    MatIconModule,
+      MatDatepickerModule,
+    MatNativeDateModule,
   ],
   providers: [
     DatePipe,
     SpinnerService,
+    AnalyticsService,
 { provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi: true },
 
   // 🟢 Adjunta Authorization: Bearer <token>
