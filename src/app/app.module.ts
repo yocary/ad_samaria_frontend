@@ -61,6 +61,7 @@ import { DialogAddDiezmoComponent } from './components/finanzas/dialogs/dialog-d
 import { RequestInterceptor } from './interceptors/request.interceptor';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AnalyticsService } from './services/analytics.service';
+import { AnalyticsInterceptor } from './core/interceptors/analytics.interceptor';
 
 
 export const MY_DATE_FORMATS = {
@@ -149,7 +150,12 @@ export const MY_DATE_FORMATS = {
   { provide: HTTP_INTERCEPTORS, useClass: RequestInterceptor, multi: true },
 
   { provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
-  { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS }
+  { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+  {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AnalyticsInterceptor,
+      multi: true,
+    },
   ],
   bootstrap: [AppComponent]
 })
