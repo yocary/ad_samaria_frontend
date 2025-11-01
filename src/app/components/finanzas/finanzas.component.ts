@@ -9,6 +9,7 @@ import { Treasury } from 'src/app/models/finanzas.model';
 import { DialogTreasuryDetailComponent } from './dialogs/dialog-treasury-detail/dialog-treasury-detail.component';
 import { MatDatepicker } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Router } from '@angular/router';
 
 type MGPeriod = 'mes' | 'mes_anterior' | 'anio' | 'todos';
 
@@ -25,20 +26,21 @@ interface MovimientoGeneralRow {
   selector: 'app-finanzas',
   templateUrl: './finanzas.component.html',
   styleUrls: ['./finanzas.component.scss'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class FinanzasComponent implements OnInit, OnDestroy {
-
   // ===== KPIs
   totIngresos = 0;
   totEgresos = 0;
-  get totSaldo(): number { return this.totIngresos - this.totEgresos; }
+  get totSaldo(): number {
+    return this.totIngresos - this.totEgresos;
+  }
 
   // ===== Selector de Mes Único
   monthCtrl: FormControl = new FormControl(new Date());
   maxMonth = new Date();
 
-    canDownload = false;
+  canDownload = false;
   // ===== Pestaña "Movimientos generales"
   searchGen = new FormControl('');
   movimientosGenerales: MovimientoGeneralRow[] = [];
@@ -51,7 +53,8 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   constructor(
     private fin: FinanzasService,
     private dialog: MatDialog,
-        private snack: MatSnackBar 
+    private snack: MatSnackBar,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -67,7 +70,7 @@ export class FinanzasComponent implements OnInit, OnDestroy {
 
     // Escuchar cambios en el selector de mes
     this.subs.add(
-      this.monthCtrl.valueChanges.subscribe(selectedDate => {
+      this.monthCtrl.valueChanges.subscribe((selectedDate) => {
         if (selectedDate) {
           this.loadMovimientosGenerales();
           this.loadTesorerias();
@@ -81,8 +84,8 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   }
 
   // ===================== MOVIMIENTOS GENERALES =====================
-// finanzas.component.ts (en loadMovimientosGenerales)
-private loadMovimientosGenerales() {
+  // finanzas.component.ts (en loadMovimientosGenerales)
+  private loadMovimientosGenerales() {
     const q = (this.searchGen.value || '').toString().trim();
     const fechaSeleccionada = this.monthCtrl.value;
     const mesISO = this.formatMonthISO(fechaSeleccionada);
@@ -93,31 +96,36 @@ private loadMovimientosGenerales() {
     this.canDownload = false; // resetea mientras carga
 
     this.subs.add(
-      this.fin.getMovimientosGenerales({ periodo: 'mes', mes: mesISO, q })
-        .subscribe((resp: any) => {
-          const items = (resp?.items ?? []) as MovimientoGeneralRow[];
-          this.movimientosGenerales = items;
+      this.fin
+        .getMovimientosGenerales({ periodo: 'mes', mes: mesISO, q })
+        .subscribe(
+          (resp: any) => {
+            const items = (resp?.items ?? []) as MovimientoGeneralRow[];
+            this.movimientosGenerales = items;
 
-          // KPI...
-          if (resp?.totales) {
-            this.totIngresos = Number(resp.totales.ingresos || 0);
-            this.totEgresos  = Number(resp.totales.egresos  || 0);
-          } else {
-            this.totIngresos = items.filter(r => r.type === 'Ingreso')
-                                    .reduce((a, r) => a + (r.amount || 0), 0);
-            this.totEgresos  = items.filter(r => r.type === 'Egreso')
-                                    .reduce((a, r) => a + (r.amount || 0), 0);
+            // KPI...
+            if (resp?.totales) {
+              this.totIngresos = Number(resp.totales.ingresos || 0);
+              this.totEgresos = Number(resp.totales.egresos || 0);
+            } else {
+              this.totIngresos = items
+                .filter((r) => r.type === 'Ingreso')
+                .reduce((a, r) => a + (r.amount || 0), 0);
+              this.totEgresos = items
+                .filter((r) => r.type === 'Egreso')
+                .reduce((a, r) => a + (r.amount || 0), 0);
+            }
+
+            // Habilita descarga solo si hay filas
+            this.canDownload = this.movimientosGenerales.length > 0;
+          },
+          (_) => {
+            this.movimientosGenerales = [];
+            this.totIngresos = 0;
+            this.totEgresos = 0;
+            this.canDownload = false;
           }
-
-          // Habilita descarga solo si hay filas
-          this.canDownload = this.movimientosGenerales.length > 0;
-
-        }, _ => {
-          this.movimientosGenerales = [];
-          this.totIngresos = 0;
-          this.totEgresos = 0;
-          this.canDownload = false;
-        })
+        )
     );
   }
   // ===================== TESORERÍAS =====================
@@ -126,11 +134,12 @@ private loadMovimientosGenerales() {
     const periodo = this.convertirFechaAPeriodo(fechaSeleccionada);
 
     this.subs.add(
-      this.fin.getTesorerias({ 
-        estado: 'activas', 
-        periodo // Usar el mismo periodo convertido
-      })
-        .subscribe(rows => {
+      this.fin
+        .getTesorerias({
+          estado: 'activas',
+          periodo, // Usar el mismo periodo convertido
+        })
+        .subscribe((rows) => {
           this.treasuries = this.fin.mapToUI(rows || []);
         })
     );
@@ -139,7 +148,11 @@ private loadMovimientosGenerales() {
   // ===================== CONVERSIÓN FECHA A PERIODO =====================
   private convertirFechaAPeriodo(fecha: Date): MGPeriod {
     const ahora = new Date();
-    const fechaSeleccionada = new Date(fecha.getFullYear(), fecha.getMonth(), 1);
+    const fechaSeleccionada = new Date(
+      fecha.getFullYear(),
+      fecha.getMonth(),
+      1
+    );
     const mesActual = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
     const mesAnterior = new Date(ahora.getFullYear(), ahora.getMonth() - 1, 1);
     const inicioAnio = new Date(ahora.getFullYear(), 0, 1);
@@ -149,7 +162,10 @@ private loadMovimientosGenerales() {
       return 'mes';
     } else if (fechaSeleccionada.getTime() === mesAnterior.getTime()) {
       return 'mes_anterior';
-    } else if (fechaSeleccionada >= inicioAnio && fechaSeleccionada <= mesActual) {
+    } else if (
+      fechaSeleccionada >= inicioAnio &&
+      fechaSeleccionada <= mesActual
+    ) {
       return 'anio';
     } else {
       return 'todos';
@@ -158,26 +174,31 @@ private loadMovimientosGenerales() {
 
   openTreasury(t: Treasury) {
     if (!t?.id) return;
-    this.dialog.open(DialogTreasuryDetailComponent, {
-      width: '960px',
-      disableClose: true,
-      data: { treasuryId: t.id, treasuryName: t.name }
-    })
-    .afterClosed()
-    .subscribe(changed => {
-      if (changed) {
-        this.loadTesorerias();
-        this.loadMovimientosGenerales();
-      }
-    });
+    this.dialog
+      .open(DialogTreasuryDetailComponent, {
+        width: '960px',
+        disableClose: true,
+        data: { treasuryId: t.id, treasuryName: t.name },
+      })
+      .afterClosed()
+      .subscribe((changed) => {
+        if (changed) {
+          this.loadTesorerias();
+          this.loadMovimientosGenerales();
+        }
+      });
   }
 
   // ===================== SELECTOR DE MES =====================
-downloadReporte() {
+  downloadReporte() {
     // Guard extra por si alguien intenta forzar el click
     if (!this.canDownload) {
       // opcional: mostrar aviso
-      this.snack.open('No hay datos para generar el reporte en el mes seleccionado.', 'OK', { duration: 3000 });
+      this.snack.open(
+        'No hay datos para generar el reporte en el mes seleccionado.',
+        'OK',
+        { duration: 3000 }
+      );
       return;
     }
 
@@ -209,11 +230,11 @@ downloadReporte() {
 
   chosenMonthHandler(date: Date, datepicker: MatDatepicker<Date>) {
     const normalized = new Date(date.getFullYear(), date.getMonth(), 1);
-    
+
     // Verificar que no sea un mes futuro
     const hoy = new Date();
     const max = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
-    
+
     if (normalized <= max) {
       this.monthCtrl.setValue(normalized);
     } else {
@@ -227,6 +248,11 @@ downloadReporte() {
   }
 
   // ===================== TRACK BY FUNCTIONS =====================
-  trackByMg = (_: number, r: MovimientoGeneralRow) => `${r.treasuryId}-${r.categoryId}-${r.type}`;
+  trackByMg = (_: number, r: MovimientoGeneralRow) =>
+    `${r.treasuryId}-${r.categoryId}-${r.type}`;
   trackByTreas = (_: number, t: Treasury) => t.id;
+
+  back() {
+    this.router.navigate(['/dashboard']);
+  }
 }

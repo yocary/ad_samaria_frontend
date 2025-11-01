@@ -38,50 +38,30 @@
               <mat-label>Mes y Año</mat-label>
 
               <!-- Input visible -->
-              <input
-                class="month-display-input"
-                [value]="displayMonth"
-                aria-label="Mes y año seleccionado"
-                placeholder="MM/AAAA"
-                readonly
-                (click)="pickerMes.open()"
-              />
+              <input class="month-display-input" [value]="displayMonth" aria-label="Mes y año seleccionado"
+                placeholder="MM/AAAA" readonly (click)="pickerMes.open()" />
 
               <!-- Botón para abrir el calendario -->
-              <button mat-icon-button matSuffix type="button" (click)="pickerMes.open()" aria-label="Abrir selector de mes">
+              <button mat-icon-button matSuffix type="button" (click)="pickerMes.open()"
+                aria-label="Abrir selector de mes">
                 <mat-icon>event</mat-icon>
               </button>
 
               <!-- Input oculto al que se ancla el mat-datepicker -->
-              <input
-                matInput
-                [matDatepicker]="pickerMes"
-                [formControl]="monthCtrl"
-                [max]="maxMonth"
-                class="visually-hidden-input"
-                tabindex="-1"
-                aria-hidden="true"
-              />
+              <input matInput [matDatepicker]="pickerMes" [formControl]="monthCtrl" [max]="maxMonth"
+                class="visually-hidden-input" tabindex="-1" aria-hidden="true" />
 
               <!-- Calendario de selección de mes -->
-              <mat-datepicker
-                #pickerMes
-                startView="multi-year"
-                (monthSelected)="chosenMonthHandler($event, pickerMes)">
+              <mat-datepicker #pickerMes startView="multi-year" (monthSelected)="chosenMonthHandler($event, pickerMes)">
               </mat-datepicker>
             </mat-form-field>
 
-<!-- Botón de descarga -->
-<button
-  class="btn btn--excel"
-  type="button"
-  (click)="downloadReporte()"
-  [disabled]="!canDownload"
-  matTooltip="Genera el PDF del mes seleccionado"
-  aria-label="Descargar reporte PDF">
-  <mat-icon aria-hidden="true">download</mat-icon>
-  <span>Descargar Reporte</span>
-</button>
+            <!-- Botón de descarga -->
+            <button class="btn btn--excel" type="button" (click)="downloadReporte()" [disabled]="!canDownload"
+              matTooltip="Genera el PDF del mes seleccionado" aria-label="Descargar reporte PDF">
+              <mat-icon aria-hidden="true">download</mat-icon>
+              <span>Descargar Reporte</span>
+            </button>
 
           </div>
         </div>
@@ -133,12 +113,8 @@
 
         <!-- Grid de tarjetas -->
         <div class="treas-grid" *ngIf="(treasuries?.length || 0) > 0; else emptyTreas">
-          <div class="treas-card" 
-               *ngFor="let t of treasuries; trackBy: trackByTreas"
-               (click)="openTreasury(t)"
-               tabindex="0"
-               role="button"
-               (keyup.enter)="openTreasury(t)">
+          <div class="treas-card" *ngFor="let t of treasuries; trackBy: trackByTreas" (click)="openTreasury(t)"
+            tabindex="0" role="button" (keyup.enter)="openTreasury(t)">
             <div class="treas-card-header">
               <div class="treas-card-icon">
                 <mat-icon>account_balance_wallet</mat-icon>
@@ -159,4 +135,7 @@
       </div>
     </mat-tab>
   </mat-tab-group>
+  <div class="footer">
+    <button mat-stroked-button color="primary" (click)="back()">Regresar</button>
+  </div>
 </div>
