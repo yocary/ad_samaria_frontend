@@ -19,7 +19,7 @@
   </section>
 
   <!-- TABS -->
-  <mat-tab-group class="finz-tabs">
+<mat-tab-group class="finz-tabs" [(selectedIndex)]="tabIndex">
     <!-- MOVIMIENTOS GENERALES -->
     <mat-tab label="Movimientos generales">
       <div class="mg-wrap">
@@ -110,7 +110,9 @@
         <div class="treas-header">
           <h3 class="title">Tesorerías</h3>
         </div>
-
+        <button class="toolbar-btn" type="button" (click)="openAddTesoreria()" aria-label="Agregar tesorería">
+           Agregar Tesorería
+        </button>
         <!-- Grid de tarjetas -->
         <div class="treas-grid" *ngIf="(treasuries?.length || 0) > 0; else emptyTreas">
           <div class="treas-card" *ngFor="let t of treasuries; trackBy: trackByTreas" (click)="openTreasury(t)"

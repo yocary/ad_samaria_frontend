@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs/operators';
@@ -10,6 +10,7 @@ import { DialogTreasuryDetailComponent } from './dialogs/dialog-treasury-detail/
 import { MatDatepicker } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { DialogAddTreasuryComponent } from './dialogs/dialog-add-treasury/dialog-add-treasury.component';
 
 type MGPeriod = 'mes' | 'mes_anterior' | 'anio' | 'todos';
 
@@ -36,9 +37,12 @@ export class FinanzasComponent implements OnInit, OnDestroy {
     return this.totIngresos - this.totEgresos;
   }
 
+  loadingTreas = false;
   // ===== Selector de Mes Único
   monthCtrl: FormControl = new FormControl(new Date());
   maxMonth = new Date();
+
+    tabIndex = 1;
 
   canDownload = false;
   // ===== Pestaña "Movimientos generales"
@@ -54,7 +58,8 @@ export class FinanzasComponent implements OnInit, OnDestroy {
     private fin: FinanzasService,
     private dialog: MatDialog,
     private snack: MatSnackBar,
-    private router: Router
+    private router: Router,
+        private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -255,4 +260,31 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   back() {
     this.router.navigate(['/dashboard']);
   }
+
+openAddTesoreria(): void {
+  const ref = this.dialog.open(DialogAddTreasuryComponent, {
+    width: '460px',
+    disableClose: true
+  });
+
+  this.subs.add(
+    ref.afterClosed().subscribe((ok: boolean) => {
+      if (ok) {
+        // ir al tab "Tesorerías"
+        this.tabIndex = 1;
+
+        // recargar datos
+        this.loadTesorerias();
+        this.loadMovimientosGenerales();
+
+        // feedback
+        this.snack.open('Tesorería creada con éxito', 'OK', { duration: 2000 });
+
+        // si usas OnPush o quieres forzar refresco visual
+        this.cdr.markForCheck();
+      }
+    })
+  );
+}
+
 }

@@ -611,3 +611,31 @@
   pointer-events: none;
   filter: grayscale(0.3);
 }
+
+.toolbar-btn {
+  margin: 6px 0 14px;
+  background: #0ea5e9; /* acento turquesa tipo Material “info” */
+  color: #fff;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  transition: transform 0.08s ease, background 0.2s ease;
+}
+.toolbar-btn::before {
+  content: "+";
+  font-weight: 800;
+}
+.toolbar-btn:hover {
+  background: #0284c7;
+  transform: translateY(-1px);
+}
+.toolbar-btn:focus {
+  outline: 2px solid rgba(14, 165, 233, 0.3);
+}
