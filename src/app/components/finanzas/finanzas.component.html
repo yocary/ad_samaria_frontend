@@ -18,6 +18,9 @@
     </div>
   </section>
 
+          <button class="toolbar-btn" type="button" *ngIf="isPastor" (click)="openDiezmos()" aria-label="Abrir diezmos">
+          Diezmos
+        </button>
   <!-- TABS -->
 <mat-tab-group class="finz-tabs" [(selectedIndex)]="tabIndex">
     <!-- MOVIMIENTOS GENERALES -->

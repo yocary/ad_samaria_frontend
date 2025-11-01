@@ -231,37 +231,47 @@ private recargarTablaCategorias() {
     this.cargarResumen(this.currentPeriod);
   }
 
-  addMovement() {
-    this.dialog
-      .open(DialogMovementComponent, {
-        width: '680px',
-        disableClose: true,
-        data: { treasuryId: this.treasuryId },
-      })
-      .afterClosed()
-      .subscribe((changed) => {
-        if (changed) {
-          this.reloadMovimientos();
-          this.cargarResumen(this.currentPeriod);
+ addMovement() {
+  this.dialog
+    .open(DialogMovementComponent, {
+      width: '680px',
+      disableClose: true,
+      data: { treasuryId: this.treasuryId },
+    })
+    .afterClosed()
+    .subscribe((result: any) => {
+      if (result?.success) {
+        this.reloadMovimientos();
+        this.cargarResumen(this.currentPeriod);
+        
+        // Si se indica recargar finanzas, emitir evento
+        if (result.reloadFinanzas) {
+          this.dialogRef.close({ reloadFinanzas: true }); // ← Cierra el diálogo con flag
         }
-      });
-  }
+      }
+    });
+}
 
-  editMovement(row: Movement) {
-    this.dialog
-      .open(DialogMovementComponent, {
-        width: '680px',
-        disableClose: true,
-        data: { treasuryId: this.treasuryId, movement: row },
-      })
-      .afterClosed()
-      .subscribe((changed) => {
-        if (changed) {
-          this.reloadMovimientos();
-          this.cargarResumen(this.currentPeriod);
+editMovement(row: Movement) {
+  this.dialog
+    .open(DialogMovementComponent, {
+      width: '680px',
+      disableClose: true,
+      data: { treasuryId: this.treasuryId, movement: row },
+    })
+    .afterClosed()
+    .subscribe((result: any) => {
+      if (result?.success) {
+        this.reloadMovimientos();
+        this.cargarResumen(this.currentPeriod);
+        
+        // Si se indica recargar finanzas, emitir evento
+        if (result.reloadFinanzas) {
+          this.dialogRef.close({ reloadFinanzas: true }); // ← Cierra el diálogo con flag
         }
-      });
-  }
+      }
+    });
+}
 
   deleteMovement(row: Movement) {
     if (!row?.id) return;

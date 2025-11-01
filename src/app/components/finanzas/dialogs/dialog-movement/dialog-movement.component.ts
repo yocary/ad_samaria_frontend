@@ -278,40 +278,44 @@ export class DialogMovementComponent implements OnInit {
 
   // ========= guardar =========
 
-  save() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-
-    const v = this.form.value;
-    const payload: CrearMovimientoReq = {
-      tipo: v.type!,
-      // 👇 evita usar toISOString(); formatea como YYYY-MM-DD en local
-      fecha: this.formatLocalYmd(v.date as Date),
-      concepto: '', // seguimos usando notas para el detalle libre
-      cantidad: Number(v.amount),
-      metodoPagoId: v.metodoPagoId!, // 👈 ahora sale del select (ID)
-      personaId: (v.personaId as number) || undefined,
-      categoriaId: (v.categoriaId as number) || undefined,
-      observaciones: v.notes || '',
-    };
-
-    if (this.isEdit && this.data.movement?.id) {
-      this.fin
-        .updateMovement(this.data.treasuryId, this.data.movement.id, payload)
-        .subscribe({
-          next: () => this.ref.close(true),
-          error: (err) => console.error('Error al actualizar movimiento', err),
-        });
-    } else {
-      this.fin.addMovements(this.data.treasuryId, payload).subscribe({
-        next: () => this.ref.close(true),
-        error: (err) => console.error('Error al crear movimiento', err),
-      });
-    }
+save() {
+  if (this.form.invalid) {
+    this.form.markAllAsTouched();
+    return;
   }
 
+  const v = this.form.value;
+  const payload: CrearMovimientoReq = {
+    tipo: v.type!,
+    fecha: this.formatLocalYmd(v.date as Date),
+    concepto: '',
+    cantidad: Number(v.amount),
+    metodoPagoId: v.metodoPagoId!,
+    personaId: (v.personaId as number) || undefined,
+    categoriaId: (v.categoriaId as number) || undefined,
+    observaciones: v.notes || '',
+  };
+
+  if (this.isEdit && this.data.movement?.id) {
+    this.fin
+      .updateMovement(this.data.treasuryId, this.data.movement.id, payload)
+      .subscribe({
+        next: () => this.ref.close({ success: true, reloadFinanzas: true }), // ← Cambia aquí
+        error: (err) => {
+          console.error('Error al actualizar movimiento', err);
+          this.ref.close({ success: false, reloadFinanzas: false }); // ← Cambia aquí
+        },
+      });
+  } else {
+    this.fin.addMovements(this.data.treasuryId, payload).subscribe({
+      next: () => this.ref.close({ success: true, reloadFinanzas: true }), // ← Cambia aquí
+      error: (err) => {
+        console.error('Error al crear movimiento', err);
+        this.ref.close({ success: false, reloadFinanzas: false }); // ← Cambia aquí
+      },
+    });
+  }
+}
   cancel() {
     this.ref.close();
   }

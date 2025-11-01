@@ -16,20 +16,31 @@
     </div>
   </section>
 
-<div class="toolbar">
-  <button class="btn btn--primary" (click)="openAdd()">
-    + Agregar Ingresos / Egresos
-  </button>
+  <div class="toolbar">
+    <button class="btn btn--primary" (click)="openAdd()">
+      + Agregar Ingresos / Egresos
+    </button>
 
-  <button class="btn btn--excel" (click)="downloadExcel()">
-    <mat-icon aria-hidden="true">download</mat-icon>
-    <span>Descargar Excel</span>
-  </button>
-</div>
+    <button class="btn btn--excel" (click)="downloadExcel()">
+      <mat-icon aria-hidden="true">download</mat-icon>
+      <span>Descargar Excel</span>
+    </button>
 
+    <!-- Selector de período -->
+    <div class="periodo-selector">
+      <label>Período:</label>
+      <select [(ngModel)]="periodoSeleccionado" (change)="cambiarPeriodo()" class="periodo-select">
+        <option value="mes">Mes Actual</option>
+        <option value="mes_anterior">Mes Anterior</option>
+        <option value="anio">Año Actual</option>
+        <option value="todos">Todos</option>
+      </select>
+    </div>
+  </div>
 
   <div class="table">
     <table mat-table [dataSource]="rows">
+      <!-- ... resto de tu tabla igual ... -->
       <ng-container matColumnDef="no">
         <th mat-header-cell *matHeaderCellDef>No.</th>
         <td mat-cell *matCellDef="let r; let i = index">{{ i+1 }}</td>
@@ -41,8 +52,10 @@
       </ng-container>
 
       <ng-container matColumnDef="cantidad">
-        <th mat-header-cell *matHeaderCellDef>cantidad</th>
-        <td mat-cell *matCellDef="let r">Q {{ r.cantidad | number:'1.2-2' }}</td>
+        <th mat-header-cell *matHeaderCellDef>Cantidad</th>
+        <td mat-cell *matCellDef="let r">
+          {{ r.cantidad | currency:'GTQ':'symbol':'1.2-2' }}
+        </td>
       </ng-container>
 
       <ng-container matColumnDef="fecha">

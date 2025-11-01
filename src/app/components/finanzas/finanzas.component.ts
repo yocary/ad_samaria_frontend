@@ -11,6 +11,8 @@ import { MatDatepicker } from '@angular/material/datepicker';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { DialogAddTreasuryComponent } from './dialogs/dialog-add-treasury/dialog-add-treasury.component';
+import { DialogDiezmosComponent } from './dialogs/dialog-diezmos/dialog-diezmos.component';
+import { AuthService } from 'src/app/services/auth.service';
 
 type MGPeriod = 'mes' | 'mes_anterior' | 'anio' | 'todos';
 
@@ -42,7 +44,7 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   monthCtrl: FormControl = new FormControl(new Date());
   maxMonth = new Date();
 
-    tabIndex = 1;
+    tabIndex = 0;
 
   canDownload = false;
   // ===== Pestaña "Movimientos generales"
@@ -52,6 +54,9 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   // ===== Pestaña "Tesorerías"
   treasuries: Treasury[] = [];
 
+    isPastor = false;
+      private authSub?: Subscription;
+
   private subs = new Subscription();
 
   constructor(
@@ -59,10 +64,17 @@ export class FinanzasComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snack: MatSnackBar,
     private router: Router,
-        private cdr: ChangeDetectorRef
+        private cdr: ChangeDetectorRef,
+           private auth: AuthService
   ) {}
 
   ngOnInit(): void {
+
+        this.authSub = this.auth.usuario.subscribe(u => {
+      const roles = (u?.roles || []).map(r => (r || '').toUpperCase());
+      this.isPastor = roles.includes('PASTOR') || roles.includes('ROLE_PASTOR');
+    });
+
     this.loadMovimientosGenerales();
     this.loadTesorerias();
 
@@ -177,23 +189,22 @@ export class FinanzasComponent implements OnInit, OnDestroy {
     }
   }
 
-  openTreasury(t: Treasury) {
-    if (!t?.id) return;
-    this.dialog
-      .open(DialogTreasuryDetailComponent, {
-        width: '960px',
-        disableClose: true,
-        data: { treasuryId: t.id, treasuryName: t.name },
-      })
-      .afterClosed()
-      .subscribe((changed) => {
-        if (changed) {
-          this.loadTesorerias();
-          this.loadMovimientosGenerales();
-        }
-      });
-  }
-
+openTreasury(t: Treasury) {
+  if (!t?.id) return;
+  this.dialog
+    .open(DialogTreasuryDetailComponent, {
+      width: '960px',
+      disableClose: true,
+      data: { treasuryId: t.id, treasuryName: t.name },
+    })
+    .afterClosed()
+    .subscribe((result: any) => {
+      if (result?.changed || result?.reloadFinanzas) {
+        this.loadTesorerias();
+        this.loadMovimientosGenerales(); // ← Esto recargará las finanzas
+      }
+    });
+}
   // ===================== SELECTOR DE MES =====================
   downloadReporte() {
     // Guard extra por si alguien intenta forzar el click
@@ -269,7 +280,10 @@ openAddTesoreria(): void {
 
   this.subs.add(
     ref.afterClosed().subscribe((ok: boolean) => {
+      console.log('Diálogo cerrado con:', ok); // ← Agrega este log
       if (ok) {
+        console.log('Recargando datos...'); // ← Agrega este log
+        
         // ir al tab "Tesorerías"
         this.tabIndex = 1;
 
@@ -280,11 +294,17 @@ openAddTesoreria(): void {
         // feedback
         this.snack.open('Tesorería creada con éxito', 'OK', { duration: 2000 });
 
-        // si usas OnPush o quieres forzar refresco visual
         this.cdr.markForCheck();
       }
     })
   );
 }
-
+  openDiezmos(): void {
+    this.dialog.open(DialogDiezmosComponent, {
+      width: '980px',
+      maxWidth: '98vw',
+      panelClass: 'dlg-diezmos',
+      disableClose: true
+    });
+  }
 }

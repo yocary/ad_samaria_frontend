@@ -5,19 +5,18 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { DialogAddDiezmoComponent } from './dialog-add-diezmo/dialog-add-diezmo.component';
 import * as XLSX from 'xlsx';
 
-/* ========= HELPERS DE FECHA (LOCAL) =========
- * Evitan el corrimiento de -1 día por UTC cuando se trabaja con "fecha" (solo día).
- */
+/* ========= HELPERS DE FECHA (LOCAL) ========= */
 function ymdToLocalDate(ymd: string): Date {
   const [y, m, d] = (ymd || '').slice(0, 10).split('-').map(Number);
-  return new Date(y, (m ?? 1) - 1, d ?? 1); // Fecha LOCAL
+  return new Date(y, (m ?? 1) - 1, d ?? 1);
 }
+
 function parseToLocalDate(input?: string | Date | null): Date | null {
   if (!input) return null;
   if (input instanceof Date) return input;
   const s = String(input);
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return ymdToLocalDate(s);
-  if (s.includes('T')) return ymdToLocalDate(s.slice(0, 10)); // tomar solo YYYY-MM-DD
+  if (s.includes('T')) return ymdToLocalDate(s.slice(0, 10));
   return ymdToLocalDate(s);
 }
 
@@ -37,6 +36,9 @@ export class DialogDiezmosComponent implements OnInit {
   // tabla
   rows: DiezmoRow[] = [];
 
+  // Filtro de período
+  periodoSeleccionado: 'mes' | 'mes_anterior' | 'anio' | 'todos' = 'mes';
+
   constructor(
     private fin: FinanzasService,
     private snack: MatSnackBar,
@@ -49,11 +51,15 @@ export class DialogDiezmosComponent implements OnInit {
   }
 
   private reload(){
-    this.fin.getDiezmos({}).subscribe(res => {
+    this.fin.getDiezmos({ periodo: this.periodoSeleccionado }).subscribe(res => {
       this.rows = res.items || [];
       this.totIngresos = res.totales?.ingresos ?? 0;
       this.totEgresos  = res.totales?.egresos ?? 0;
     });
+  }
+
+  cambiarPeriodo() {
+    this.reload();
   }
 
   openAdd(){
@@ -82,18 +88,16 @@ export class DialogDiezmosComponent implements OnInit {
 
   // ===== Descargar Excel =====
   downloadExcel(): void {
-    // Mapea lo visible en la tabla
+    // Mapea lo visible en la tabla (filtrado por período actual)
     const data = (this.rows || []).map((r, idx) => ({
       'No.': idx + 1,
       'Nombre': r.nombre || '',
-      // Fecha como Date LOCAL para que Excel no reste 1 día
       'Fecha': r.fecha ? parseToLocalDate(r.fecha as any) : null,
       'Tipo': r.tipo || '',
       'Cantidad': Number(r.cantidad || 0),
     }));
 
     const ws = XLSX.utils.json_to_sheet(data);
-    // Ancho de columnas para mejor lectura
     ws['!cols'] = [
       { wch: 6 },   // No.
       { wch: 30 },  // Nombre
@@ -105,8 +109,8 @@ export class DialogDiezmosComponent implements OnInit {
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Diezmos');
 
-    const hoy = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
-    const file = `diezmos_${hoy}.xlsx`;
+    const hoy = new Date().toISOString().slice(0, 10);
+    const file = `diezmos_${hoy}_${this.periodoSeleccionado}.xlsx`;
     XLSX.writeFile(wb, file, { cellDates: true });
   }
 
