@@ -149,3 +149,68 @@
 }
 .btn-wide{ min-width:110px; }
 .btn-green{ background:#79c36a !important; color:#fff !important; }
+
+.cat-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .left-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1rem;
+  }
+
+  .right-group {
+    display: flex;
+    align-items: flex-end;
+
+    .btn-add {
+      height: 40px;
+      font-weight: 600;
+      background-color: #1976d2;
+      color: white;
+    }
+  }
+
+  .cat-name,
+  .cat-type {
+    width: 220px;
+  }
+}
+.cat-toolbar {
+  display: flex;
+  align-items: center;      // 👈 Alinea verticalmente TODO al centro
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1rem;
+
+  .cat-name,
+  .cat-type {
+    width: 220px;
+    margin: 0;
+  }
+
+  .chk-container {
+    display: flex;
+    align-items: center;
+    height: 56px;           // misma altura visual que los mat-form-field
+  }
+
+  .btn-add {
+    height: 56px;           // igual que los mat-form-field
+    line-height: 56px;
+    font-weight: 600;
+    padding: 0 20px;
+  }
+
+  // Elimina espacio de subscript (errores/hints)
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+    height: 0;
+  }
+}

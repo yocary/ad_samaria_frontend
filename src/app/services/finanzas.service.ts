@@ -12,6 +12,9 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { tap } from 'rxjs/operators';
 
+import { map } from 'rxjs/operators';
+
+
 export interface CrearMovimientoReq {
   tipo?: 'Ingreso' | 'Egreso'; // o usa tipoId
   tipoId?: number;
@@ -24,10 +27,35 @@ export interface CrearMovimientoReq {
   observaciones?: string;
 }
 
+export interface MovimientoGeneralDTO {
+  tesoreriaId: number;
+  tesoreria: string;
+  categoriaId: number;
+  categoria: string;
+  tipo: 'Ingreso' | 'Egreso';
+  amount?: number; // opcional, por si lo agregas después
+}
+
+export interface MovimientoGeneralUI {
+  treasuryId: number;
+  treasury: string;
+  categoryId: number;
+  category: string;
+  type: 'Ingreso' | 'Egreso';
+  amount?: number;
+}
+
+export interface TotalesGenerales {
+  ingresos: number;
+  egresos: number;
+}
+
+
 export interface CategoriaMini {
   id: number;
   nombre: string;
   tipo: string;
+  finanzasGenerales: boolean;
 }
 export interface MetodoPago {
   id: number;
@@ -233,14 +261,27 @@ export class FinanzasService {
     );
   }
 
-  getCategoriasPorTipo(
-    tipo: 'Ingreso' | 'Egreso'
-  ): Observable<CategoriaMini[]> {
-    const params = new HttpParams().set('tipo', tipo);
-    return this.http.get<CategoriaMini[]>(`${this.baseMov}/categorias`, {
-      params,
-    });
-  }
+getCategoriasPorTipo(tipo: 'Ingreso' | 'Egreso'): Observable<CategoriaMini[]> {
+  const params = new HttpParams().set('tipo', tipo);
+  // OJO: ahora apunta a baseCategoria, no baseMov
+  return this.http.get<any[]>(`${this.baseCategoria}/categorias`, { params }).pipe(
+    // normaliza cada item a camelCase
+    // (si tu backend devuelve un array plano)
+    // Si devuelve {items: [...]}, ajusta este map.
+    // También puedes dejar un tap para inspección
+    // tap(res => console.log('[GET CATS] raw ->', res)),
+    // map(res => res.items ?? res) // si fuera paginado
+    // map((arr: any[]) => arr.map(c => this.normInCategoria(c)))
+    // Para la versión simple:
+    // @ts-ignore
+    (source) => source.pipe(
+      // eslint-disable-next-line rxjs/no-ignored-notifier
+      // tap(arr => console.log('[GET CATS] raw ->', arr)),
+      // @ts-ignore
+      map((arr: any[]) => (arr || []).map(c => this.normInCategoria(c)))
+    )
+  );
+}
 
   deleteMovement(treasuryId: number, movementId: number) {
     return this.http.delete<void>(
@@ -269,22 +310,27 @@ export class FinanzasService {
     );
   }
 
-  createCategoria(body: { nombre: string; tipoMovimientoId: number }) {
-    return this.http.post<CategoriaMini>(
-      `${this.baseCategoria}/categorias`,
-      body
-    );
-  }
+createCategoria(body: { nombre: string; tipoMovimientoId: number; finanzasGenerales: boolean }) {
+  const out = this.normOutCategoria(body);
+  // console.log('[CREATE CAT] payload ->', out);
+  return this.http.post<any>(`${this.baseCategoria}/categorias`, out).pipe(
+    // tap(res => console.log('[CREATE CAT] res ->', res)),
+    map(res => this.normInCategoria(res))
+  );
+}
 
-  updateCategoria(
-    id: number,
-    body: { nombre: string; tipoMovimientoId: number }
-  ) {
-    return this.http.put<CategoriaMini>(
-      `${this.baseCategoria}/categorias/${id}`,
-      body
-    );
-  }
+updateCategoria(
+  id: number,
+  body: { nombre: string; tipoMovimientoId: number; finanzasGenerales: boolean }
+) {
+  const out = this.normOutCategoria(body);
+  // console.log('[UPDATE CAT] payload ->', out);
+  return this.http.put<any>(`${this.baseCategoria}/categorias/${id}`, out).pipe(
+    // tap(res => console.log('[UPDATE CAT] res ->', res)),
+    map(res => this.normInCategoria(res))
+  );
+}
+
 
   deleteCategoria(id: number) {
     return this.http.delete<void>(`${this.baseCategoria}/categorias/${id}`);
@@ -333,4 +379,67 @@ export class FinanzasService {
     responseType: 'blob'
   });
 }
+
+// Helper: normaliza salida hacia backend (camel -> snake)
+private normOutCategoria(dto: { nombre: string; tipoMovimientoId: number; finanzasGenerales?: boolean }) {
+  return {
+    nombre: dto.nombre,
+    tipoMovimientoId: dto.tipoMovimientoId,
+    // siempre enviar snake_case
+    finanzas_generales: dto.finanzasGenerales ?? false
+  };
+}
+
+// Helper: normaliza entrada desde backend (snake/camel -> camel)
+private normInCategoria(res: any): CategoriaMini {
+  return {
+    id: res.id,
+    nombre: res.nombre,
+    tipo: res.tipo,
+    finanzasGenerales: Boolean(res.finanzasGenerales ?? res.finanzas_generales ?? false)
+  };
+}
+
+getMovimientosGenerales(params: { periodo?: 'mes'|'mes_anterior'|'anio'|'todos'; q?: string; mes?: string }) {
+  let p = new HttpParams().set('periodo', params.periodo || 'mes');
+  if (params.q && params.q.trim()) p = p.set('q', params.q.trim());
+  if (params.mes) p = p.set('mes', params.mes); // <<--- NUEVO
+
+  return this.http.get<any>(`${this.baseMov}/movimientos-generales`, { params: p }).pipe(
+    map((resp: any) => {
+      // ... (tu mapeo tal cual)
+      // NO CAMBIES el resto
+      if (resp && Array.isArray(resp.items)) {
+        const items = resp.items.map((x: any) => ({
+          treasuryId: x.tesoreriaId ?? x.treasuryId ?? x.tesoreria_id,
+          treasury:   x.tesoreria   ?? x.treasury   ?? x.tesoreria_nombre ?? x.tesoreriaName,
+          categoryId: x.categoriaId ?? x.categoryId ?? x.categoria_id,
+          category:   x.categoria   ?? x.category   ?? x.categoria_nombre ?? x.categoriaName,
+          type:       (x.tipo ?? x.type) as ('Ingreso'|'Egreso'),
+          amount:     x.amount ?? x.monto ?? x.cantidad
+        }));
+        const totales = resp.totales
+          ? { ingresos: Number(resp.totales.ingresos ?? 0), egresos: Number(resp.totales.egresos ?? 0) }
+          : null;
+        return { items, totales };
+      }
+      if (Array.isArray(resp)) {
+        const items = resp.map((x: any) => ({
+          treasuryId: x.tesoreriaId ?? x.treasuryId ?? x.tesoreria_id,
+          treasury:   x.tesoreria   ?? x.treasury   ?? x.tesoreria_nombre ?? x.tesoreriaName,
+          categoryId: x.categoriaId ?? x.categoryId ?? x.categoria_id,
+          category:   x.categoria   ?? x.category   ?? x.categoria_nombre ?? x.categoriaName,
+          type:       (x.tipo ?? x.type) as ('Ingreso'|'Egreso'),
+          amount:     x.amount ?? x.monto ?? x.cantidad
+        }));
+        const ingresos = items.reduce((a, r) => a + (r.type === 'Ingreso' ? (r.amount ?? 0) : 0), 0);
+        const egresos  = items.reduce((a, r) => a + (r.type === 'Egreso'  ? (r.amount ?? 0) : 0), 0);
+        return { items, totales: { ingresos, egresos } };
+      }
+      return { items: [], totales: { ingresos: 0, egresos: 0 } };
+    })
+  );
+}
+
+
 }

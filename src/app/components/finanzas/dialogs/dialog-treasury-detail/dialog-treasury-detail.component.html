@@ -33,9 +33,9 @@
           </div>
 
           <button mat-stroked-button (click)="downloadMovimientosExcel()">
-  <mat-icon>download</mat-icon>
-  Descargar Excel
-</button>
+            <mat-icon>download</mat-icon>
+            Descargar Excel
+          </button>
 
           <mat-form-field appearance="outline" class="period">
             <mat-label>Periodo</mat-label>
@@ -63,11 +63,10 @@
 
           <ng-container matColumnDef="concept">
             <th mat-header-cell *matHeaderCellDef>Concepto</th>
-            <!-- Mostrar categoría si viene del backend, si no el concepto -->
             <td mat-cell *matCellDef="let r">{{ r.category || r.concept }}</td>
           </ng-container>
 
-                    <ng-container matColumnDef="type">
+          <ng-container matColumnDef="type">
             <th mat-header-cell *matHeaderCellDef>Tipo Movimiento</th>
             <td mat-cell *matCellDef="let r">{{ r.type }}</td>
           </ng-container>
@@ -85,9 +84,8 @@
             </td>
           </ng-container>
 
-          <!-- Orden de columnas: No., Fecha, Concepto, Cantidad, Acciones -->
-          <tr mat-header-row *matHeaderRowDef="['index','date','concept', 'type', 'amount','actions']"></tr>
-          <tr mat-row *matRowDef="let row; columns: ['index','date','concept', 'type', 'amount','actions'];"></tr>
+          <tr mat-header-row *matHeaderRowDef="['index','date','concept','type','amount','actions']"></tr>
+          <tr mat-row *matRowDef="let row; columns: ['index','date','concept','type','amount','actions'];"></tr>
         </table>
       </div>
 
@@ -100,7 +98,7 @@
   <!-- ===================== CATEGORÍAS ===================== -->
   <mat-tab label="Categorías">
     <div class="cat-wrap">
-      <!-- toolbar de Categorías -->
+      <!-- Toolbar de Categorías -->
 <div class="cat-toolbar">
   <mat-form-field appearance="outline" class="cat-name">
     <mat-label>Nombre</mat-label>
@@ -116,10 +114,23 @@
     </mat-select>
   </mat-form-field>
 
-  <button mat-raised-button color="primary" class="btn-add" (click)="addCategory()">
+  <div class="chk-container">
+    <mat-checkbox [formControl]="catGeneral">
+      Mostrar en <strong>Finanzas Generales</strong>
+    </mat-checkbox>
+  </div>
+
+  <button
+    mat-raised-button
+    color="primary"
+    class="btn-add"
+    (click)="addCategory()"
+  >
     + Agregar
   </button>
 </div>
+
+
 
 
       <div class="cat-table">
@@ -129,6 +140,7 @@
               <th class="col-num">No.</th>
               <th>Categoría</th>
               <th class="col-tipo">Tipo</th>
+              <th class="col-fg">Finanzas Generales</th>
               <th class="col-acc">Acciones</th>
             </tr>
           </thead>
@@ -136,6 +148,7 @@
             <tr *ngFor="let c of catList; let i = index">
               <td class="col-num">{{ i + 1 }}</td>
 
+              <!-- Nombre -->
               <td>
                 <ng-container *ngIf="!c.editing; else editName">
                   {{ c.name }}
@@ -145,37 +158,81 @@
                 </ng-template>
               </td>
 
-<td class="col-tipo">
-  <ng-container *ngIf="!c.editing; else editType">
-    <span class="badge" [ngClass]="c.type === 'Ingreso' ? 'badge-ingreso' : 'badge-egreso'">
-      {{ c.type }}
-    </span>
-  </ng-container>
-  <ng-template #editType>
-    <mat-form-field appearance="outline" class="inline-select">
-      <!-- ahora las opciones vienen de `tiposMov` -->
-      <mat-select [(ngModel)]="c._type">
-        <mat-option *ngFor="let t of tiposMov" [value]="t.nombre">{{ t.nombre }}</mat-option>
-      </mat-select>
-    </mat-form-field>
-  </ng-template>
-</td>
+              <!-- Tipo -->
+              <td class="col-tipo">
+                <ng-container *ngIf="!c.editing; else editType">
+                  <span
+                    class="badge"
+                    [ngClass]="c.type === 'Ingreso' ? 'badge-ingreso' : 'badge-egreso'"
+                  >
+                    {{ c.type }}
+                  </span>
+                </ng-container>
+                <ng-template #editType>
+                  <mat-form-field appearance="outline" class="inline-select">
+                    <mat-select [(ngModel)]="c._type">
+                      <mat-option *ngFor="let t of tiposMov" [value]="t.nombre">
+                        {{ t.nombre }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </ng-template>
+              </td>
 
+              <!-- Finanzas Generales -->
+              <td class="col-fg">
+                <ng-container *ngIf="!c.editing; else editFG">
+                  <!-- Checkbox deshabilitado para visualizar el estado -->
+                  <mat-checkbox [checked]="!!c.finanzasGenerales" disabled></mat-checkbox>
+                </ng-container>
+                <ng-template #editFG>
+                  <mat-checkbox [(ngModel)]="c._finanzasGenerales">Visible</mat-checkbox>
+                </ng-template>
+              </td>
 
+              <!-- Acciones -->
               <td class="col-acc">
                 <ng-container *ngIf="!c.editing; else editBtns">
-                  <button mat-raised-button color="accent" class="btn-sm" (click)="startEditCategory(c)">Editar</button>
-                  <button mat-raised-button color="warn" class="btn-sm" (click)="removeCategory(c)">Eliminar</button>
+                  <button
+                    mat-raised-button
+                    color="accent"
+                    class="btn-sm"
+                    (click)="startEditCategory(c)"
+                  >
+                    Editar
+                  </button>
+                  <button
+                    mat-raised-button
+                    color="warn"
+                    class="btn-sm"
+                    (click)="removeCategory(c)"
+                  >
+                    Eliminar
+                  </button>
                 </ng-container>
                 <ng-template #editBtns>
-                  <button mat-raised-button color="primary" class="btn-sm" (click)="saveEditCategory(c)">Guardar</button>
-                  <button mat-stroked-button class="btn-sm" (click)="cancelEditCategory(c)">Cancelar</button>
+                  <button
+                    mat-raised-button
+                    color="primary"
+                    class="btn-sm"
+                    (click)="saveEditCategory(c)"
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    mat-stroked-button
+                    class="btn-sm"
+                    (click)="cancelEditCategory(c)"
+                  >
+                    Cancelar
+                  </button>
                 </ng-template>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+
       <div class="footer">
         <button mat-stroked-button (click)="close()">Cerrar</button>
       </div>

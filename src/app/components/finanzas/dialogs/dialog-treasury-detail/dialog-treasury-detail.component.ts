@@ -22,6 +22,17 @@ import * as XLSX from 'xlsx';
 
 type TabKey = 'mov' | 'cat' | 'users' | 'edit';
 
+type UICategory = {
+  id: number;
+  name: string;
+  type: 'Ingreso' | 'Egreso';
+  finanzasGenerales: boolean;
+  editing?: boolean;
+  _name?: string;
+  _type?: 'Ingreso' | 'Egreso';
+  _finanzasGenerales?: boolean;
+};
+
 @Component({
   selector: 'app-dialog-treasury-detail',
   templateUrl: './dialog-treasury-detail.component.html',
@@ -29,10 +40,10 @@ type TabKey = 'mov' | 'cat' | 'users' | 'edit';
   encapsulation: ViewEncapsulation.None,
 })
 export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
+  tiposMov: { id: number; nombre: string }[] = [];
+  catTypeId: FormControl = new FormControl(null);
+  catGeneral: FormControl = new FormControl(false);
 
-  
-tiposMov: { id:number; nombre:string }[] = [];
-catTypeId: FormControl = new FormControl(null); // 👈 ahora guardamos el ID del tipo
   /* ---------- Tabs ---------- */
   selectedIndex = 0;
   tabs: { key: TabKey; label: string }[] = [
@@ -55,20 +66,9 @@ catTypeId: FormControl = new FormControl(null); // 👈 ahora guardamos el ID de
   /** Periodo actual del backend ('mes' | 'mes_anterior' | 'anio' | 'todos') */
   private currentPeriod: 'mes' | 'mes_anterior' | 'anio' | 'todos' = 'mes';
 
-  /* ---------- CATEGORÍAS (mock por ahora) ---------- */
+  /* ---------- CATEGORÍAS ---------- */
   catName = new FormControl('');
-  catType = new FormControl(''); // 'Ingreso' | 'Egreso'
-  catList: Array<{
-    id: number;
-    name: string;
-    type: 'Ingreso' | 'Egreso';
-    editing?: boolean;
-    _name?: string;
-    _type?: 'Ingreso' | 'Egreso';
-  }> = [
-    { id: 1, name: 'Ofrenda Jóvenes', type: 'Egreso' },
-    { id: 2, name: 'Diezmos', type: 'Ingreso' },
-  ];
+  catList: UICategory[] = [];
   private catIdSeq = 3;
 
   /* ---------- USUARIOS (mock por ahora) ---------- */
@@ -89,10 +89,7 @@ catTypeId: FormControl = new FormControl(null); // 👈 ahora guardamos el ID de
 
   /* ---------- EDIT TESORERÍA ---------- */
   treasuryStatuses = ['Activo', 'Inactivo'];
-  currencies = [
-    { value: 'GTQ', label: '(GTQ) Guatemala' },
-    // { value: 'USD', label: '(USD) Dólar' },
-  ];
+  currencies = [{ value: 'GTQ', label: '(GTQ) Guatemala' }];
   editForm = new FormGroup({
     name: new FormControl('', Validators.required),
     status: new FormControl('Activo'),
@@ -102,53 +99,36 @@ catTypeId: FormControl = new FormControl(null); // 👈 ahora guardamos el ID de
   /* ---------- Subs ---------- */
   private subs = new Subscription();
 
-  
-
   constructor(
-  @Inject(MAT_DIALOG_DATA) public data: { treasuryId: number; treasuryName?: string },
+    @Inject(MAT_DIALOG_DATA)
+    public data: { treasuryId: number; treasuryName?: string },
     private dialogRef: MatDialogRef<DialogTreasuryDetailComponent>,
     private fin: FinanzasService,
     private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
-
-     this.treasuryId = this.data.treasuryId;
-
-  // 👇 inicializa el título inmediatamente con el nombre recibido
-  if (this.data.treasuryName) {
-    this.treasury = { id: this.treasuryId, name: this.data.treasuryName } as any;
-  }
-
-  // luego tu suscripción para refrescar/normalizar desde el servicio
-  this.subs.add(
-    this.fin.treasuries$.subscribe((list: Treasury[]) => {
-      const found = list?.find(t => t.id === this.treasuryId) || null;
-      if (found) {
-        this.treasury = found; // actualizará el título si cambia
-        this.editForm.patchValue({ name: found.name, status: found.status, currency: (found as any).currency || 'GTQ' }, { emitEvent: false });
-      }
-    })
-  );
-
-
     this.treasuryId = this.data.treasuryId;
 
-      this.cargarTiposMovimiento(); // 👈 carga opciones del select
-  this.recargarTablaCategorias(); // opcional: cargar ambas listas al entrar
+    // Inicializa título con el nombre recibido
+    if (this.data.treasuryName) {
+      this.treasury = {
+        id: this.treasuryId,
+        name: this.data.treasuryName,
+      } as any;
+    }
 
-    // 1) Sincronizar tesorería (del store del servicio si ya está cargada)
+    // Sincroniza tesorería desde el servicio
     this.subs.add(
       this.fin.treasuries$.subscribe((list: Treasury[]) => {
-        this.treasury =
-          list?.find((t) => t.id === this.treasuryId) || this.treasury || null;
-
-        if (this.treasury) {
+        const found = list?.find((t) => t.id === this.treasuryId) || null;
+        if (found) {
+          this.treasury = found;
           this.editForm.patchValue(
             {
-              name: this.treasury.name,
-              status: this.treasury.status,
-              currency: (this as any).treasury?.currency || 'GTQ',
+              name: found.name,
+              status: found.status,
+              currency: (found as any).currency || 'GTQ',
             },
             { emitEvent: false }
           );
@@ -156,14 +136,20 @@ catTypeId: FormControl = new FormControl(null); // 👈 ahora guardamos el ID de
       })
     );
 
-    // 2) Buscar → reconsultar backend con q (debounced)
+    // Cargar opciones del select de tipo de movimiento
+    this.cargarTiposMovimiento();
+
+    // Cargar categorías (Ingreso/Egreso)
+    this.recargarTablaCategorias();
+
+    // Buscar → reconsultar backend con q (debounced)
     this.subs.add(
       this.searchMov.valueChanges.pipe(debounceTime(250)).subscribe(() => {
-        this.reloadMovimientos(); // pide al backend con q actual
+        this.reloadMovimientos();
       })
     );
 
-    // 3) Primera carga: movimientos + resumen
+    // Primera carga
     this.reloadMovimientos();
     this.cargarResumen(this.currentPeriod);
   }
@@ -173,21 +159,30 @@ catTypeId: FormControl = new FormControl(null); // 👈 ahora guardamos el ID de
   }
 
   private cargarTiposMovimiento() {
-  this.fin.getTiposMovimiento().subscribe(list => this.tiposMov = list || []);
-}
+    this.fin.getTiposMovimiento().subscribe((list) => (this.tiposMov = list || []));
+  }
 
 private recargarTablaCategorias() {
   Promise.all([
     this.fin.getCategoriasPorTipo('Ingreso').toPromise(),
     this.fin.getCategoriasPorTipo('Egreso').toPromise()
   ]).then(([ing = [], egr = []]) => {
+    const mapCat = (c: any, type: 'Ingreso' | 'Egreso') => ({
+      id: c.id,
+      name: c.nombre,
+      type,
+      // acepta cualquiera de los dos nombres que pueda mandar el backend
+      finanzasGenerales: Boolean(
+        c.finanzasGenerales ?? c.finanzas_generales ?? c.finanzas_generale // por si acaso
+      ),
+    });
+
     this.catList = [
-      ...ing.map(c => ({ id: c.id, name: c.nombre, type: 'Ingreso' as const })),
-      ...egr.map(c => ({ id: c.id, name: c.nombre, type: 'Egreso' as const })),
+      ...ing.map((c: any) => mapCat(c, 'Ingreso')),
+      ...egr.map((c: any) => mapCat(c, 'Egreso')),
     ];
   });
 }
-
 
 
   /** Llama al backend para recargar movimientos usando periodo + q actuales */
@@ -198,16 +193,13 @@ private recargarTablaCategorias() {
         q: (this.searchMov.value || '').toString().trim(),
       })
       .subscribe((list) => {
-        // El backend ya devuelve movimientos de esta tesorería y filtrados por q
         this.movements = list || [];
         this.updateKPIs();
       });
   }
 
   /** Llama al backend para traer totales de la tesorería y refrescar KPIs */
-  private cargarResumen(
-    periodo: 'mes' | 'mes_anterior' | 'anio' | 'todos'
-  ): void {
+  private cargarResumen(periodo: 'mes' | 'mes_anterior' | 'anio' | 'todos'): void {
     this.fin.getResumenTesoreria(this.treasuryId, periodo).subscribe((r) => {
       this.kpiIngresos = r?.totalIngresos ?? 0;
       this.kpiEgresos = r?.totalEgresos ?? 0;
@@ -276,84 +268,137 @@ private recargarTablaCategorias() {
 
     this.fin.deleteMovement(this.treasuryId, row.id).subscribe({
       next: () => {
-        this.reloadMovimientos(); // recarga la tabla
-        this.cargarResumen(this.currentPeriod); // actualiza KPIs
+        this.reloadMovimientos();
+        this.cargarResumen(this.currentPeriod);
       },
       error: (err) => console.error('Error al eliminar movimiento', err),
     });
   }
 
-  download() {
-    /* TODO: exportar CSV */
-  }
-
-  /* ===== Categorías (mock) ===== */
+  /* ===== Categorías ===== */
 addCategory(): void {
   const nombre = (this.catName.value || '').trim();
   const tipoId = this.catTypeId.value;
+  const finanzasGenerales = !!this.catGeneral.value;
+  if (!nombre || !tipoId) return;
 
-  if (!nombre || !tipoId) {
-    // podrías mostrar un snack
-    return;
-  }
+  const payload = {
+    nombre,
+    tipoMovimientoId: tipoId,
+    finanzasGenerales,
+    finanzas_generales: finanzasGenerales
+  };
 
-  this.fin.createCategoria({ nombre, tipoMovimientoId: tipoId }).subscribe({
-    next: (res) => {
-      // actualizar tabla localmente
+  console.log('[ADD] payload ->', payload);
+
+  this.fin.createCategoria(payload).subscribe({
+    next: (res: any) => {
+      console.log('[ADD] response ->', res);
       this.catList = [
         ...this.catList,
-        { id: res.id, name: res.nombre, type: (res.tipo as 'Ingreso' | 'Egreso') }
+        {
+          id: res.id,
+          name: res.nombre,
+          type: res.tipo as ('Ingreso'|'Egreso'),
+          finanzasGenerales: Boolean(res.finanzasGenerales ?? res.finanzas_generales)
+        }
       ];
-      // limpiar formulario
       this.catName.reset();
       this.catTypeId.reset();
+      this.catGeneral.setValue(false);
     },
-    error: (err) => console.error('Error creando categoría', err)
+    error: (err) => console.error('Error creando categoría', err),
   });
 }
-
-  startEditCategory(c: any): void {
-    c.editing = true;
-    c._name = c.name;
-    c._type = c.type;
-  }
 
 saveEditCategory(c: any): void {
   const nombre = (c._name || '').trim();
   const tipoNombre = (c._type || '').trim(); // "Ingreso" | "Egreso"
+  const finanzasGenerales = !!c._finanzasGenerales;
   if (!nombre || (tipoNombre !== 'Ingreso' && tipoNombre !== 'Egreso')) return;
 
-  // Buscar el ID del tipo por su nombre
   const tipo = this.tiposMov.find(t => t.nombre.toLowerCase() === tipoNombre.toLowerCase());
-  if (!tipo) { console.error('Tipo no encontrado'); return; }
+  if (!tipo) return;
 
-  this.fin.updateCategoria(c.id, { nombre, tipoMovimientoId: tipo.id }).subscribe({
-    next: (res) => {
-      // Actualizar fila localmente con lo devuelto por el backend
+  const payload = {
+    nombre,
+    tipoMovimientoId: tipo.id,
+    finanzasGenerales,
+    finanzas_generales: finanzasGenerales
+  };
+
+  console.log('[UPDATE] payload ->', payload);
+
+  this.fin.updateCategoria(c.id, payload).subscribe({
+    next: (res: any) => {
+      console.log('[UPDATE] response ->', res);
       c.name = res.nombre;
-      c.type = (res.tipo as 'Ingreso'|'Egreso');
+      c.type = res.tipo as ('Ingreso'|'Egreso');
+      c.finanzasGenerales = Boolean(res.finanzasGenerales ?? res.finanzas_generales);
       c.editing = false;
-      delete c._name; delete c._type;
+      delete c._name; delete c._type; delete c._finanzasGenerales;
     },
     error: (err) => console.error('Error al actualizar categoría', err)
   });
 }
 
-cancelEditCategory(c: any): void {
-  c.editing = false;
-  delete c._name;
-  delete c._type;
-}
 
-removeCategory(c: any): void {
-  if (!c?.id) return;
-  this.fin.deleteCategoria(c.id).subscribe({
-    next: () => {
-      this.catList = this.catList.filter(x => x.id !== c.id);
-    },
-    error: (err) => console.error('Error al eliminar categoría', err)
-  });
-}
+  startEditCategory(c: UICategory): void {
+    c.editing = true;
+    c._name = c.name;
+    c._type = c.type;
+    c._finanzasGenerales = c.finanzasGenerales;
+  }
+
+// saveEditCategory(c: any): void {
+//   const nombre = (c._name || '').trim();
+//   const tipoNombre = (c._type || '').trim(); // "Ingreso" | "Egreso"
+//   const finanzasGenerales = !!c._finanzasGenerales;
+//   if (!nombre || (tipoNombre !== 'Ingreso' && tipoNombre !== 'Egreso')) return;
+
+//   const tipo = this.tiposMov.find(
+//     t => t.nombre.toLowerCase() === tipoNombre.toLowerCase()
+//   );
+//   if (!tipo) return;
+
+//   const payload = {
+//     nombre,
+//     tipoMovimientoId: tipo.id,
+//     finanzasGenerales,
+//     finanzas_generales: finanzasGenerales,
+//   };
+
+//   this.fin.updateCategoria(c.id, payload).subscribe({
+//     next: (res: any) => {
+//       c.name = res.nombre;
+//       c.type = res.tipo as ('Ingreso'|'Egreso');
+//       c.finanzasGenerales = Boolean(
+//         res.finanzasGenerales ?? res.finanzas_generales
+//       );
+//       c.editing = false;
+//       delete c._name; delete c._type; delete c._finanzasGenerales;
+//     },
+//     error: (err) => console.error('Error al actualizar categoría', err)
+//   });
+// }
+
+
+  cancelEditCategory(c: UICategory): void {
+    c.editing = false;
+    delete c._name;
+    delete c._type;
+    delete c._finanzasGenerales;
+  }
+
+  removeCategory(c: UICategory): void {
+    if (!c?.id) return;
+    this.fin.deleteCategoria(c.id).subscribe({
+      next: () => {
+        this.catList = this.catList.filter((x) => x.id !== c.id);
+      },
+      error: (err) => console.error('Error al eliminar categoría', err),
+    });
+  }
 
   /* ===== Usuarios (mock) ===== */
   startAddUser() {
@@ -407,95 +452,85 @@ removeCategory(c: any): void {
   }
 
   /* ===== Edit Tesorería ===== */
-saveTreasury() {
-  if (!this.editForm.valid || !this.treasury) return;
+  saveTreasury() {
+    if (!this.editForm.valid || !this.treasury) return;
 
-  const nombre    = (this.editForm.get('name')?.value as string)?.trim();
-  const statusStr = this.editForm.get('status')?.value as ('Activo'|'Inactivo');
-  const estado    = statusStr === 'Activo'; // boolean para backend
+    const nombre = (this.editForm.get('name')?.value as string)?.trim();
+    const statusStr = this.editForm.get('status')?.value as 'Activo' | 'Inactivo';
+    const estado = statusStr === 'Activo';
 
-  this.fin.updateTesoreria(this.treasury.id!, { nombre, estado }).subscribe({
-    next: () => this.dialogRef.close(true), // el padre ya recarga lista/resumen
-    error: (err) => console.error('Error actualizando tesorería', err)
-  });
-}
+    this.fin.updateTesoreria(this.treasury.id!, { nombre, estado }).subscribe({
+      next: () => this.dialogRef.close(true),
+      error: (err) => console.error('Error actualizando tesorería', err),
+    });
+  }
 
+  deleteTreasury() {
+    if (!this.treasury?.id) return;
 
-deleteTreasury() {
-  if (!this.treasury?.id) return;
+    Swal.fire({
+      title: '¿Eliminar esta tesorería?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.fin.deleteTesoreria(this.treasury!.id).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: 'Eliminada',
+              text: 'La tesorería se eliminó correctamente.',
+              confirmButtonColor: '#3085d6',
+            }).then(() => {
+              this.dialogRef.close({ deleted: true });
+            });
+          },
+          error: (err) => {
+            const msg =
+              err?.error?.message || 'No se pudo eliminar la tesorería.';
+            console.error('Error al eliminar tesorería', err);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: msg,
+              confirmButtonColor: '#3085d6',
+            });
+          },
+        });
+      }
+    });
+  }
 
-  Swal.fire({
-    title: '¿Eliminar esta tesorería?',
-    text: 'Esta acción no se puede deshacer.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar',
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      this.fin.deleteTesoreria(this.treasury!.id).subscribe({
-        next: () => {
-          Swal.fire({
-            icon: 'success',
-            title: 'Eliminada',
-            text: 'La tesorería se eliminó correctamente.',
-            confirmButtonColor: '#3085d6'
-          }).then(() => {
-            this.dialogRef.close({ deleted: true }); 
-          });
-        },
-        error: (err) => {
-          const msg = err?.error?.message || 'No se pudo eliminar la tesorería.';
-          console.error('Error al eliminar tesorería', err);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error',
-            text: msg,
-            confirmButtonColor: '#3085d6'
-          });
-        }
-      });
-    }
-  });
-}
   close() {
     this.dialogRef.close();
   }
 
   downloadMovimientosExcel(): void {
-  // Arma las filas como están visibles en la tabla
-  const rows = (this.movements || []).map((r, idx) => ({
-    'No.': idx + 1,
-    'Fecha': r.date ? new Date(r.date) : null,         // se exporta como fecha
-    'Concepto': r.category || r.concept || '',
-    'Tipo': r.type || '',
-    'Cantidad': Number(r.amount || 0)
-  }));
-
-  // Hoja
-  const ws = XLSX.utils.json_to_sheet(rows);
-
-  // Ancho de columnas opcional (mejor legibilidad)
-  ws['!cols'] = [
-    { wch: 6 },   // No.
-    { wch: 12 },  // Fecha
-    { wch: 40 },  // Concepto
-    { wch: 12 },  // Tipo
-    { wch: 14 },  // Cantidad
-  ];
-
-  // Libro
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Movimientos');
-
-  // Nombre de archivo: tesorería + periodo + fecha actual
-  const safeName = (this.treasury?.name || 'tesoreria').replace(/[^\w\-]+/g, '_');
-  const hoy = new Date().toISOString().slice(0, 10); // yyyy-mm-dd
-  const file = `movimientos_${safeName}_${this.currentPeriod}_${hoy}.xlsx`;
-
-  XLSX.writeFile(wb, file, { cellDates: true });
-}
-
+    const rows = (this.movements || []).map((r, idx) => ({
+      'No.': idx + 1,
+      Fecha: r.date ? new Date(r.date) : null,
+      Concepto: r.category || r.concept || '',
+      Tipo: r.type || '',
+      Cantidad: Number(r.amount || 0),
+    }));
+    const ws = XLSX.utils.json_to_sheet(rows);
+    ws['!cols'] = [
+      { wch: 6 },
+      { wch: 12 },
+      { wch: 40 },
+      { wch: 12 },
+      { wch: 14 },
+    ];
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Movimientos');
+    const safeName = (this.treasury?.name || 'tesoreria').replace(/[^\w\-]+/g, '_');
+    const hoy = new Date().toISOString().slice(0, 10);
+    const file = `movimientos_${safeName}_${this.currentPeriod}_${hoy}.xlsx`;
+    XLSX.writeFile(wb, file, { cellDates: true });
+  }
 }
