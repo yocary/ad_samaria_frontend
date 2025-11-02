@@ -155,3 +155,146 @@
   .search{ justify-self:stretch; max-width:none; }
   .certs{ padding:14px; }
 }
+
+
+/* =========================
+   BOTONES – CERTIFICADOS (ESTILO SAMARIA)
+   ========================= */
+
+/* === BOTÓN PRIMARIO: + Nuevo Certificado === */
+.toolbar button[mat-raised-button][color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  font-weight: 800;
+  border-radius: 10px;
+  padding: 0 22px;
+  height: 40px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.25);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.toolbar button[mat-raised-button][color="primary"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transition: transform 0.75s ease;
+}
+
+.toolbar button[mat-raised-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(36, 75, 107, 0.35);
+}
+
+.toolbar button[mat-raised-button][color="primary"]:hover::before {
+  transform: translateX(120%);
+}
+
+.toolbar button[mat-raised-button][color="primary"]:active {
+  transform: scale(0.98);
+}
+
+/* === BOTÓN DESCARGAR (outline → relleno azul) === */
+.table button[mat-stroked-button][color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff !important;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  height: 36px;
+  padding: 0 14px;
+  box-shadow: 0 4px 12px rgba(36, 75, 107, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.table button[mat-stroked-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(36, 75, 107, 0.35);
+}
+
+/* === BOTÓN ELIMINAR === */
+.table button[mat-raised-button][color="warn"] {
+  background: linear-gradient(135deg, #e53935, #b71c1c) !important;
+  color: #fff !important;
+  border-radius: 8px;
+  font-weight: 700;
+  height: 36px;
+  padding: 0 14px;
+  box-shadow: 0 4px 12px rgba(183, 28, 28, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.table button[mat-raised-button][color="warn"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(183, 28, 28, 0.35);
+}
+
+/* === BOTÓN REGRESAR (outline azul) === */
+.footer button[mat-stroked-button][color="primary"] {
+  background: #fff;
+  color: #244b6b !important;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px;
+  font-weight: 800;
+  padding: 8px 22px;
+  height: 40px;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.14);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+.footer button[mat-stroked-button][color="primary"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(36, 75, 107, 0.18),
+    transparent
+  );
+  transition: transform 0.75s ease;
+}
+
+.footer button[mat-stroked-button][color="primary"]:hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.28);
+}
+
+.footer button[mat-stroked-button][color="primary"]:hover::before {
+  transform: translateX(120%);
+}
+
+/* === FOCUS ACCESIBLE === */
+.certs :where(button):focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 600px) {
+  .toolbar {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar button,
+  .footer button {
+    width: 100%;
+  }
+}

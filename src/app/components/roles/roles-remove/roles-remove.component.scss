@@ -1,214 +1,227 @@
 /* =========================
-   WRAPPER + CARD – MODERNO, GRADIENTE Y ANIMADO
+   ROLES DELETE – ESTILO SAMARIA
    ========================= */
 
-/* Fondo con fade-in (sobrio) */
-.wrapper {
-  display: grid;
-  place-items: center;
-  min-height: calc(100vh - 64px);
-  background: #f5f7fa;
-  padding: 16px;
-  animation: wrapFade .45s ease-out both;
+/* Fondo sobrio con fade-in */
+.wrapper{
+  display:grid;
+  place-items:center;
+  min-height:calc(100vh - 64px);
+  background:#f5f7fa;
+  padding:16px;
+  animation:wrapFade .45s ease-out both;
 }
-@keyframes wrapFade { from { opacity: 0 } to { opacity: 1 } }
+@keyframes wrapFade{from{opacity:0} to{opacity:1}}
 
-/* Card con pop-in y sombra suave */
-.card {
-  width: 100%;
-  max-width: 880px;
-  border-radius: 12px;
-  background: #fff;
-  border: 1px solid rgba(207,227,237,.6);
+/* Card con sombra suave y pop-in */
+.card{
+  width:100%;
+  max-width:880px;
+  border-radius:12px;
+  background:#fff;
+  border:1px solid rgba(207,227,237,.6);
   box-shadow:
     0 18px 40px rgba(25,55,100,.08),
     0 3px 5px -1px rgba(0,0,0,.2),
     0 6px 10px 0 rgba(0,0,0,.14),
     0 1px 18px 0 rgba(0,0,0,.12);
-  overflow: hidden;
-  animation: cardPop .55s cubic-bezier(.2,.8,.2,1) .05s both;
+  overflow:hidden;
+  animation:cardPop .55s cubic-bezier(.2,.8,.2,1) .05s both;
 }
-@keyframes cardPop {
-  from { opacity: 0; transform: translateY(10px) scale(.985) }
-  to   { opacity: 1; transform: translateY(0) scale(1) }
+@keyframes cardPop{from{opacity:0; transform:translateY(10px) scale(.985)} to{opacity:1; transform:translateY(0) scale(1)}}
+
+/* Header degradado */
+.card-header{
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
+  color:#fff;
+  font-weight:800;
+  padding:16px 20px;
+  letter-spacing:.35px;
+  text-transform:uppercase;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+  animation:slideDown .45s ease both;
+}
+@keyframes slideDown{from{opacity:0; transform:translateY(-8px)} to{opacity:1; transform:translateY(0)}}
+
+/* Contenido */
+mat-card-content,
+.card-content{
+  padding:16px 20px 20px;
+  animation:bodyIn .35s ease .1s both;
+}
+@keyframes bodyIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)}}
+
+.row{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:12px;
+  margin:12px 0;
+}
+.w-full{ width:100%; }
+
+/* Angular Material form-field ancho completo */
+:host ::ng-deep .mat-mdc-form-field{ width:100%; }
+
+/* Autocomplete – panel más cómodo (opcional, no invasivo) */
+:host ::ng-deep .mat-mdc-autocomplete-panel{
+  max-height:320px;
 }
 
 /* =========================
-   HEADER – DEGRADADO + SLIDE
+   TABLA – LIMPIA + HOVER
    ========================= */
-.card-header {
-  background: linear-gradient(135deg, #244b6b, #1e3b55);
-  color: #fff;
-  font-weight: 800;
-  padding: 16px 20px;
-  letter-spacing: .35px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  text-transform: uppercase;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
-  animation: slideDown .45s ease both;
-}
-@keyframes slideDown { from { opacity: 0; transform: translateY(-8px) } to { opacity: 1; transform: translateY(0) } }
+.table-wrap{ margin-top:8px; }
 
-.card-header .subtitle {
-  font-weight: 400;
-  opacity: .9;
-  margin-left: auto;
-  font-size: .9rem;
-  text-transform: none;
+.table{
+  width:100%;
+  border-radius:10px;
+  overflow:hidden;
+  border:1px solid #e0eef6;
+  background:#fff;
+  table-layout:fixed;
+  box-shadow:0 6px 16px rgba(25,55,100,.05);
+  animation:tableIn .4s ease .05s both;
+}
+@keyframes tableIn{from{opacity:0; transform:translateY(6px)} to{opacity:1; transform:translateY(0)}}
+
+/* Cabecera (compatible nativo + MDC) */
+.table thead th,
+:host ::ng-deep .mat-mdc-table .mat-mdc-header-row .mat-mdc-header-cell{
+  background:linear-gradient(180deg,#f8fcff,#f3f9ff);
+  color:#516b85;
+  font-weight:800;
+  border-bottom:1px solid #e3edf4;
+  letter-spacing:.2px;
+  text-transform:uppercase;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.6);
+}
+
+.table td, .table th{
+  padding:12px 14px;
+  vertical-align:middle;
+  word-break:break-word;
+}
+
+.table tbody tr{
+  transition:background .18s ease, box-shadow .18s ease;
+}
+.table tbody tr:nth-child(odd){ background:#fcfeff; }
+.table tbody tr:hover{ background:#f3f9ff; }
+
+/* Título de tabla */
+.table-title{
+  font-weight:800;
+  color:#244b6b;
+  margin:6px 0 10px;
+  letter-spacing:.2px;
 }
 
 /* =========================
-   CUERPO – ENTRADA SUAVE
+   BOTONES – CONSISTENTES
    ========================= */
-.card-content {
-  padding: 16px 20px 20px;
-  animation: bodyIn .35s ease .1s both;
+
+/* Botón Eliminar (warn stroked) dentro de la tabla -> degradado rojo */
+.table button[mat-stroked-button][color="warn"]{
+  background:linear-gradient(135deg,#ef5350,#c62828);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  font-weight:800;
+  letter-spacing:.2px;
+  height:36px;
+  padding:0 14px;
+  box-shadow:0 4px 12px rgba(198,40,40,.25);
+  transition:transform .2s ease, box-shadow .25s ease;
 }
-@keyframes bodyIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
-
-.row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
-  margin: 12px 0;
+.table button[mat-stroked-button][color="warn"]:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 18px rgba(198,40,40,.32);
 }
-.w-full { width: 100%; }
-
-/* Si usas Angular Material: asegurar ancho completo */
-:host ::ng-deep .card-content .mat-form-field { width: 100%; }
-
-/* =========================
-   TABLA – STICKY, DEGRADADO Y HOVER
-   ========================= */
-.table-wrap { margin-top: 8px; }
-
-.table {
-  width: 100%;
-  border-radius: 10px;
-  overflow: hidden;
-  border: 1px solid #e0eef6;
-  background: #fff;
-  table-layout: fixed;
-  box-shadow: 0 6px 16px rgba(25,55,100,.05);
-  animation: tableIn .4s ease .05s both;
-}
-@keyframes tableIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
-
-.table thead th {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  background: linear-gradient(180deg, #f8fcff, #f3f9ff);
-  color: #516b85;
-  font-weight: 800;
-  border-bottom: 1px solid #e3edf4;
-  letter-spacing: .2px;
-  text-transform: uppercase;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
+.table button[mat-stroked-button][color="warn"]:active{
+  transform:translateY(0) scale(.98);
 }
 
-.table td,
-.table th {
-  padding: 12px 14px;
-  vertical-align: middle;
+/* Botón Regresar (primary stroked) debajo del contenido */
+.card > button[mat-stroked-button][color="primary"]{
+  align-self:flex-end;
+  margin:0 20px 18px;
+  background:#fff;
+  color:#244b6b;
+  border:1px solid #244b6b !important;
+  border-radius:10px;
+  font-weight:800;
+  letter-spacing:.2px;
+  height:40px;
+  padding:0 18px;
+  box-shadow:0 6px 14px rgba(36,75,107,.14);
+  position:relative;
+  overflow:hidden;
+  transition:all .25s ease;
+  cursor:pointer;
 }
-
-.table tbody tr {
-  transition: background .18s ease, box-shadow .18s ease;
+.card > button[mat-stroked-button][color="primary"]::before{
+  content:""; position:absolute; inset:0; transform:translateX(-120%);
+  background:linear-gradient(90deg,transparent,rgba(36,75,107,.18),transparent);
+  transition:transform .75s ease;
 }
-.table tbody tr:nth-child(odd) { background: #fcfeff; }
-.table tbody tr:hover {
-  background: #f3f9ff;
+.card > button[mat-stroked-button][color="primary"]:hover{
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
+  color:#fff;
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(36,75,107,.28);
 }
-
-/* Acciones dentro de celdas */
-.table .cell-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
+.card > button[mat-stroked-button][color="primary"]:hover::before{
+  transform:translateX(120%);
 }
-
-/* Convierte outlined en “rellenos” elegantes como en otros módulos */
-.table .cell-actions .mat-stroked-button.mat-primary,
-.table .cell-actions button[mat-stroked-button][color="primary"] {
-  background: linear-gradient(135deg, #244b6b, #1e3b55);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-weight: 700;
-  letter-spacing: .2px;
-  height: 36px;
-  padding: 0 14px;
-  box-shadow: 0 4px 12px rgba(36,75,107,.25);
-  transition: transform .2s ease, box-shadow .25s ease;
+.card > button[mat-stroked-button][color="primary"]:active{
+  transform:translateY(0) scale(.98);
 }
-.table .cell-actions .mat-stroked-button.mat-primary:hover,
-.table .cell-actions button[mat-stroked-button][color="primary"]:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(30,59,85,.3);
-}
-
-.table .cell-actions .mat-stroked-button.mat-accent,
-.table .cell-actions button[mat-stroked-button][color="accent"] {
-  background: linear-gradient(135deg, #43a047, #2e7d32);
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-weight: 700;
-  height: 36px;
-  padding: 0 14px;
-  box-shadow: 0 4px 12px rgba(46,125,50,.25);
-  transition: transform .2s ease, box-shadow .25s ease;
-}
-.table .cell-actions .mat-stroked-button[disabled] {
-  opacity: .65;
-  box-shadow: none;
-  cursor: not-allowed;
+.card > button[mat-stroked-button][color="primary"]:disabled{
+  opacity:.6; cursor:not-allowed; box-shadow:none;
 }
 
 /* =========================
-   LOADER & EMPTY – PULSE SUAVE
+   LOADER & EMPTY
    ========================= */
-.loader {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 8px 0;
-  color: #244b6b;
-  animation: pulse 2.2s ease-in-out infinite;
+.loader{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:8px 0;
+  color:#244b6b;
+  animation:pulse 2.2s ease-in-out infinite;
 }
-@keyframes pulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.04) } }
+@keyframes pulse{0%,100%{transform:scale(1)} 50%{transform:scale(1.04)}}
+.loader .mat-progress-spinner circle{ stroke:#244b6b; }
 
-.loader .mat-progress-spinner circle {
-  stroke: #244b6b;
-}
-
-.empty {
-  padding: 16px;
-  color: #6e7f91;
-  background: #f8fbfe;
-  border: 1px dashed #d8e8f2;
-  border-radius: 8px;
-  display: grid;
-  place-items: center;
-  animation: bodyIn .35s ease .05s both;
+.empty{
+  padding:16px;
+  color:#6e7f91;
+  background:#f8fbfe;
+  border:1px dashed #d8e8f2;
+  border-radius:8px;
+  display:grid;
+  place-items:center;
+  animation:bodyIn .35s ease .05s both;
 }
 
 /* =========================
    ACCESIBILIDAD
    ========================= */
-:host :where(button, a, .mat-form-field, .table thead th):focus-visible {
-  outline: 2px solid #ffd54f;
-  outline-offset: 2px;
-  border-radius: 8px;
+:host :where(button, a, .mat-form-field, .table thead th):focus-visible{
+  outline:2px solid #ffd54f;
+  outline-offset:2px;
+  border-radius:8px;
 }
 
 /* =========================
    RESPONSIVE
    ========================= */
-@media (max-width: 720px) {
-  .card { margin: 0 8px; }
-  .table td, .table th { padding: 10px; }
+@media (max-width:720px){
+  .card{ margin:0 8px; }
+  .table td, .table th{ padding:10px; }
+  .card > button[mat-stroked-button][color="primary"]{
+    width:calc(100% - 40px);
+    justify-self:center;
+  }
 }

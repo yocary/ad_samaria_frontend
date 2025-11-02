@@ -1,26 +1,91 @@
+/* ================================
+   DIALOG – INGRESOS/EGRESOS (SAMARIA)
+   ================================ */
+
+/* Contenedor base */
 .fin-dialog{
   background:#fff;
   border-radius:12px;
   border:1px solid #cfe0ef;
   overflow:hidden;
+  box-shadow:0 18px 40px rgba(25,55,100,.08);
+  animation:dlgPop .4s cubic-bezier(.2,.8,.2,1) both;
 }
-::ng-deep .mat-dialog-container{ padding:0; }
+@keyframes dlgPop{from{opacity:0; transform:scale(.98) translateY(8px)} to{opacity:1; transform:scale(1) translateY(0)}}
 
+/* Quita padding del contenedor del dialog de Material */
+::ng-deep .mat-dialog-container{ padding:0 !important; border-radius:14px !important; overflow:hidden; }
+
+/* Header: de color sólido -> degradado + tipografía */
 .fin-dialog__header{
-  background:#244b6b;
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
   color:#fff;
   font-weight:800;
-  padding:12px 16px;
+  letter-spacing:.35px;
+  text-transform:uppercase;
+  text-align:center;
+  padding:14px 16px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+  animation:slideDown .45s ease both;
 }
+@keyframes slideDown{from{opacity:0; transform:translateY(-6px)} to{opacity:1; transform:translateY(0)}}
 
+/* Body y grid */
 .fin-dialog__body{ padding:16px; }
 .grid{
   display:grid;
-  grid-template-columns: repeat(2, minmax(220px,1fr));
+  grid-template-columns:repeat(2, minmax(220px,1fr));
   gap:12px;
 }
 .span-2{ grid-column: span 2; }
+/* Por si usas span-1 en tu HTML */
+.span-1{ grid-column: span 1; }
 
+/* Campos Material: ancho completo */
+:host ::ng-deep .mat-mdc-form-field,
+:host ::ng-deep .mat-form-field{ width:100%; }
+
+/* ================================
+   Monto con prefijo “Q” – Alineación perfecta
+   ================================ */
+
+/* MDC (Angular Material 15+) */
+.form-total .mat-mdc-text-field-wrapper{ align-items:center; }
+.form-total .mat-mdc-form-field-text-prefix{
+  display:inline-flex; align-items:center; height:100%;
+}
+.form-total .mdc-text-field__input[type="number"]::-webkit-outer-spin-button,
+.form-total .mdc-text-field__input[type="number"]::-webkit-inner-spin-button{
+  -webkit-appearance:none; margin:0;
+}
+.form-total .mdc-text-field__input[type="number"]{ -moz-appearance:textfield; }
+.form-total .mdc-text-field__input{
+  padding-top:0; padding-bottom:0; line-height:1.4; margin:0;
+  transform:translateY(1px); /* ajuste fino */
+}
+
+/* Legacy (pre-MDC) */
+.form-total .mat-form-field-prefix{
+  display:inline-flex; align-items:center; height:100%;
+}
+.form-total .mat-input-element{
+  padding-top:0; padding-bottom:0; line-height:1.4; margin:0;
+  transform:translateY(5px);
+}
+
+/* Datepicker toggle con tono primario */
+:host ::ng-deep .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button{
+  color:#244b6b;
+}
+
+/* ================================
+   Tabla/Autocomplete (suaves)
+   ================================ */
+:host ::ng-deep .mat-mdc-autocomplete-panel{ max-height:320px; }
+
+/* ================================
+   Acciones – Botones
+   ================================ */
 .fin-dialog__actions{
   display:flex;
   gap:12px;
@@ -28,49 +93,54 @@
   padding:0 16px 16px;
 }
 
-/* ====== MDC (Angular Material 15+) ====== */
-/* Centra el wrapper para que prefijo + input compartan el centro */
-.form-total .mat-mdc-text-field-wrapper {
-  align-items: center;
+/* Botón Primario (Guardar/Actualizar) */
+.fin-dialog__actions button[mat-raised-button][color="primary"]{
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
+  color:#fff;
+  font-weight:800;
+  border-radius:10px;
+  height:40px;
+  padding:0 22px;
+  letter-spacing:.3px;
+  box-shadow:0 8px 18px rgba(36,75,107,.25);
+  transition:transform .18s ease, box-shadow .25s ease;
+}
+.fin-dialog__actions button[mat-raised-button][color="primary"]:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(36,75,107,.35);
+}
+.fin-dialog__actions button[mat-raised-button][color="primary"]:disabled{
+  opacity:.6; cursor:not-allowed; box-shadow:none;
 }
 
-/* Centra el prefijo exactamente al medio del alto disponible */
-.form-total .mat-mdc-form-field-text-prefix {
-  display: inline-flex;
-  align-items: center;
-  height: 100%;
+/* Botón Warn (Cancelar) */
+.fin-dialog__actions button[mat-raised-button][color="warn"]{
+  background:linear-gradient(135deg,#ef5350,#c62828);
+  color:#fff;
+  font-weight:800;
+  border-radius:10px;
+  height:40px;
+  padding:0 22px;
+  letter-spacing:.3px;
+  box-shadow:0 6px 14px rgba(198,40,40,.22);
+  transition:transform .18s ease, box-shadow .25s ease;
+}
+.fin-dialog__actions button[mat-raised-button][color="warn"]:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(198,40,40,.32);
 }
 
-/* Quita el efecto de los spinners del number, que cambian la baseline */
-.form-total .mdc-text-field__input[type="number"]::-webkit-outer-spin-button,
-.form-total .mdc-text-field__input[type="number"]::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
-}
-.form-total .mdc-text-field__input[type="number"] {
-  -moz-appearance: textfield; /* Firefox */
+/* Focus accesible */
+:host :where(button, .mat-form-field):focus-visible{
+  outline:2px solid #ffd54f;
+  outline-offset:2px;
+  border-radius:8px;
 }
 
-/* Normaliza padding/line-height del input */
-.form-total .mdc-text-field__input {
-  padding-top: 0;
-  padding-bottom: 0;
-  line-height: 1.4;
-  margin: 0;
-  /* 👇 Ajuste fino: baja 1–2px el input para que quede PERFECTO con la Q */
-  transform: translateY(1px);
-}
-
-/* ====== Legacy (por si estás en pre-MDC) ====== */
-.form-total .mat-form-field-prefix {
-  display: inline-flex;
-  align-items: center;
-  height: 100%;
-}
-.form-total .mat-input-element {
-  padding-top: 0;
-  padding-bottom: 0;
-  line-height: 1.4;
-  margin: 0;
-  transform: translateY(5px);
+/* ================================
+   Responsive
+   ================================ */
+@media (max-width:720px){
+  .grid{ grid-template-columns:1fr; }
+  .span-2{ grid-column: span 1; }
 }

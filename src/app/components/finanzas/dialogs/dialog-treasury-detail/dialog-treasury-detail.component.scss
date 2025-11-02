@@ -337,3 +337,270 @@
     height: 0;
   }
 }
+/* =========================
+   PARCHE SAMARIA – DIALOGO DE TESORERÍA (TABS)
+   (añádelo al final de tu CSS)
+   ========================= */
+
+/* ---- Tabs estilo pastilla coherentes ---- */
+.dlg-tabs .mat-mdc-tab-labels{ gap:8px; }
+.dlg-tabs .mat-mdc-tab{
+  background:#f3f6fb;
+  border-radius:10px;
+  height:36px;
+  margin-top:4px;
+  transition:box-shadow .2s ease, background .2s ease;
+}
+.dlg-tabs .mat-mdc-tab.mdc-tab--active{
+  background:#fff;
+  box-shadow:0 8px 18px rgba(2,6,23,.06);
+}
+.dlg-tabs .mdc-tab__content{ font-weight:800; letter-spacing:.2px; color:#244b6b; }
+
+/* Indicador sutil (ocúltalo si no quieres subrayado) */
+.dlg-tabs .mat-mdc-tab-header-pagination{ display:none; }
+.dlg-tabs .mat-mdc-tab-header .mat-mdc-tab-indicator{ display:none; }
+
+/* ---- KPIs: mismas sombras/colores ---- */
+.kpi{
+  border:0;
+  box-shadow:0 8px 18px rgba(2,6,23,.08);
+}
+.kpi .kpi-val{ font-variation-settings: "wght" 800; }
+
+/* ---- Toolbar ---- */
+.btn-primary{
+  background:linear-gradient(135deg,#244b6b,#1e3b55) !important;
+  box-shadow:0 8px 18px rgba(36,75,107,.25);
+}
+.btn-primary:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(36,75,107,.35); }
+
+/* Botones de la derecha: outline/raised coherentes */
+.toolbar .right button[mat-stroked-button]{
+  background:#fff;
+  color:#244b6b;
+  border:1px solid #244b6b !important;
+  border-radius:8px;
+  font-weight:800;
+  box-shadow:0 6px 14px rgba(36,75,107,.14);
+  transition:all .25s ease;
+}
+.toolbar .right button[mat-stroked-button]:hover{
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
+  color:#fff;
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(36,75,107,.28);
+}
+
+/* Periodo select: radios y foco */
+.toolbar .right .mdc-notched-outline__leading,
+.toolbar .right .mdc-notched-outline__trailing{ border-radius:8px; }
+.toolbar .right .mat-mdc-form-field-icon-suffix .mat-mdc-icon-button{ color:#244b6b; }
+
+/* ---- Tabla mat-table (MDC) ---- */
+.table{
+  border:1px solid #d9e6f2;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 6px 16px rgba(25,55,100,.05);
+}
+.table .mat-mdc-header-row,
+.table .mat-mdc-row{ height:40px; }
+.table .mat-mdc-header-cell{
+  background:linear-gradient(180deg,#f8fcff,#f3f9ff);
+  font-weight:800;
+  color:#516b85;
+  border-bottom:1px solid #e3edf4;
+  letter-spacing:.2px;
+}
+.table .mat-mdc-cell{
+  border-top:1px solid #eef3f8;
+  color:#2a3646;
+  font-size:14px;
+}
+.table .mat-mdc-row:hover .mat-mdc-cell{ background:#fbfdff; }
+
+/* Botones dentro de tabla */
+.btn-sm{
+  min-width:84px;
+  height:32px;
+  border-radius:8px;
+  font-weight:800;
+  font-size:13px;
+  padding:0 12px;
+  box-shadow:0 4px 10px rgba(2,6,23,.06);
+  transition:transform .18s ease, box-shadow .25s ease;
+}
+button[mat-raised-button].btn-sm[color="accent"]{
+  background:linear-gradient(135deg,#43a047,#2e7d32);
+  color:#fff;
+}
+button[mat-raised-button].btn-sm[color="warn"]{
+  background:linear-gradient(135deg,#ef5350,#c62828);
+  color:#fff;
+}
+.btn-sm:hover{ transform:translateY(-2px); box-shadow:0 10px 18px rgba(2,6,23,.12); }
+
+/* Variante Cancelar en edición (stroked) */
+button[mat-stroked-button].btn-sm{
+  background:#fff;
+  color:#244b6b;
+  border:1px solid #244b6b !important;
+}
+button[mat-stroked-button].btn-sm:hover{
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
+  color:#fff;
+}
+
+/* ---- Footer de cada tab: botón Cerrar igual a “Regresar” ---- */
+.footer button[mat-stroked-button]{
+  background:#fff;
+  color:#244b6b;
+  border:1px solid #244b6b !important;
+  border-radius:10px;
+  font-weight:800;
+  height:40px;
+  padding:0 18px;
+  box-shadow:0 6px 14px rgba(36,75,107,.14);
+  transition:all .25s ease;
+}
+.footer button[mat-stroked-button]:hover{
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
+  color:#fff;
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(36,75,107,.28);
+}
+
+/* ---- Categorías: corrige selectores anidados (SCSS → CSS) ---- */
+.cat-toolbar{ display:flex; align-items:center; flex-wrap:wrap; gap:1rem; margin-bottom:1rem; }
+.cat-toolbar .left-group{ display:flex; flex-wrap:wrap; align-items:flex-end; gap:1rem; }
+.cat-toolbar .right-group{ display:flex; align-items:flex-end; }
+.cat-toolbar .btn-add{
+  height:56px; padding:0 20px; font-weight:800;
+  background:linear-gradient(135deg,#244b6b,#1e3b55); color:#fff;
+  border-radius:10px; box-shadow:0 6px 16px rgba(36,75,107,.22);
+}
+.cat-toolbar .cat-name,
+.cat-toolbar .cat-type{ width:220px; margin:0; }
+.cat-toolbar .chk-container{ display:flex; align-items:center; height:56px; }
+.cat-toolbar .mat-mdc-form-field-subscript-wrapper{ display:none; height:0; }
+
+/* Badges de tipo */
+.badge{ border-radius:14px; font-weight:800; }
+.badge-ingreso{ background:#43a047; }
+.badge-egreso { background:#f0a23a; }
+
+/* ---- Editar Tesorería: botones coherentes ---- */
+.edit-actions .btn-wide{ min-width:120px; }
+.edit-actions button[mat-raised-button][color="primary"].btn-green{
+  background:linear-gradient(135deg,#27b66f,#1e8f57) !important;
+  box-shadow:0 8px 18px rgba(30,143,87,.25);
+}
+.edit-actions button[mat-raised-button][color="warn"]{
+  background:linear-gradient(135deg,#ef5350,#c62828);
+  color:#fff;
+}
+.edit-actions button[mat-stroked-button]{
+  background:#fff;
+  color:#244b6b;
+  border:1px solid #244b6b !important;
+  border-radius:10px;
+  font-weight:800;
+}
+.edit-actions button[mat-stroked-button]:hover{
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
+  color:#fff;
+}
+
+/* ---- Accesibilidad consistente ---- */
+:host :where(button, .mat-mdc-form-field, .mat-mdc-header-cell):focus-visible{
+  outline:2px solid #ffd54f;
+  outline-offset:2px;
+  border-radius:8px;
+}
+/* =========================
+   EDITAR TESORERÍA – BOTONES UNIFICADOS
+   (pegar al final)
+   ========================= */
+
+/* Base común (altura, radio, peso, animaciones) */
+.edit-actions button[mat-raised-button],
+.edit-actions button[mat-stroked-button]{
+  height:40px !important;
+  border-radius:10px !important;
+  font-weight:800 !important;
+  letter-spacing:.2px;
+  padding:0 22px !important;
+  transition:transform .18s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
+  position:relative; overflow:hidden;
+}
+
+/* ---------- Primario (Guardar) ---------- */
+/* Si NO usas .btn-green: azul como el resto */
+.edit-actions button[mat-raised-button][color="primary"]:not(.btn-green){
+  background:linear-gradient(135deg,#244b6b,#1e3b55) !important;
+  color:#fff !important;
+  box-shadow:0 8px 18px rgba(36,75,107,.25) !important;
+}
+.edit-actions button[mat-raised-button][color="primary"]:not(.btn-green):hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(36,75,107,.35) !important;
+}
+
+/* Si usas .btn-green para Guardar: mismo estilo pero verde */
+.edit-actions button[mat-raised-button].btn-green{
+  background:linear-gradient(135deg,#27b66f,#1e8f57) !important;
+  color:#fff !important;
+  box-shadow:0 8px 18px rgba(30,143,87,.25) !important;
+}
+.edit-actions button[mat-raised-button].btn-green:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(30,143,87,.35) !important;
+}
+
+/* Deshabilitado coherente */
+.edit-actions button[mat-raised-button][disabled]{
+  opacity:.6 !important; cursor:not-allowed !important; box-shadow:none !important; transform:none !important;
+}
+
+/* ---------- Warn (Eliminar) ---------- */
+.edit-actions button[mat-raised-button][color="warn"]{
+  background:linear-gradient(135deg,#ef5350,#c62828) !important;
+  color:#fff !important;
+  box-shadow:0 6px 14px rgba(198,40,40,.22) !important;
+}
+.edit-actions button[mat-raised-button][color="warn"]:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(198,40,40,.32) !important;
+}
+
+/* ---------- Stroked (Cancelar) – igual a “Regresar” ---------- */
+.edit-actions button[mat-stroked-button]{
+  background:#fff !important;
+  color:#244b6b !important;
+  border:1px solid #244b6b !important;
+  box-shadow:0 6px 14px rgba(36,75,107,.14) !important;
+}
+.edit-actions button[mat-stroked-button]::before{
+  content:""; position:absolute; inset:0; transform:translateX(-120%);
+  background:linear-gradient(90deg,transparent,rgba(36,75,107,.18),transparent);
+  transition:transform .75s ease;
+}
+.edit-actions button[mat-stroked-button]:hover{
+  background:linear-gradient(135deg,#244b6b,#1e3b55) !important;
+  color:#fff !important;
+  transform:translateY(-2px);
+  box-shadow:0 12px 24px rgba(36,75,107,.28) !important;
+}
+.edit-actions button[mat-stroked-button]:hover::before{ transform:translateX(120%); }
+
+/* ---------- Accesibilidad ---------- */
+:host .edit-actions :where(button):focus-visible{
+  outline:2px solid #ffd54f; outline-offset:2px; border-radius:8px;
+}
+
+/* ---------- (Opcional) Evitar que el tema de Material sobrescriba dentro de esta zona ---------- */
+:host ::ng-deep .edit-actions .mat-mdc-raised-button,
+:host ::ng-deep .edit-actions .mat-mdc-unelevated-button{
+  box-shadow:none;            /* lo controlamos nosotros arriba */
+}

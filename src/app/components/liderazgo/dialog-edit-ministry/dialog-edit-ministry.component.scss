@@ -24,3 +24,126 @@
 .w-full {
   width: 100%;
 }
+
+/* =========================
+   EDITAR MINISTERIO – ESTILO SAMARIA
+   ========================= */
+
+.dlg {
+  width: min(500px, 96vw);
+  display: grid;
+  gap: 16px;
+  padding: 12px 14px 18px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #d6e1eb;
+  box-shadow: 0 8px 24px rgba(17, 24, 39, 0.08);
+}
+
+/* ===== Título ===== */
+.dlg__title {
+  height: 48px;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  border-radius: 12px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.25);
+}
+
+/* ===== Campo de formulario ===== */
+.w-full {
+  width: 100%;
+}
+
+/* ===== Acciones ===== */
+.dlg__actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+/* ===== BOTÓN PRIMARIO (Guardar) ===== */
+.dlg__actions button[mat-raised-button][color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  border-radius: 10px !important;
+  padding: 0 22px !important;
+  height: 40px !important;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.25);
+  transition: all 0.25s ease;
+}
+
+.dlg__actions button[mat-raised-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.35);
+}
+
+.dlg__actions button[mat-raised-button][color="primary"]:active {
+  transform: scale(0.98);
+}
+
+/* ===== BOTÓN CANCELAR (Outline azul) ===== */
+.dlg__actions button[mat-stroked-button] {
+  background: #fff;
+  color: #244b6b !important;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px;
+  font-weight: 700;
+  padding: 0 22px;
+  height: 40px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.12);
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Brillo animado */
+.dlg__actions button[mat-stroked-button]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(36, 75, 107, 0.18),
+    transparent
+  );
+  transition: transform 0.75s ease;
+}
+
+.dlg__actions button[mat-stroked-button]:hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.28);
+}
+
+.dlg__actions button[mat-stroked-button]:hover::before {
+  transform: translateX(120%);
+}
+
+/* ===== Accesibilidad ===== */
+.dlg__actions button:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 480px) {
+  .dlg__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dlg__actions button {
+    width: 100%;
+  }
+}

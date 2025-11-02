@@ -193,3 +193,68 @@
   .acciones { flex-direction: column; }
   .btn-agregar, .btn-secondary { width: 100%; }
 }
+/* =========================
+   BOTÓN REGRESAR – UNIFICADO SAMARIA
+   ========================= */
+
+mat-card-actions button[mat-stroked-button][color="primary"] {
+  background: #fff;
+  color: #244b6b;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 10px 22px;
+  height: 40px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.14);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  cursor: pointer;
+}
+
+/* Brillo animado */
+mat-card-actions button[mat-stroked-button][color="primary"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(36, 75, 107, 0.18),
+    transparent
+  );
+  transition: transform 0.75s ease;
+}
+
+/* Hover con degradado azul */
+mat-card-actions button[mat-stroked-button][color="primary"]:hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.28);
+}
+
+mat-card-actions button[mat-stroked-button][color="primary"]:hover::before {
+  transform: translateX(120%);
+}
+
+/* Active */
+mat-card-actions button[mat-stroked-button][color="primary"]:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Disabled */
+mat-card-actions button[mat-stroked-button][color="primary"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Focus accesible */
+mat-card-actions button[mat-stroked-button][color="primary"]:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}

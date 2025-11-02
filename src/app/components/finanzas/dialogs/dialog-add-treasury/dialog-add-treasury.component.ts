@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -7,7 +7,9 @@ import { TesoreriaCreate } from 'src/app/models/finanzas.model';
 
 @Component({
   selector: 'app-dialog-add-treasury',
-  templateUrl: './dialog-add-treasury.component.html'
+  templateUrl: './dialog-add-treasury.component.html',
+  styleUrls: ['./dialog-add-treasury.component.scss'],
+      encapsulation: ViewEncapsulation.None,
 })
 export class DialogAddTreasuryComponent {
   saving = false;

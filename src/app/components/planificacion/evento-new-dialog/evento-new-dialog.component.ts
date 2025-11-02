@@ -1,4 +1,4 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { EventoNewPayload } from '../../planificacion/planificacion-eventos/tipos';
@@ -10,7 +10,8 @@ interface DialogData {
 @Component({
   selector: 'app-evento-new-dialog',
   templateUrl: './evento-new-dialog.component.html',
-  styleUrls: ['./evento-new-dialog.component.scss']
+  styleUrls: ['./evento-new-dialog.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class EventoNewDialogComponent {
   form = this.fb.group({

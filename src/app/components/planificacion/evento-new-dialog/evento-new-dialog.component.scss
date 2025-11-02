@@ -1,10 +1,103 @@
-.dlg { padding-top: 4px; }
-.hint { margin-bottom: 8px; color: #244b6b; }
+/* =========================
+   CREAR EVENTO – ESTILO SAMARIA
+   ========================= */
+
+.dlg {
+  padding-top: 4px;
+}
+
+.hint {
+  margin-bottom: 8px;
+  color: #244b6b;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
 .grid {
-  display: grid; grid-template-columns: 1fr 200px; gap: 12px;
-  .full { grid-column: 1 / -1; }
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 12px;
+
+  .full {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 640px) {
-  .grid { grid-template-columns: 1fr; }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ===== BOTONES ===== */
+
+/* — GUARDAR (azul principal) — */
+mat-dialog-actions button[mat-raised-button][color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  border-radius: 10px !important;
+  padding: 0 22px !important;
+  height: 40px !important;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.25);
+  transition: all 0.25s ease;
+}
+
+mat-dialog-actions button[mat-raised-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.35);
+}
+
+mat-dialog-actions button[mat-raised-button][color="primary"]:active {
+  transform: scale(0.98);
+}
+
+/* — CANCELAR (outline azul elegante) — */
+mat-dialog-actions button[mat-stroked-button] {
+  background: #fff;
+  color: #244b6b !important;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px;
+  font-weight: 700;
+  height: 40px;
+  padding: 0 22px;
+  letter-spacing: 0.2px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.12);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+mat-dialog-actions button[mat-stroked-button]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(36, 75, 107, 0.18), transparent);
+  transition: transform 0.75s ease;
+}
+
+mat-dialog-actions button[mat-stroked-button]:hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(36, 75, 107, 0.24);
+}
+
+mat-dialog-actions button[mat-stroked-button]:hover::before {
+  transform: translateX(120%);
+}
+
+/* — Estados comunes — */
+mat-dialog-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+mat-dialog-actions button:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
 }

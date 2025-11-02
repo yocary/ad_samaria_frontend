@@ -200,14 +200,30 @@ abrirObservacion(e: EventoItem): void {
 private mostrarSwalObservacion(e: EventoItem, valorInicial: string): void {
   Swal.fire({
     title: 'Observación',
+    html: `<div style="
+        font-weight:600;
+        color:#244b6b;
+        margin-bottom:8px;
+        font-size:15px;">
+        Para: <span style='font-weight:800;'>${e.nombre}</span>
+      </div>`,
     input: 'textarea',
-    inputLabel: `Observación para "${e.nombre}"`,
     inputPlaceholder: 'Escribe aquí...',
     inputValue: valorInicial,
-    inputAttributes: { rows: '5' },
+    inputAttributes: { rows: '5', style: 'font-size:14px;padding:8px;border-radius:8px;border:1px solid #cfd9e6;' },
     showCancelButton: true,
     confirmButtonText: 'Guardar',
     cancelButtonText: 'Cancelar',
+    background: '#ffffff',
+    color: '#1e293b',
+    confirmButtonColor: '#244b6b',
+    cancelButtonColor: '#9ca3af',
+    customClass: {
+      popup: 'samaria-popup',
+      confirmButton: 'samaria-btn-confirm',
+      cancelButton: 'samaria-btn-cancel',
+      input: 'samaria-input'
+    },
     showLoaderOnConfirm: true,
     preConfirm: (texto) => {
       const observacion = (texto ?? '').toString().trim();
@@ -215,15 +231,21 @@ private mostrarSwalObservacion(e: EventoItem, valorInicial: string): void {
         .guardarObservacion(this.liderazgoId, e.id, observacion)
         .toPromise()
         .catch(() => {
-          Swal.showValidationMessage('No se pudo guardar la observación.');
+          Swal.showValidationMessage('❌ No se pudo guardar la observación.');
         });
     },
     allowOutsideClick: () => !Swal.isLoading()
   }).then((res) => {
     if (!res.isConfirmed) return;
-    Swal.fire('Guardado', 'Observación registrada.', 'success');
-    // (Opcional) refrescar listado o cachear localmente si llevas esa propiedad en memoria
-    // this.cargar();
+    Swal.fire({
+      icon: 'success',
+      title: 'Guardado',
+      text: 'Observación registrada correctamente.',
+      confirmButtonColor: '#244b6b',
+      confirmButtonText: 'Aceptar',
+      background: '#ffffff',
+      color: '#1e293b'
+    });
   });
 }
 

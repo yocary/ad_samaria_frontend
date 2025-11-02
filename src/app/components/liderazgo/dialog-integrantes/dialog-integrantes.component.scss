@@ -142,3 +142,131 @@
   .row-add{ flex-direction: column; align-items: stretch; }
   .btn-rol{ width: 100%; }
 }
+
+/* =========================
+   BOTONES – ESTILO SAMARIA UNIFICADO
+   ========================= */
+
+/* ====== BOTÓN PRINCIPAL (azul degradado) ====== */
+button[mat-raised-button][color="primary"],
+.btn-rol {
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  border-radius: 10px !important;
+  height: 40px !important;
+  padding: 0 20px !important;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.25);
+  transition: all 0.25s ease;
+}
+
+button[mat-raised-button][color="primary"]:hover,
+.btn-rol:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(36, 75, 107, 0.35);
+}
+
+button[mat-raised-button][color="primary"]:active,
+.btn-rol:active {
+  transform: scale(0.98);
+}
+
+/* ====== BOTÓN ADVERTENCIA (Eliminar / rojo) ====== */
+button[mat-raised-button][color="warn"] {
+  background: linear-gradient(135deg, #e53935, #b71c1c) !important;
+  color: #fff !important;
+  font-weight: 800;
+  border-radius: 10px;
+  height: 36px;
+  padding: 0 18px;
+  box-shadow: 0 6px 14px rgba(183, 28, 28, 0.25);
+  transition: all 0.25s ease;
+}
+
+button[mat-raised-button][color="warn"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 22px rgba(183, 28, 28, 0.35);
+}
+
+/* ====== BOTÓN OUTLINE (Guardar/Cancelar dentro de edición) ====== */
+button[mat-stroked-button][color="primary"] {
+  background: #fff;
+  color: #244b6b !important;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px;
+  font-weight: 700;
+  padding: 0 18px;
+  height: 36px;
+  letter-spacing: 0.2px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.14);
+}
+
+/* animación de brillo */
+button[mat-stroked-button][color="primary"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(36, 75, 107, 0.18),
+    transparent
+  );
+  transition: transform 0.75s ease;
+}
+
+button[mat-stroked-button][color="primary"]:hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.28);
+}
+button[mat-stroked-button][color="primary"]:hover::before {
+  transform: translateX(120%);
+}
+
+/* ====== BOTÓN TEXTO (Cancelar simple) ====== */
+button[mat-button] {
+  color: #244b6b !important;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+}
+button[mat-button]:hover {
+  background: rgba(36, 75, 107, 0.08);
+}
+
+/* ====== Íconos ====== */
+button[mat-icon-button] mat-icon {
+  color: #244b6b;
+  transition: color 0.25s ease;
+}
+button[mat-icon-button]:hover mat-icon {
+  color: #1a2f46;
+}
+
+/* ====== Alineación general ====== */
+.dlg-int__actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding-top: 8px;
+  flex-wrap: wrap;
+}
+
+/* ====== Responsive ====== */
+@media (max-width: 600px) {
+  .dlg-int__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .dlg-int__actions button {
+    width: 100%;
+  }
+}

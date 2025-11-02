@@ -1,6 +1,151 @@
-.fin-dialog{ background:#fff; border-radius:12px; border:1px solid #cfe0ef; overflow:hidden; }
-::ng-deep .mat-dialog-container{ padding:0; }
-.fin-dialog__header{ background:#244b6b; color:#fff; font-weight:800; padding:12px 16px; }
-.fin-dialog__body{ padding:16px; display:grid; gap:12px; }
-.fin-dialog__actions{ display:flex; gap:12px; justify-content:center; padding:0 16px 16px; }
-.w-full{ width:100%; }
+/* =========================
+   DIALOG – AGREGAR TESORERÍA (ESTILO SAMARIA)
+   ========================= */
+
+/* Contenedor base del diálogo */
+.fin-dialog {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #cfe0ef;
+  overflow: hidden;
+  box-shadow: 0 18px 40px rgba(25, 55, 100, 0.08);
+  animation: dialogPop 0.4s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Quita el padding por defecto del contenedor Material */
+::ng-deep .mat-dialog-container {
+  padding: 0 !important;
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+
+/* Header con gradiente azul */
+h2[mat-dialog-title] {
+  margin: 0;
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.1rem;
+  letter-spacing: 0.35px;
+  padding: 14px 18px;
+  text-transform: uppercase;
+  text-align: center;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  animation: slideDown 0.45s ease both;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cuerpo del diálogo */
+mat-dialog-content {
+  display: grid;
+  gap: 16px;
+  padding: 18px 20px 10px;
+  background: #fff;
+  animation: fadeBody 0.3s ease 0.05s both;
+}
+@keyframes fadeBody {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Campos de formulario */
+:host ::ng-deep .mat-form-field {
+  width: 100%;
+}
+.w-full { width: 100%; }
+
+/* Botones inferiores */
+mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 12px 20px 18px;
+  border-top: 1px solid #e0eef6;
+  background: #fafcfd;
+}
+
+/* Botón Cancelar (outline) */
+mat-dialog-actions button[mat-stroked-button] {
+  background: #fff;
+  color: #244b6b;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  height: 38px;
+  padding: 0 18px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.14);
+  transition: all 0.25s ease;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+mat-dialog-actions button[mat-stroked-button]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(36, 75, 107, 0.18),
+    transparent
+  );
+  transition: transform 0.75s ease;
+}
+
+mat-dialog-actions button[mat-stroked-button]:hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.28);
+}
+mat-dialog-actions button[mat-stroked-button]:hover::before {
+  transform: translateX(120%);
+}
+
+/* Botón Guardar (primario plano) */
+mat-dialog-actions button[mat-flat-button][color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  font-weight: 800;
+  border-radius: 10px;
+  height: 38px;
+  padding: 0 22px;
+  box-shadow: 0 6px 16px rgba(36, 75, 107, 0.25);
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+mat-dialog-actions button[mat-flat-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.35);
+}
+mat-dialog-actions button[mat-flat-button][color="primary"]:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Animación suave del diálogo */
+@keyframes dialogPop {
+  from { opacity: 0; transform: scale(0.96) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Accesibilidad */
+:host :where(button):focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  h2[mat-dialog-title] { font-size: 1rem; padding: 12px; }
+  mat-dialog-content { padding: 14px; }
+  mat-dialog-actions { flex-direction: column; align-items: stretch; }
+  mat-dialog-actions button { width: 100%; }
+}

@@ -1,5 +1,5 @@
 // src/app/components/planificacion/asistencia-dialog/asistencia-dialog.component.ts
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormControl } from '@angular/forms';
 import Swal from 'sweetalert2';
@@ -17,7 +17,8 @@ interface DialogData {
 @Component({
   selector: 'app-asistencia-dialog',
   templateUrl: './asistencia-dialog.component.html',
-  styleUrls: ['./asistencia-dialog.component.scss']
+  styleUrls: ['./asistencia-dialog.component.scss'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class AsistenciaDialogComponent implements OnInit {
   loading = true;

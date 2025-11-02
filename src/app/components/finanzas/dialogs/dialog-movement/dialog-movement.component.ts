@@ -1,6 +1,6 @@
 // src/app/components/.../dialog-movement/dialog-movement.component.ts
 
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormBuilder, Validators, FormControl } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import {
@@ -31,6 +31,7 @@ interface PersonaMini {
   selector: 'app-dialog-movement',
   templateUrl: './dialog-movement.component.html',
   styleUrls: ['./dialog-movement.component.scss'],
+      encapsulation: ViewEncapsulation.None,
 })
 export class DialogMovementComponent implements OnInit {
   // 🔁 Alta/Edición
