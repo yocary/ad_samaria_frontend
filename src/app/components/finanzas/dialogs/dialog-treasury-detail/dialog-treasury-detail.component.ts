@@ -14,7 +14,7 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Subscription } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
 
-import { FinanzasService } from 'src/app/services/finanzas.service';
+import { FinanzasService, TipoMovimientoMini } from 'src/app/services/finanzas.service';
 import { Movement, Treasury } from 'src/app/models/finanzas.model';
 import { DialogMovementComponent } from '../dialog-movement/dialog-movement.component';
 import Swal from 'sweetalert2';
@@ -22,14 +22,15 @@ import * as XLSX from 'xlsx';
 
 type TabKey = 'mov' | 'cat' | 'users' | 'edit';
 
-type UICategory = {
+type CategoriaUI = {
   id: number;
   name: string;
-  type: 'Ingreso' | 'Egreso';
+  typeId: number;                       // 1 | 2
+  typeName: 'Ingreso' | 'Egreso';       // derivado de typeId
   finanzasGenerales: boolean;
   editing?: boolean;
   _name?: string;
-  _type?: 'Ingreso' | 'Egreso';
+  _typeId?: number;                     // edición: id del tipo
   _finanzasGenerales?: boolean;
 };
 
@@ -40,10 +41,9 @@ type UICategory = {
   encapsulation: ViewEncapsulation.None,
 })
 export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
-  tiposMov: { id: number; nombre: string }[] = [];
-  catTypeId: FormControl = new FormControl(null);
-  catGeneral: FormControl = new FormControl(false);
-
+  tiposMov: TipoMovimientoMini[] = [];          // [{id:1,nombre:'Ingreso'},{id:2,nombre:'Egreso'}]
+catTypeId: FormControl = new FormControl(null);
+catGeneral: FormControl = new FormControl(false);
   /* ---------- Tabs ---------- */
   selectedIndex = 0;
   tabs: { key: TabKey; label: string }[] = [
@@ -68,18 +68,12 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
 
   /* ---------- CATEGORÍAS ---------- */
   catName = new FormControl('');
-  catList: UICategory[] = [];
-  private catIdSeq = 3;
+  catList: CategoriaUI[] = [];
 
-  /* ---------- USUARIOS (mock por ahora) ---------- */
+  /* ---------- USUARIOS (mock) ---------- */
   userRoles = ['Administrador', 'Tesorero', 'Revisor', 'Lector'];
   users: { id: number; name: string; email: string; role: string }[] = [
-    {
-      id: 1,
-      name: 'Nombre usuario',
-      email: 'usuario@e.com.gt',
-      role: 'Administrador',
-    },
+    { id: 1, name: 'Nombre usuario', email: 'usuario@e.com.gt', role: 'Administrador' },
   ];
   userName = new FormControl('');
   userEmail = new FormControl('');
@@ -110,15 +104,10 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.treasuryId = this.data.treasuryId;
 
-    // Inicializa título con el nombre recibido
     if (this.data.treasuryName) {
-      this.treasury = {
-        id: this.treasuryId,
-        name: this.data.treasuryName,
-      } as any;
+      this.treasury = { id: this.treasuryId, name: this.data.treasuryName } as any;
     }
 
-    // Sincroniza tesorería desde el servicio
     this.subs.add(
       this.fin.treasuries$.subscribe((list: Treasury[]) => {
         const found = list?.find((t) => t.id === this.treasuryId) || null;
@@ -136,13 +125,10 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
       })
     );
 
-    // Cargar opciones del select de tipo de movimiento
-    this.cargarTiposMovimiento();
+    // Cargar catálogo de tipos, setear default, y cargar categorías
+    this.initCategoriasTab();
 
-    // Cargar categorías (Ingreso/Egreso)
-    this.recargarTablaCategorias();
-
-    // Buscar → reconsultar backend con q (debounced)
+    // Buscar movimientos
     this.subs.add(
       this.searchMov.valueChanges.pipe(debounceTime(250)).subscribe(() => {
         this.reloadMovimientos();
@@ -158,34 +144,113 @@ export class DialogTreasuryDetailComponent implements OnInit, OnDestroy {
     this.subs.unsubscribe();
   }
 
-  private cargarTiposMovimiento() {
-    this.fin.getTiposMovimiento().subscribe((list) => (this.tiposMov = list || []));
-  }
+  /* ==================== CATEGORÍAS ==================== */
 
-private recargarTablaCategorias() {
-  Promise.all([
-    this.fin.getCategoriasPorTipo('Ingreso').toPromise(),
-    this.fin.getCategoriasPorTipo('Egreso').toPromise()
-  ]).then(([ing = [], egr = []]) => {
-    const mapCat = (c: any, type: 'Ingreso' | 'Egreso') => ({
-      id: c.id,
-      name: c.nombre,
-      type,
-      // acepta cualquiera de los dos nombres que pueda mandar el backend
-      finanzasGenerales: Boolean(
-        c.finanzasGenerales ?? c.finanzas_generales ?? c.finanzas_generale // por si acaso
-      ),
+  private initCategoriasTab() {
+    this.fin.getTiposMovimiento().subscribe((tipos) => {
+      this.tiposMov = tipos || [];
+      const def =
+        this.tiposMov.find((t) => t.nombre === 'Ingreso')?.id ??
+        this.tiposMov[0]?.id ??
+        1;
+      this.catTypeId.setValue(def, { emitEvent: false });
+      this.loadCategorias(); // primera carga
     });
 
-    this.catList = [
-      ...ing.map((c: any) => mapCat(c, 'Ingreso')),
-      ...egr.map((c: any) => mapCat(c, 'Egreso')),
-    ];
-  });
-}
+    // recargar al cambiar el tipo
+    this.subs.add(
+      this.catTypeId.valueChanges.subscribe(() => this.loadCategorias())
+    );
+  }
 
+  private loadCategorias() {
+    const tesoreriaId = this.treasuryId;
+    const tipoId = this.catTypeId.value!;
+    if (!tesoreriaId || !tipoId) {
+      this.catList = [];
+      return;
+    }
+    this.fin.getCategoriasPorTesoreria(tesoreriaId, tipoId).subscribe((arr) => {
+      this.catList = (arr || []).map((res) => {
+        const tm = this.tiposMov.find((t) => t.id === res.tipoId);
+        const typeName = (tm?.nombre === 'Ingreso' ? 'Ingreso' : 'Egreso') as
+          | 'Ingreso'
+          | 'Egreso';
+        return {
+          id: res.id,
+          name: res.nombre,
+          typeId: res.tipoId,
+          typeName,
+          finanzasGenerales: !!res.finanzasGenerales,
+        } as CategoriaUI;
+      });
+    });
+  }
 
-  /** Llama al backend para recargar movimientos usando periodo + q actuales */
+  addCategory(): void {
+    const nombre = (this.catName.value || '').trim();
+    const tipoId = this.catTypeId.value!;
+    const finanzasGenerales = !!this.catGeneral.value;
+    if (!nombre || !tipoId) return;
+
+    this.fin
+      .createCategoriaLocal(this.treasuryId, { nombre, tipoId, finanzasGenerales })
+      .subscribe({
+        next: () => {
+          this.loadCategorias();
+          this.catName.setValue('');
+          this.catGeneral.setValue(false);
+        },
+        error: (err) => console.error('Error creando categoría', err),
+      });
+  }
+
+  startEditCategory(c: CategoriaUI): void {
+    c.editing = true;
+    c._name = c.name;
+    c._typeId = c.typeId;
+    c._finanzasGenerales = c.finanzasGenerales;
+  }
+
+  saveEditCategory(c: CategoriaUI): void {
+    const nombre = (c._name || '').trim();
+    const tipoId = c._typeId ?? c.typeId;
+    const finanzasGenerales = !!c._finanzasGenerales;
+    if (!nombre || !tipoId) return;
+
+    this.fin
+      .updateCategoriaLocal(c.id, {
+        nombre,
+        tipoId,
+        finanzasGenerales,
+        tesoreriaId: this.treasuryId,
+      })
+      .subscribe({
+        next: () => {
+          c.editing = false;
+          this.loadCategorias(); // refrescar desde backend
+        },
+        error: (err) => console.error('Error al actualizar categoría', err),
+      });
+  }
+
+  cancelEditCategory(c: CategoriaUI): void {
+    c.editing = false;
+    delete c._name;
+    delete c._typeId;
+    delete c._finanzasGenerales;
+  }
+
+  removeCategory(c: CategoriaUI): void {
+    if (!c?.id) return;
+    this.fin.deleteCategoria(c.id).subscribe({
+      next: () => (this.catList = this.catList.filter((x) => x.id !== c.id)),
+      error: (err) => console.error('Error al eliminar categoría', err),
+    });
+  }
+
+  /* ==================== MOVIMIENTOS ==================== */
+
   private reloadMovimientos(): void {
     this.fin
       .loadMovimientos(this.treasuryId, {
@@ -198,7 +263,6 @@ private recargarTablaCategorias() {
       });
   }
 
-  /** Llama al backend para traer totales de la tesorería y refrescar KPIs */
   private cargarResumen(periodo: 'mes' | 'mes_anterior' | 'anio' | 'todos'): void {
     this.fin.getResumenTesoreria(this.treasuryId, periodo).subscribe((r) => {
       this.kpiIngresos = r?.totalIngresos ?? 0;
@@ -208,7 +272,7 @@ private recargarTablaCategorias() {
   }
 
   private updateKPIs() {
-    const list = this.movements;
+    const list = this.movements || [];
     this.kpiIngresos = list
       .filter((m) => m.type === 'Ingreso')
       .reduce((a, b) => a + (b.amount || 0), 0);
@@ -218,7 +282,6 @@ private recargarTablaCategorias() {
     this.kpiSaldo = this.kpiIngresos - this.kpiEgresos;
   }
 
-  /** Mapea el select de UI a periodo del backend y recarga */
   periodChanged(v: string) {
     const map: Record<string, 'mes' | 'mes_anterior' | 'anio' | 'todos'> = {
       all: 'todos',
@@ -231,51 +294,42 @@ private recargarTablaCategorias() {
     this.cargarResumen(this.currentPeriod);
   }
 
- addMovement() {
-  this.dialog
-    .open(DialogMovementComponent, {
-      width: '680px',
-      disableClose: true,
-      data: { treasuryId: this.treasuryId },
-    })
-    .afterClosed()
-    .subscribe((result: any) => {
-      if (result?.success) {
-        this.reloadMovimientos();
-        this.cargarResumen(this.currentPeriod);
-        
-        // Si se indica recargar finanzas, emitir evento
-        if (result.reloadFinanzas) {
-          this.dialogRef.close({ reloadFinanzas: true }); // ← Cierra el diálogo con flag
+  addMovement() {
+    this.dialog
+      .open(DialogMovementComponent, {
+        width: '680px',
+        disableClose: true,
+  data: { treasuryId: this.treasuryId } as { treasuryId: number },
+      })
+      .afterClosed()
+      .subscribe((result: any) => {
+        if (result?.success) {
+          this.reloadMovimientos();
+          this.cargarResumen(this.currentPeriod);
+          if (result.reloadFinanzas) this.dialogRef.close({ reloadFinanzas: true });
         }
-      }
-    });
-}
+      });
+  }
 
-editMovement(row: Movement) {
-  this.dialog
-    .open(DialogMovementComponent, {
-      width: '680px',
-      disableClose: true,
-      data: { treasuryId: this.treasuryId, movement: row },
-    })
-    .afterClosed()
-    .subscribe((result: any) => {
-      if (result?.success) {
-        this.reloadMovimientos();
-        this.cargarResumen(this.currentPeriod);
-        
-        // Si se indica recargar finanzas, emitir evento
-        if (result.reloadFinanzas) {
-          this.dialogRef.close({ reloadFinanzas: true }); // ← Cierra el diálogo con flag
+  editMovement(row: Movement) {
+    this.dialog
+      .open(DialogMovementComponent, {
+        width: '680px',
+        disableClose: true,
+        data: { treasuryId: this.treasuryId, movement: row },
+      })
+      .afterClosed()
+      .subscribe((result: any) => {
+        if (result?.success) {
+          this.reloadMovimientos();
+          this.cargarResumen(this.currentPeriod);
+          if (result.reloadFinanzas) this.dialogRef.close({ reloadFinanzas: true });
         }
-      }
-    });
-}
+      });
+  }
 
   deleteMovement(row: Movement) {
     if (!row?.id) return;
-
     this.fin.deleteMovement(this.treasuryId, row.id).subscribe({
       next: () => {
         this.reloadMovimientos();
@@ -285,132 +339,8 @@ editMovement(row: Movement) {
     });
   }
 
-  /* ===== Categorías ===== */
-addCategory(): void {
-  const nombre = (this.catName.value || '').trim();
-  const tipoId = this.catTypeId.value;
-  const finanzasGenerales = !!this.catGeneral.value;
-  if (!nombre || !tipoId) return;
+  /* ==================== USUARIOS MOCK ==================== */
 
-  const payload = {
-    nombre,
-    tipoMovimientoId: tipoId,
-    finanzasGenerales,
-    finanzas_generales: finanzasGenerales
-  };
-
-  console.log('[ADD] payload ->', payload);
-
-  this.fin.createCategoria(payload).subscribe({
-    next: (res: any) => {
-      console.log('[ADD] response ->', res);
-      this.catList = [
-        ...this.catList,
-        {
-          id: res.id,
-          name: res.nombre,
-          type: res.tipo as ('Ingreso'|'Egreso'),
-          finanzasGenerales: Boolean(res.finanzasGenerales ?? res.finanzas_generales)
-        }
-      ];
-      this.catName.reset();
-      this.catTypeId.reset();
-      this.catGeneral.setValue(false);
-    },
-    error: (err) => console.error('Error creando categoría', err),
-  });
-}
-
-saveEditCategory(c: any): void {
-  const nombre = (c._name || '').trim();
-  const tipoNombre = (c._type || '').trim(); // "Ingreso" | "Egreso"
-  const finanzasGenerales = !!c._finanzasGenerales;
-  if (!nombre || (tipoNombre !== 'Ingreso' && tipoNombre !== 'Egreso')) return;
-
-  const tipo = this.tiposMov.find(t => t.nombre.toLowerCase() === tipoNombre.toLowerCase());
-  if (!tipo) return;
-
-  const payload = {
-    nombre,
-    tipoMovimientoId: tipo.id,
-    finanzasGenerales,
-    finanzas_generales: finanzasGenerales
-  };
-
-  console.log('[UPDATE] payload ->', payload);
-
-  this.fin.updateCategoria(c.id, payload).subscribe({
-    next: (res: any) => {
-      console.log('[UPDATE] response ->', res);
-      c.name = res.nombre;
-      c.type = res.tipo as ('Ingreso'|'Egreso');
-      c.finanzasGenerales = Boolean(res.finanzasGenerales ?? res.finanzas_generales);
-      c.editing = false;
-      delete c._name; delete c._type; delete c._finanzasGenerales;
-    },
-    error: (err) => console.error('Error al actualizar categoría', err)
-  });
-}
-
-
-  startEditCategory(c: UICategory): void {
-    c.editing = true;
-    c._name = c.name;
-    c._type = c.type;
-    c._finanzasGenerales = c.finanzasGenerales;
-  }
-
-// saveEditCategory(c: any): void {
-//   const nombre = (c._name || '').trim();
-//   const tipoNombre = (c._type || '').trim(); // "Ingreso" | "Egreso"
-//   const finanzasGenerales = !!c._finanzasGenerales;
-//   if (!nombre || (tipoNombre !== 'Ingreso' && tipoNombre !== 'Egreso')) return;
-
-//   const tipo = this.tiposMov.find(
-//     t => t.nombre.toLowerCase() === tipoNombre.toLowerCase()
-//   );
-//   if (!tipo) return;
-
-//   const payload = {
-//     nombre,
-//     tipoMovimientoId: tipo.id,
-//     finanzasGenerales,
-//     finanzas_generales: finanzasGenerales,
-//   };
-
-//   this.fin.updateCategoria(c.id, payload).subscribe({
-//     next: (res: any) => {
-//       c.name = res.nombre;
-//       c.type = res.tipo as ('Ingreso'|'Egreso');
-//       c.finanzasGenerales = Boolean(
-//         res.finanzasGenerales ?? res.finanzas_generales
-//       );
-//       c.editing = false;
-//       delete c._name; delete c._type; delete c._finanzasGenerales;
-//     },
-//     error: (err) => console.error('Error al actualizar categoría', err)
-//   });
-// }
-
-
-  cancelEditCategory(c: UICategory): void {
-    c.editing = false;
-    delete c._name;
-    delete c._type;
-    delete c._finanzasGenerales;
-  }
-
-  removeCategory(c: UICategory): void {
-    if (!c?.id) return;
-    this.fin.deleteCategoria(c.id).subscribe({
-      next: () => {
-        this.catList = this.catList.filter((x) => x.id !== c.id);
-      },
-      error: (err) => console.error('Error al eliminar categoría', err),
-    });
-  }
-
-  /* ===== Usuarios (mock) ===== */
   startAddUser() {
     this.editingId = null;
     this.userName.reset();
@@ -461,14 +391,13 @@ saveEditCategory(c: any): void {
     this.users = this.users.filter((u) => u.id !== id);
   }
 
-  /* ===== Edit Tesorería ===== */
+  /* ==================== EDIT TESORERÍA ==================== */
+
   saveTreasury() {
     if (!this.editForm.valid || !this.treasury) return;
-
     const nombre = (this.editForm.get('name')?.value as string)?.trim();
     const statusStr = this.editForm.get('status')?.value as 'Activo' | 'Inactivo';
     const estado = statusStr === 'Activo';
-
     this.fin.updateTesoreria(this.treasury.id!, { nombre, estado }).subscribe({
       next: () => this.dialogRef.close(true),
       error: (err) => console.error('Error actualizando tesorería', err),
@@ -496,20 +425,12 @@ saveEditCategory(c: any): void {
               title: 'Eliminada',
               text: 'La tesorería se eliminó correctamente.',
               confirmButtonColor: '#3085d6',
-            }).then(() => {
-              this.dialogRef.close({ deleted: true });
-            });
+            }).then(() => this.dialogRef.close({ deleted: true }));
           },
           error: (err) => {
-            const msg =
-              err?.error?.message || 'No se pudo eliminar la tesorería.';
+            const msg = err?.error?.message || 'No se pudo eliminar la tesorería.';
             console.error('Error al eliminar tesorería', err);
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: msg,
-              confirmButtonColor: '#3085d6',
-            });
+            Swal.fire({ icon: 'error', title: 'Error', text: msg, confirmButtonColor: '#3085d6' });
           },
         });
       }
@@ -529,13 +450,7 @@ saveEditCategory(c: any): void {
       Cantidad: Number(r.amount || 0),
     }));
     const ws = XLSX.utils.json_to_sheet(rows);
-    ws['!cols'] = [
-      { wch: 6 },
-      { wch: 12 },
-      { wch: 40 },
-      { wch: 12 },
-      { wch: 14 },
-    ];
+    ws['!cols'] = [{ wch: 6 }, { wch: 12 }, { wch: 40 }, { wch: 12 }, { wch: 14 }];
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, ws, 'Movimientos');
     const safeName = (this.treasury?.name || 'tesoreria').replace(/[^\w\-]+/g, '_');

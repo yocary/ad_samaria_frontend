@@ -20,6 +20,7 @@ import {
   take,
 } from 'rxjs/operators';
 import { MiembrosService } from 'src/app/services/miembros.service';
+import Swal from 'sweetalert2';
 
 interface PersonaMini {
   id: number;
@@ -59,6 +60,8 @@ export class DialogMovementComponent implements OnInit {
   categorias: CategoriaMini[] = [];
   metodosPago: MetodoPago[] = [];
 
+    treasuryId!: number;
+
   constructor(
     private fb: FormBuilder,
     private fin: FinanzasService,
@@ -88,6 +91,9 @@ export class DialogMovementComponent implements OnInit {
 
   ngOnInit(): void {
     this.isEdit = !!this.data?.movement;
+
+      // ← agrega esta línea
+  this.treasuryId = this.data.treasuryId;
 
     // 1) Cargar métodos de pago primero (porque al editar quizá necesitemos resolver el ID por nombre)
     this.loadMetodosPago(() => {
@@ -243,22 +249,54 @@ export class DialogMovementComponent implements OnInit {
     });
   }
 
-  private loadCategorias(tipo: 'Ingreso' | 'Egreso', afterLoad?: () => void) {
-    this.fin.getCategoriasPorTipo(tipo).subscribe({
-      next: (list) => {
-        this.categorias = (list || []).filter(
-          c =>
-            !['diezmo', 'diezmos'].includes((c.nombre || '').trim().toLowerCase())
-        );
-        afterLoad?.();
-      },
-      error: (e) => {
-        console.error('Error cargando categorías', e);
-        this.categorias = [];
-        afterLoad?.();
-      },
-    });
-  }
+private loadCategorias(tipo: 'Ingreso' | 'Egreso', afterLoad?: () => void) {
+  const tesoreriaId = this.treasuryId; // o this.data.treasuryId
+  if (!tesoreriaId) return;
+
+  this.fin.getCategoriasPorTipo(tipo, tesoreriaId).subscribe({
+    next: (list) => {
+      this.categorias = (list || []).filter(c =>
+        !['diezmo','diezmos'].includes((c.nombre || '').trim().toLowerCase())
+      );
+
+      // ⚠️ Si no hay categorías, avisa y cierra el diálogo.
+      if (!this.categorias.length) {
+        // deshabilita el control para evitar validaciones molestas
+        this.form.get('categoriaId')?.disable({ emitEvent: false });
+        Swal.fire({
+          icon: 'info',
+          title: 'Sin categorías',
+          text: 'Primero debes crear al menos una categoría en esta tesorería.',
+          confirmButtonText: 'Entendido'
+        }).then(() => {
+          this.ref.close({ success: false, reason: 'no_categories' });
+        });
+        return;
+      }
+
+      // hay categorías -> habilita el control por si estaba deshabilitado
+      this.form.get('categoriaId')?.enable({ emitEvent: false });
+
+      afterLoad?.();
+    },
+    error: (e) => {
+      console.error('Error cargando categorías', e);
+      this.categorias = [];
+      // también deshabilita el control ante error
+      this.form.get('categoriaId')?.disable({ emitEvent: false });
+      Swal.fire({
+        icon: 'error',
+        title: 'No se pudieron cargar las categorías',
+        text: 'Intenta de nuevo o verifica la conexión.',
+        confirmButtonText: 'Ok'
+      }).then(() => {
+        this.ref.close({ success: false, reason: 'cat_load_error' });
+      });
+      afterLoad?.();
+    },
+  });
+}
+
 
   // ========= personas =========
 

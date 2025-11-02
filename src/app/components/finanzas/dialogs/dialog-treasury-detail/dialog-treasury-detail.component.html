@@ -1,11 +1,9 @@
 <h2 mat-dialog-title class="dlg-title">{{ treasury?.name || 'Tesorería' }}</h2>
 
 <mat-tab-group class="dlg-tabs" [selectedIndex]="selectedIndex" animationDuration="200ms">
-
   <!-- ===================== MOVIMIENTOS ===================== -->
   <mat-tab label="Movimientos">
     <div class="mov-wrap">
-
       <div class="kpis-row">
         <div class="kpi purple">
           <div class="kpi-title">Total Ingresos</div>
@@ -99,39 +97,31 @@
   <mat-tab label="Categorías">
     <div class="cat-wrap">
       <!-- Toolbar de Categorías -->
-<div class="cat-toolbar">
-  <mat-form-field appearance="outline" class="cat-name">
-    <mat-label>Nombre</mat-label>
-    <input matInput [formControl]="catName" />
-  </mat-form-field>
+      <div class="cat-toolbar">
+        <mat-form-field appearance="outline" class="cat-name">
+          <mat-label>Nombre</mat-label>
+          <input matInput [formControl]="catName" />
+        </mat-form-field>
 
-  <mat-form-field appearance="outline" class="cat-type">
-    <mat-label>-Seleccionar tipo-</mat-label>
-    <mat-select [formControl]="catTypeId">
-      <mat-option *ngFor="let t of tiposMov" [value]="t.id">
-        {{ t.nombre }}
-      </mat-option>
-    </mat-select>
-  </mat-form-field>
+        <mat-form-field appearance="outline" class="cat-type">
+          <mat-label>-Seleccionar tipo-</mat-label>
+          <mat-select [formControl]="catTypeId">
+            <mat-option *ngFor="let t of tiposMov" [value]="t.id">
+              {{ t.nombre }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
 
-  <div class="chk-container">
-    <mat-checkbox [formControl]="catGeneral">
-      Mostrar en <strong>Finanzas Generales</strong>
-    </mat-checkbox>
-  </div>
+        <div class="chk-container">
+          <mat-checkbox [formControl]="catGeneral">
+            Mostrar en <strong>Finanzas Generales</strong>
+          </mat-checkbox>
+        </div>
 
-  <button
-    mat-raised-button
-    color="primary"
-    class="btn-add"
-    (click)="addCategory()"
-  >
-    + Agregar
-  </button>
-</div>
-
-
-
+        <button mat-raised-button color="primary" class="btn-add" (click)="addCategory()">
+          + Agregar
+        </button>
+      </div>
 
       <div class="cat-table">
         <table class="tbl">
@@ -161,17 +151,14 @@
               <!-- Tipo -->
               <td class="col-tipo">
                 <ng-container *ngIf="!c.editing; else editType">
-                  <span
-                    class="badge"
-                    [ngClass]="c.type === 'Ingreso' ? 'badge-ingreso' : 'badge-egreso'"
-                  >
-                    {{ c.type }}
+                  <span class="badge" [ngClass]="c.typeName === 'Ingreso' ? 'badge-ingreso' : 'badge-egreso'">
+                    {{ c.typeName }}
                   </span>
                 </ng-container>
                 <ng-template #editType>
                   <mat-form-field appearance="outline" class="inline-select">
-                    <mat-select [(ngModel)]="c._type">
-                      <mat-option *ngFor="let t of tiposMov" [value]="t.nombre">
+                    <mat-select [(ngModel)]="c._typeId">
+                      <mat-option *ngFor="let t of tiposMov" [value]="t.id">
                         {{ t.nombre }}
                       </mat-option>
                     </mat-select>
@@ -182,7 +169,6 @@
               <!-- Finanzas Generales -->
               <td class="col-fg">
                 <ng-container *ngIf="!c.editing; else editFG">
-                  <!-- Checkbox deshabilitado para visualizar el estado -->
                   <mat-checkbox [checked]="!!c.finanzasGenerales" disabled></mat-checkbox>
                 </ng-container>
                 <ng-template #editFG>
@@ -193,39 +179,12 @@
               <!-- Acciones -->
               <td class="col-acc">
                 <ng-container *ngIf="!c.editing; else editBtns">
-                  <button
-                    mat-raised-button
-                    color="accent"
-                    class="btn-sm"
-                    (click)="startEditCategory(c)"
-                  >
-                    Editar
-                  </button>
-                  <button
-                    mat-raised-button
-                    color="warn"
-                    class="btn-sm"
-                    (click)="removeCategory(c)"
-                  >
-                    Eliminar
-                  </button>
+                  <button mat-raised-button color="accent" class="btn-sm" (click)="startEditCategory(c)">Editar</button>
+                  <button mat-raised-button color="warn" class="btn-sm" (click)="removeCategory(c)">Eliminar</button>
                 </ng-container>
                 <ng-template #editBtns>
-                  <button
-                    mat-raised-button
-                    color="primary"
-                    class="btn-sm"
-                    (click)="saveEditCategory(c)"
-                  >
-                    Guardar
-                  </button>
-                  <button
-                    mat-stroked-button
-                    class="btn-sm"
-                    (click)="cancelEditCategory(c)"
-                  >
-                    Cancelar
-                  </button>
+                  <button mat-raised-button color="primary" class="btn-sm" (click)="saveEditCategory(c)">Guardar</button>
+                  <button mat-stroked-button class="btn-sm" (click)="cancelEditCategory(c)">Cancelar</button>
                 </ng-template>
               </td>
             </tr>

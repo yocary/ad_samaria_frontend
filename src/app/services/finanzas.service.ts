@@ -14,6 +14,28 @@ import { tap } from 'rxjs/operators';
 
 import { map } from 'rxjs/operators';
 
+export interface CategoriaRes {
+  id: number;
+  nombre: string;
+  tipoId: number;            // viene como Long del backend
+  finanzasGenerales: boolean;
+}
+
+
+export interface CategoriaUI {
+  id: number;
+  name: string;
+  typeId: number;            // numeric (1=Ingreso, 2=Egreso)
+  typeName: 'Ingreso' | 'Egreso';
+  finanzasGenerales: boolean;
+
+  // campos temporales para edición inline
+  editing?: boolean;
+  _name?: string;
+  _typeId?: number;
+  _finanzasGenerales?: boolean;
+}
+
 
 export interface CrearMovimientoReq {
   tipo?: 'Ingreso' | 'Egreso'; // o usa tipoId
@@ -261,27 +283,21 @@ export class FinanzasService {
     );
   }
 
-getCategoriasPorTipo(tipo: 'Ingreso' | 'Egreso'): Observable<CategoriaMini[]> {
-  const params = new HttpParams().set('tipo', tipo);
-  // OJO: ahora apunta a baseCategoria, no baseMov
-  return this.http.get<any[]>(`${this.baseCategoria}/categorias`, { params }).pipe(
-    // normaliza cada item a camelCase
-    // (si tu backend devuelve un array plano)
-    // Si devuelve {items: [...]}, ajusta este map.
-    // También puedes dejar un tap para inspección
-    // tap(res => console.log('[GET CATS] raw ->', res)),
-    // map(res => res.items ?? res) // si fuera paginado
-    // map((arr: any[]) => arr.map(c => this.normInCategoria(c)))
-    // Para la versión simple:
-    // @ts-ignore
-    (source) => source.pipe(
-      // eslint-disable-next-line rxjs/no-ignored-notifier
-      // tap(arr => console.log('[GET CATS] raw ->', arr)),
-      // @ts-ignore
+getCategoriasPorTipo(
+  tipo: 'Ingreso' | 'Egreso',
+  tesoreriaId: number
+): Observable<CategoriaMini[]> {
+  const params = new HttpParams()
+    .set('tipo', tipo)
+    .set('tesoreriaId', String(tesoreriaId));
+
+  return this.http
+    .get<any[]>(`${this.baseCategoria}/categorias`, { params })
+    .pipe(
       map((arr: any[]) => (arr || []).map(c => this.normInCategoria(c)))
-    )
-  );
+    );
 }
+
 
   deleteMovement(treasuryId: number, movementId: number) {
     return this.http.delete<void>(
@@ -440,6 +456,50 @@ getMovimientosGenerales(params: { periodo?: 'mes'|'mes_anterior'|'anio'|'todos';
     })
   );
 }
+
+// Traduce CategoriaRes (API) -> CategoriaUI (UI)
+private catResToUI = (res: CategoriaRes, tipos: TipoMovimientoMini[]): CategoriaUI => {
+  const tm = tipos.find(t => t.id === res.tipoId);
+  const typeName = (tm?.nombre === 'Ingreso' ? 'Ingreso' : 'Egreso') as ('Ingreso'|'Egreso');
+  return {
+    id: res.id,
+    name: res.nombre,
+    typeId: res.tipoId,
+    typeName,
+    finanzasGenerales: !!res.finanzasGenerales,
+  };
+};
+
+// Traduce UI -> payload API (crear/actualizar)
+private catUIToOut = (dto: { nombre: string; tipoId: number; finanzasGenerales?: boolean; tesoreriaId: number }) => ({
+  nombre: dto.nombre,
+  tipoId: dto.tipoId,
+  finanzasGenerales: dto.finanzasGenerales ?? false,
+  tesoreriaId: dto.tesoreriaId
+});
+
+
+// GET /categoria/por-tesoreria?tesoreriaId=&tipoId=
+getCategoriasPorTesoreria(tesoreriaId: number, tipoId: number) {
+  const params = new HttpParams()
+    .set('tesoreriaId', String(tesoreriaId))
+    .set('tipoId', String(tipoId));
+  return this.http.get<CategoriaRes[]>(`${this.baseCategoria}/por-tesoreria`, { params });
+}
+
+// POST /categoria/categorias  (body: { nombre, tipoId, finanzasGenerales, tesoreriaId })
+createCategoriaLocal(tesoreriaId: number, body: { nombre: string; tipoId: number; finanzasGenerales: boolean }) {
+  const payload = this.catUIToOut({ ...body, tesoreriaId });
+  return this.http.post<CategoriaRes>(`${this.baseCategoria}/categorias`, payload);
+}
+
+// PUT /categoria/categorias/{id}
+updateCategoriaLocal(id: number, body: { nombre: string; tipoId: number; finanzasGenerales: boolean; tesoreriaId: number }) {
+  const payload = this.catUIToOut(body);
+  return this.http.put<CategoriaRes>(`${this.baseCategoria}/categorias/${id}`, payload);
+}
+
+
 
 
 }
