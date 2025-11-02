@@ -81,6 +81,8 @@ catGeneral: FormControl = new FormControl(false);
   userEditing = false;
   private editingId: number | null = null;
 
+  private _reloadFinanzasPorCategorias = false;
+
   /* ---------- EDIT TESORERÍA ---------- */
   treasuryStatuses = ['Activo', 'Inactivo'];
   currencies = [{ value: 'GTQ', label: '(GTQ) Guatemala' }];
@@ -212,27 +214,47 @@ catGeneral: FormControl = new FormControl(false);
     c._finanzasGenerales = c.finanzasGenerales;
   }
 
-  saveEditCategory(c: CategoriaUI): void {
-    const nombre = (c._name || '').trim();
-    const tipoId = c._typeId ?? c.typeId;
-    const finanzasGenerales = !!c._finanzasGenerales;
-    if (!nombre || !tipoId) return;
+saveEditCategory(c: CategoriaUI): void {
+  const nombre = (c._name || '').trim();
+  const tipoId = c._typeId ?? c.typeId;
+  const finanzasGenerales = !!c._finanzasGenerales;
+  if (!nombre || !tipoId) return;
 
-    this.fin
-      .updateCategoriaLocal(c.id, {
-        nombre,
-        tipoId,
-        finanzasGenerales,
-        tesoreriaId: this.treasuryId,
-      })
-      .subscribe({
-        next: () => {
-          c.editing = false;
-          this.loadCategorias(); // refrescar desde backend
-        },
-        error: (err) => console.error('Error al actualizar categoría', err),
-      });
-  }
+  // Detectar si cambió algo relevante
+  const changedName = nombre !== c.name;
+  const changedTipo = tipoId !== c.typeId;
+  const changedFG = c.finanzasGenerales !== finanzasGenerales;
+
+  this.fin
+    .updateCategoriaLocal(c.id, {
+      nombre,
+      tipoId,
+      finanzasGenerales,
+      tesoreriaId: this.treasuryId,
+    })
+    .subscribe({
+      next: () => {
+        // Actualiza visualmente la fila
+        c.name = nombre;
+        c.typeId = tipoId;
+        const tm = this.tiposMov.find((t) => t.id === tipoId);
+        c.typeName = (tm?.nombre === 'Ingreso' ? 'Ingreso' : 'Egreso') as 'Ingreso' | 'Egreso';
+        c.finanzasGenerales = finanzasGenerales;
+
+        c.editing = false;
+        delete c._name;
+        delete c._typeId;
+        delete c._finanzasGenerales;
+
+        // Si se cambió algo (nombre, tipo o FG), marcamos flag
+        if (changedName || changedTipo || changedFG) {
+          this._reloadFinanzasPorCategorias = true;
+        }
+      },
+      error: (err) => console.error('Error al actualizar categoría', err),
+    });
+}
+
 
   cancelEditCategory(c: CategoriaUI): void {
     c.editing = false;
@@ -241,13 +263,40 @@ catGeneral: FormControl = new FormControl(false);
     delete c._finanzasGenerales;
   }
 
-  removeCategory(c: CategoriaUI): void {
-    if (!c?.id) return;
-    this.fin.deleteCategoria(c.id).subscribe({
-      next: () => (this.catList = this.catList.filter((x) => x.id !== c.id)),
-      error: (err) => console.error('Error al eliminar categoría', err),
-    });
-  }
+removeCategory(c: CategoriaUI): void {
+  if (!c?.id) return;
+
+  this.fin.deleteCategoria(c.id).subscribe({
+    next: () => {
+      this.catList = this.catList.filter((x) => x.id !== c.id);
+      Swal.fire({
+        icon: 'success',
+        title: 'Eliminada',
+        text: 'La categoría se eliminó correctamente.',
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    },
+    error: (err) => {
+      const msg = err?.error?.message || 'No se pudo eliminar la categoría ya que cuenta con movimientos.';
+      if (err?.status === 409) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No se puede eliminar',
+          text: msg,
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: msg,
+        });
+      }
+      console.error('Error al eliminar categoría', err);
+    },
+  });
+}
+
 
   /* ==================== MOVIMIENTOS ==================== */
 
@@ -393,16 +442,29 @@ catGeneral: FormControl = new FormControl(false);
 
   /* ==================== EDIT TESORERÍA ==================== */
 
-  saveTreasury() {
-    if (!this.editForm.valid || !this.treasury) return;
-    const nombre = (this.editForm.get('name')?.value as string)?.trim();
-    const statusStr = this.editForm.get('status')?.value as 'Activo' | 'Inactivo';
-    const estado = statusStr === 'Activo';
-    this.fin.updateTesoreria(this.treasury.id!, { nombre, estado }).subscribe({
-      next: () => this.dialogRef.close(true),
-      error: (err) => console.error('Error actualizando tesorería', err),
-    });
-  }
+saveTreasury() {
+  if (!this.editForm.valid || !this.treasury) return;
+
+  const nombre = (this.editForm.get('name')?.value as string)?.trim();
+  const statusStr = this.editForm.get('status')?.value as 'Activo' | 'Inactivo';
+  const estado = statusStr === 'Activo';
+
+  this.fin.updateTesoreria(this.treasury.id!, { nombre, estado }).subscribe({
+    next: () => {
+      // Refresca el objeto local para que el header y los campos se vean actualizados de inmediato
+      this.treasury = {
+        ...(this.treasury!),
+        name: nombre,
+        status: statusStr,
+      } as any;
+
+      // Cierra enviando flags para que el componente padre recargue tesorerías y movimientos
+      this.dialogRef.close({ changed: true, reloadFinanzas: true });
+    },
+    error: (err) => console.error('Error actualizando tesorería', err),
+  });
+}
+
 
   deleteTreasury() {
     if (!this.treasury?.id) return;
@@ -437,9 +499,13 @@ catGeneral: FormControl = new FormControl(false);
     });
   }
 
-  close() {
-    this.dialogRef.close();
-  }
+close() {
+  this.dialogRef.close({
+    changed: this._reloadFinanzasPorCategorias,
+    reloadFinanzas: this._reloadFinanzasPorCategorias
+  });
+}
+
 
   downloadMovimientosExcel(): void {
     const rows = (this.movements || []).map((r, idx) => ({
