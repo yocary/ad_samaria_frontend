@@ -66,30 +66,37 @@ export class CertificadosComponent implements OnInit {
   }
 
   // ===== Descargar PDF =====
-  download(row: CertificadoDTO) {
-    this.api.descargarPdf(row.id).subscribe({
-      next: (blob) => {
-        const fecha = row.fecha ? ` (${row.fecha})` : '';
-        const nombreBase = `${row.tipo || 'certificado'} - ${
-          row.miembro || ''
-        }${fecha}`.trim();
-        const filename = `${nombreBase}.pdf`.replace(/[\\/:*?"<>|]/g, '_');
+download(row: CertificadoDTO) {
+  this.api.descargarPdf(row.id).subscribe({
+    next: (blob) => {
+      const fecha = row.fecha ? ` (${row.fecha})` : '';
+      const nombreBase = `${row.tipo || 'certificado'} - ${
+        row.miembro || ''
+      }${fecha}`.trim();
+      const filename = `${nombreBase}.pdf`.replace(/[\\/:*?"<>|]/g, '_');
 
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-      },
-      error: (err) => {
-        console.error(err);
-        alert('No se pudo descargar el PDF');
-      },
-    });
-  }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    },
+    error: (err) => {
+      console.error(err);
+      // Reemplazar alert por Swal.fire
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo descargar el PDF',
+        confirmButtonText: 'Aceptar',
+        confirmButtonColor: '#d33'
+      });
+    },
+  });
+}
 
   remove(row: CertificadoDTO) {
     this.api.delete(row.id).subscribe({
