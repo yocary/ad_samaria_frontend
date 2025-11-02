@@ -64,6 +64,7 @@ import { AnalyticsService } from './services/analytics.service';
 import { AnalyticsInterceptor } from './core/interceptors/analytics.interceptor';
 import { AnalyticsApiInterceptor } from './interceptors/analytics-api.interceptor';
 import { MatOutlineFixDirective } from './shared/mat-outline-fix.directive';
+import { HeaderComponent } from './components/core/header/header.component';
 
 
 export const MY_DATE_FORMATS = {
@@ -117,7 +118,8 @@ export const MY_DATE_FORMATS = {
     CambiarPasswordDialogComponent,
     DialogDiezmosComponent,
     DialogAddDiezmoComponent,
-    MatOutlineFixDirective
+    MatOutlineFixDirective,
+    HeaderComponent
   ],
   imports: [
     FormsModule,

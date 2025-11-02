@@ -1,0 +1,28 @@
+<mat-toolbar color="primary" class="app-toolbar">
+  <!-- Marca / título -->
+  <div class="brand" [routerLink]="'/'" matRipple>
+    IGLESIA ASAMBLEA DE DIOS SAMARIA
+  </div>
+
+  <span class="spacer"></span>
+
+  <!-- (Opcional) Nombre del usuario -->
+  <button mat-button class="user-btn" [matMenuTriggerFor]="menu" *ngIf="user">
+    <mat-icon>account_circle</mat-icon>
+    <span class="user-name">{{ displayName }}</span>
+    <mat-icon class="chev">expand_more</mat-icon>
+  </button>
+
+  <!-- Menú de usuario -->
+  <mat-menu #menu="matMenu">
+    <button mat-menu-item (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      <span>Cerrar sesión</span>
+    </button>
+  </mat-menu>
+
+  <!-- Si no hay sesión, muestra botón directo -->
+  <button mat-stroked-button color="accent" (click)="logout()" *ngIf="!user">
+    Cerrar sesión
+  </button>
+</mat-toolbar>

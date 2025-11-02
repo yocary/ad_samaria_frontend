@@ -14,12 +14,23 @@ export class AppComponent implements OnInit {
   username!: string;
   password!: string;
 
+    isLoginRoute = false;
+
+
   constructor(
     private router: Router,
     private authService: AuthService,
         private gaService: GoogleAnalyticsService
   ) {
     localStorage.setItem("section", "home");
+
+    this.router.events
+      .pipe(filter((e): e is NavigationEnd => e instanceof NavigationEnd))
+      .subscribe(e => {
+        const url = e.urlAfterRedirects || e.url;
+        this.isLoginRoute = url.startsWith('/login');
+      });
+      
   }
 
   ngOnInit() {

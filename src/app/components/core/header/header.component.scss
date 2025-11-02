@@ -1,0 +1,35 @@
+.app-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  height: 56px;
+}
+
+.brand {
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.spacer {
+  flex: 1 1 auto;
+}
+
+.user-btn {
+  color: #fff;
+  .user-name {
+    margin: 0 4px 0 6px;
+    font-weight: 600;
+  }
+  .chev {
+    font-size: 18px;
+    line-height: 18px;
+  }
+}
+
+/* Ajuste para pantallas pequeñas */
+@media (max-width: 600px) {
+  .brand { font-size: 13px; }
+  .user-name { display: none; }
+}
