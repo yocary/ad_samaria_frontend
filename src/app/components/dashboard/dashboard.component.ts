@@ -84,7 +84,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
     // ADMINISTRADOR: todo menos finanzas (según tu regla original)
     if (this.hasRole(rolesNorm, 'ADMINISTRADOR')) {
-      ['roles', 'miembros', 'planificacion', 'liderazgo', 'certificados']
+      ['roles', 'miembros', 'planificacion', 'liderazgo', 'certificados', 'finanzas']
         .forEach(k => want.add(k as Tile['key']));
     }
 
@@ -97,6 +97,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
     // TESORERO: siempre agrega FINANZAS (aunque también sea admin)
     if (this.hasRole(rolesNorm, 'TESORERO')) {
       want.add('finanzas');
+    }
+
+   if (this.hasRole(rolesNorm, 'pastor')) {
+      ['miembros', 'finanzas', 'planificacion', 'certificados']
+        .forEach(k => want.add(k as Tile['key']));
     }
 
     // PASTOR (si en algún momento necesitas lógica específica, aquí)
