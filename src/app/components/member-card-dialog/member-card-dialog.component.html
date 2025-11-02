@@ -73,7 +73,7 @@
 
 
 <!-- Grupos -->
-<div class="block">
+<!-- <div class="block">
   <div class="block__title">Grupos</div>
   <div *ngIf="hasArray(ficha.grupos); else noGrupos" class="chips">
     <mat-chip-list aria-label="Grupos">
@@ -83,16 +83,16 @@
     </mat-chip-list>
   </div>
   <ng-template #noGrupos><div class="empty">Sin grupos</div></ng-template>
-</div>
+</div> -->
 
 
     <!-- Liderazgos -->
     <div class="block">
-      <div class="block__title">Liderazgos</div>
+      <div class="block__title">Grupos</div>
       <table class="table" *ngIf="hasArray(ficha.liderazgos); else noLid">
         <thead>
           <tr>
-            <th>Liderazgo</th>
+            <th>Grupo</th>
             <th>Rol</th>
             <th>Desde</th>
             <th>Hasta</th>
