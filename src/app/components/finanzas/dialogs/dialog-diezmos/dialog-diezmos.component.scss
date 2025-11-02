@@ -313,3 +313,79 @@ tr:hover td           { background: #f6faff; }
   outline-offset: 2px;
   border-radius: 8px;
 }
+/* =========================
+   DIEZMOS – BOTONES EN TABLA (CON ANIMACIÓN)
+   ========================= */
+
+.table .btn-sm {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px !important;
+  padding: 0 14px !important;
+  border-radius: 8px !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.2px;
+  text-transform: none !important;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.3s ease;
+}
+
+/* — EFECTO DE BRILLO ANIMADO — */
+.table .btn-sm::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.25),
+    transparent
+  );
+  transition: transform 0.8s ease;
+}
+
+/* — ESTILOS BASE CON DEGRADADO — */
+.table .mat-mdc-raised-button.mat-accent.btn-sm {
+  background: linear-gradient(135deg, #43a047, #2e7d32) !important; /* verde editar */
+  color: #fff !important;
+  box-shadow: 0 4px 10px rgba(46, 125, 50, 0.25);
+  border: none !important;
+}
+
+.table .mat-mdc-raised-button.mat-warn.btn-sm {
+  background: linear-gradient(135deg, #ef5350, #c62828) !important; /* rojo eliminar */
+  color: #fff !important;
+  box-shadow: 0 4px 10px rgba(198, 40, 40, 0.25);
+  border: none !important;
+}
+
+/* — HOVER / ACTIVE — */
+.table .btn-sm:hover::before {
+  transform: translateX(120%);
+}
+.table .btn-sm:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(2, 6, 23, 0.25);
+}
+.table .btn-sm:active {
+  transform: scale(0.97);
+}
+
+/* — ICONOS (si los usas) — */
+.table .btn-sm mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* — ACCESIBILIDAD — */
+.table .btn-sm:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
