@@ -104,28 +104,38 @@ catGeneral: FormControl = new FormControl(false);
   ) {}
 
   ngOnInit(): void {
-    this.treasuryId = this.data.treasuryId;
+  this.treasuryId = this.data.treasuryId;
 
-    if (this.data.treasuryName) {
-      this.treasury = { id: this.treasuryId, name: this.data.treasuryName } as any;
-    }
+  if (this.data.treasuryName) {
+    this.treasury = { id: this.treasuryId, name: this.data.treasuryName } as any;
+    // ← Prefill inmediato del input "Nombre de la tesorería"
+    this.editForm.patchValue({ name: this.data.treasuryName }, { emitEvent: false });
+  }
 
-    this.subs.add(
-      this.fin.treasuries$.subscribe((list: Treasury[]) => {
-        const found = list?.find((t) => t.id === this.treasuryId) || null;
-        if (found) {
-          this.treasury = found;
-          this.editForm.patchValue(
-            {
-              name: found.name,
-              status: found.status,
-              currency: (found as any).currency || 'GTQ',
-            },
-            { emitEvent: false }
-          );
-        }
-      })
-    );
+  this.subs.add(
+    this.fin.treasuries$.subscribe((list: Treasury[]) => {
+      const found = list?.find((t) => t.id === this.treasuryId) || null;
+      if (found) {
+        this.treasury = found;
+        const statusBool =
+          (found as any).estado ??
+          (typeof (found as any).status === 'boolean'
+            ? (found as any).status
+            : (found as any).status === 'Activo');
+
+        const statusStr = statusBool ? 'Activo' : 'Inactivo';
+
+        this.editForm.patchValue(
+          {
+            name: found.name,                     // ← Nombre por defecto
+            status: statusStr,                    // ← Mapea a 'Activo' | 'Inactivo'
+            currency: (found as any).currency || 'GTQ',
+          },
+          { emitEvent: false }
+        );
+      }
+    })
+  );
 
     // Cargar catálogo de tipos, setear default, y cargar categorías
     this.initCategoriasTab();

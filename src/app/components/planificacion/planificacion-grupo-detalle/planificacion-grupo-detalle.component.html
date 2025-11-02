@@ -4,7 +4,7 @@
       {{ liderazgoNombre | uppercase }}
     </div>
 
-    <!-- Tabs -->
+    <!-- Tabs simples -->
     <div class="tabs">
       <button class="tab" [class.active]="tabActivo === 'integrantes'" (click)="cambiarTab('integrantes')">
         Integrantes
@@ -14,33 +14,40 @@
       </button>
     </div>
 
-    <!-- Contenido dinámico -->
     <ng-container [ngSwitch]="tabActivo">
-      <!-- Integrantes -->
+      <!-- INTEGRANTES -->
       <ng-container *ngSwitchCase="'integrantes'">
         <div class="bar">
           <div class="search-container">
-            <mat-form-field appearance="outline" class="search">
+            <mat-form-field appearance="outline"
+                            class="search"
+                            floatLabel="auto"
+                            subscriptSizing="dynamic">
               <mat-label>Buscar persona (mín. 2 letras)</mat-label>
-              <input matInput [formControl]="personaQuery" placeholder="Escribe el nombre…" />
+              <input type="text"
+                     matInput
+                     [formControl]="personaQuery"
+                     [matAutocomplete]="auto"
+                     autocomplete="off" />
+
               <button mat-icon-button matSuffix *ngIf="personaQuery.value" (click)="limpiarSeleccion()">
                 <mat-icon>close</mat-icon>
               </button>
-            </mat-form-field>
 
-            <div class="results-wrapper"
-                 *ngIf="(personaQuery.value?.length ?? 0) >= 2 && (resultados$ | async) as opciones">
-              <div class="results" *ngIf="opciones.length > 0 && !seleccionado">
-                <button class="res" *ngFor="let p of opciones" (click)="elegir(p)">
+              <mat-autocomplete #auto="matAutocomplete"
+                                [displayWith]="displayPersona"
+                                autoActiveFirstOption
+                                panelClass="search-panel"
+                                (optionSelected)="elegir($event.option.value)">
+                <mat-option *ngFor="let p of opcionesFiltradas$ | async" [value]="p">
                   {{ p.nombre }}
-                </button>
-              </div>
-              <div class="results" *ngIf="opciones.length === 0 && !seleccionado">
-                <div class="empty">
-                  Sin resultados
-                </div>
-              </div>
-            </div>
+                </mat-option>
+
+                <ng-container *ngIf="(opcionesFiltradas$ | async)?.length === 0 && (personaQuery.value?.length || 0) >= 2">
+                  <mat-option disabled>Sin resultados</mat-option>
+                </ng-container>
+              </mat-autocomplete>
+            </mat-form-field>
           </div>
 
           <button mat-raised-button color="primary" class="btn-add"
@@ -81,9 +88,11 @@
         </div>
       </ng-container>
 
-      <!-- Eventos -->
+      <!-- EVENTOS -->
       <ng-container *ngSwitchCase="'eventos'">
-        <app-planificacion-eventos [liderazgoId]="liderazgoId" [liderazgoNombre]="liderazgoNombre">
+        <app-planificacion-eventos
+          [liderazgoId]="liderazgoId"
+          [liderazgoNombre]="liderazgoNombre">
         </app-planificacion-eventos>
       </ng-container>
     </ng-container>
