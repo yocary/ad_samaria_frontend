@@ -88,9 +88,7 @@ export class AsistenciaDialogComponent implements OnInit {
     });
   }
 
-  close(): void {
-    this.ref.close(false);
-  }
+  close(): void { this.ref.close(false); }
 
   trackById = (_: number, it: AsistenciaItem) => it.personaId;
 }

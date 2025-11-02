@@ -6,18 +6,35 @@
 
 <mat-dialog-content class="dlg">
   <div class="bar">
-    <mat-form-field appearance="outline" class="search">
-      <mat-label>Buscar miembro</mat-label>
-      <input matInput [formControl]="filtro" placeholder="Escribe el nombre…" />
-      <button mat-icon-button matSuffix *ngIf="filtro.value" (click)="filtro.setValue('')">
+    <!-- Buscador estilo pill (sin mat-form-field para evitar doble marco) -->
+    <div class="search" role="search">
+      <mat-icon aria-hidden="true">search</mat-icon>
+      <input
+        [formControl]="filtro"
+        placeholder="Buscar miembro..."
+        type="text"
+        autocomplete="off"
+        aria-label="Buscar miembro"
+      />
+      <button
+        *ngIf="filtro.value"
+        (click)="filtro.setValue('')"
+        aria-label="Limpiar búsqueda"
+        class="clear-btn"
+        type="button"
+      >
         <mat-icon>close</mat-icon>
       </button>
-    </mat-form-field>
+    </div>
 
     <span class="spacer"></span>
 
-    <button mat-stroked-button class="btn-amber" (click)="toggleAll(true)" [disabled]="loading">Marcar todo</button>
-    <button mat-stroked-button (click)="toggleAll(false)" [disabled]="loading">Desmarcar todo</button>
+    <button mat-stroked-button class="btn-amber" (click)="toggleAll(true)" [disabled]="loading">
+      Marcar todo
+    </button>
+    <button mat-stroked-button (click)="toggleAll(false)" [disabled]="loading">
+      Desmarcar todo
+    </button>
   </div>
 
   <div class="loader" *ngIf="loading">
@@ -38,7 +55,7 @@
         <td>{{ i + 1 }}</td>
         <td>{{ a.nombre }}</td>
         <td class="center">
-          <mat-checkbox [(ngModel)]="a.presente"></mat-checkbox>
+          <mat-checkbox [(ngModel)]="a.presente" aria-label="Marcador de asistencia"></mat-checkbox>
         </td>
       </tr>
     </tbody>
@@ -50,8 +67,8 @@
 </mat-dialog-content>
 
 <mat-dialog-actions align="end" class="actions">
-  <button mat-button (click)="close()">Cerrar</button>
-  <button mat-raised-button color="primary" (click)="guardar()" [disabled]="saving || loading">
+  <button mat-button type="button" (click)="close()">Cerrar</button>
+  <button mat-raised-button color="primary" type="button" (click)="guardar()" [disabled]="saving || loading">
     Guardar
   </button>
 </mat-dialog-actions>

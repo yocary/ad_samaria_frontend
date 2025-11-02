@@ -1,4 +1,6 @@
 /* src/app/components/planificacion/asistencia-dialog/asistencia-dialog.component.scss */
+
+/* Layout base */
 .dlg { min-width: 720px; }
 
 .bar {
@@ -6,33 +8,102 @@
   gap: 10px;
   align-items: center;
   margin-bottom: 12px;
+  flex-wrap: wrap;
 }
-.search { width: 340px; }
+
 .spacer { flex: 1; }
 
+/* =========================
+   BUSCADOR – PILL SIN DOBLE MARCO
+   ========================= */
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 320px;
+  height: 38px;
+  background: #fff;
+  border: 1px solid #cfd9e6;
+  border-radius: 22px;
+  padding: 0 12px;
+  box-shadow: 0 2px 8px rgba(36, 75, 107, 0.08);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.18s ease;
+}
+
+.search:hover {
+  border-color: #b9c8da;
+  transform: translateY(-1px);
+}
+
+.search:focus-within {
+  border-color: #244b6b;
+  box-shadow: 0 0 0 3px rgba(36, 75, 107, 0.12);
+}
+
+.search mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  color: #7b8a9c;
+  transition: color 0.25s ease;
+}
+
+.search:focus-within mat-icon {
+  color: #244b6b;
+}
+
+.search input {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  flex: 1;
+  font-size: 14px;
+  color: #2b3a4d;
+  font-weight: 600;
+}
+
+.clear-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  transition: background 0.25s ease;
+}
+
+.clear-btn:hover { background: rgba(2, 6, 23, 0.06); }
+
+/* =========================
+   TABLA
+   ========================= */
 .table {
   width: 100%;
   border: 1px solid #e0eef6;
-  border-radius: 6px;
+  border-radius: 10px;
   overflow: hidden;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(25, 55, 100, 0.05);
 }
-th { background: #f7fbff; }
+
 td, th { padding: 10px 12px; }
+th { background: #f7fbff; font-weight: 800; color: #0f172a; font-size: 12.5px; }
 .center { text-align: center; }
 
+/* =========================
+   LOADER / EMPTY
+   ========================= */
 .loader {
   display: flex;
   gap: 10px;
   align-items: center;
   padding: 8px 0;
+  color: #244b6b;
 }
-.empty { padding: 12px; color: #777; }
-
-.btn-amber {
-  color: #6a4a00;
-  background: #ffd16622;
-  border-color: #ffd166;
-}
+.empty { padding: 12px; color: #6b7a8a; }
 
 .muted {
   font-weight: normal;
@@ -74,9 +145,7 @@ td, th { padding: 10px 12px; }
   height: 40px;
   transition: background 0.25s ease, transform 0.2s ease;
 }
-.actions button[mat-button]:hover {
-  background: rgba(36, 75, 107, 0.08);
-}
+.actions button[mat-button]:hover { background: rgba(36, 75, 107, 0.08); }
 
 /* — MARCAR/DESMARCAR (outline azul) — */
 .bar button[mat-stroked-button] {
@@ -107,9 +176,7 @@ td, th { padding: 10px 12px; }
   transform: translateY(-2px);
   box-shadow: 0 12px 22px rgba(36, 75, 107, 0.24);
 }
-.bar button[mat-stroked-button]:hover::before {
-  transform: translateX(120%);
-}
+.bar button[mat-stroked-button]:hover::before { transform: translateX(120%); }
 
 /* — MARCAR TODO (ámbar) — */
 .bar .btn-amber {
@@ -126,14 +193,144 @@ td, th { padding: 10px 12px; }
   box-shadow: 0 10px 20px rgba(242, 166, 58, 0.35);
 }
 
-/* — Estados comunes — */
-.dlg :where(button):disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-.dlg :where(button):focus-visible {
+/* Accesibilidad */
+.dlg :where(button, .search input):focus-visible {
   outline: 2px solid #ffd54f;
   outline-offset: 2px;
   border-radius: 8px;
+}
+
+/* Responsivo */
+@media (max-width: 780px) {
+  .dlg { min-width: 0; }
+  .search { width: 100%; order: 0; }
+  .spacer { display: none; }
+}
+
+/* Quita cualquier marco/box-shadow interno del input */
+.search input {
+  border: 0;
+  outline: none;
+  background: transparent;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* Forzar sin outline en focus (incl. Firefox) */
+.search input:focus,
+.search input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.search input::-moz-focus-inner { border: 0; }
+
+/* Evitar “amarillo”/sombra de autofill de Chrome */
+.search input:-webkit-autofill,
+.search input:-webkit-autofill:hover,
+.search input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px transparent inset !important;
+  box-shadow: 0 0 0 1000px transparent inset !important;
+  -webkit-text-fill-color: #2b3a4d !important;
+  caret-color: #2b3a4d;
+}
+
+/* Mantén el glow SOLO en el contenedor */
+.search:focus-within {
+  border-color: #244b6b;
+  box-shadow: 0 0 0 3px rgba(36, 75, 107, 0.12);
+}
+/* =========================
+   BUSCADOR – ESTILO PILL FIJO SIN MOVIMIENTO
+   ========================= */
+
+.search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 320px;
+  height: 38px;
+  background: #fff;
+  border: 1.5px solid #cfd9e6;       /* grosor fijo */
+  border-radius: 22px;
+  padding: 0 12px;
+  box-shadow: 0 2px 8px rgba(36, 75, 107, 0.08);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Sin cambio de tamaño al hacer focus */
+.search:hover,
+.search:focus-within {
+  border-color: #244b6b;
+  box-shadow: 0 0 0 3px rgba(36, 75, 107, 0.12);
+  transform: none;
+}
+
+/* Icono de lupa */
+.search mat-icon {
+  width: 20px;
+  height: 20px;
+  font-size: 20px;
+  color: #7b8a9c;
+  flex-shrink: 0;
+  transition: color 0.25s ease;
+}
+.search:focus-within mat-icon {
+  color: #244b6b;
+}
+
+/* Input sin outline ni movimientos */
+.search input {
+  flex: 1;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  font-size: 14px;
+  color: #2b3a4d;
+  font-weight: 600;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  line-height: 1;
+  caret-color: #244b6b;
+}
+
+/* Quita sombras o colores automáticos */
+.search input:-webkit-autofill,
+.search input:-webkit-autofill:focus,
+.search input:-webkit-autofill:hover {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: #2b3a4d !important;
+}
+
+/* Botón para limpiar */
+.clear-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.25s ease;
+}
+.clear-btn:hover { background: rgba(2, 6, 23, 0.06); }
+.clear-btn mat-icon { font-size: 18px; color: #7b8a9c; }
+
+/* Evita salto al mostrar/ocultar el botón */
+.clear-btn { visibility: hidden; opacity: 0; }
+.search:has(input:not(:placeholder-shown)) .clear-btn,
+.search:has(input:focus) .clear-btn {
+  visibility: visible;
+  opacity: 1;
+  transition: opacity 0.2s ease;
+}
+
+/* Responsivo */
+@media (max-width: 780px) {
+  .search { width: 100%; }
 }
