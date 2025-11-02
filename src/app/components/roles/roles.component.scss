@@ -1,58 +1,171 @@
+/* =========================
+   TARJETA + FORM – MODERNO, GRADIENTE Y ANIMADO
+   ========================= */
+
+/* Fondo con fade-in (sin halos para mantenerlo sobrio) */
 .wrapper {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #f5f7fa;
+  padding: 16px;
+  animation: wrapFade .45s ease-out both;
 }
+@keyframes wrapFade { from { opacity: 0 } to { opacity: 1 } }
 
-/* Tarjeta */
+/* Tarjeta con pop-in y sombra suave */
 .card {
   width: 100%;
   max-width: 520px;
   border-radius: 14px;
   overflow: hidden;
   border: 1px solid #cde7f0;
-  box-shadow: 0 4px 12px rgba(0,0,0,.08);
+  background: #fff;
+  box-shadow: 0 18px 40px rgba(25, 55, 100, .08);
+  animation: cardPop .55s cubic-bezier(.2,.8,.2,1) .05s both;
+}
+@keyframes cardPop {
+  from { opacity: 0; transform: translateY(10px) scale(.985) }
+  to   { opacity: 1; transform: translateY(0) scale(1) }
 }
 
+/* Header con gradiente y slide-down */
 .card-header {
-  background: #244b6b;
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
   color: #fff;
-  font-weight: 700;
+  font-weight: 800;
   text-align: center;
-  padding: 14px 16px;
+  padding: 16px;
   font-size: 1.1rem;
+  letter-spacing: .35px;
+  text-transform: uppercase;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+  animation: slideDown .45s ease both;
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px) }
+  to   { opacity: 1; transform: translateY(0) }
 }
 
-/* Formulario */
+/* Formulario: entrada por secciones */
 .form {
   display: grid;
-  gap: 20px;
-  padding-top: 8px;
+  gap: 18px;
+  padding: 16px;
+  animation: bodyIn .35s ease .1s both;
 }
+@keyframes bodyIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
 
 .w-full { width: 100%; }
 
-/* Grupo de radios */
-.rol-group { display: grid; gap: 8px; }
-.rol-title { font-weight: 700; letter-spacing: .3px; }
+/* Si usas Angular Material: asegura ancho completo sin romper estilos */
+:host ::ng-deep .form .mat-form-field { width: 100%; }
+
+/* Grupo de radios con título y columnas suaves */
+.rol-group {
+  display: grid;
+  gap: 10px;
+}
+.rol-title {
+  font-weight: 800;
+  color: #244b6b;
+  letter-spacing: .3px;
+}
 .radio-col {
   display: grid;
   gap: 8px;
-  padding-left: 4px;
+  padding-left: 2px;
 }
 
+/* Realce sutil en hover de cada radio */
+:host ::ng-deep .radio-col .mat-radio-button {
+  padding: 4px 2px;
+  border-radius: 8px;
+  transition: background-color .2s ease, transform .1s ease;
+}
+:host ::ng-deep .radio-col .mat-radio-button:hover {
+  background: #f3f8ff;
+  transform: translateY(-1px);
+}
+
+/* Acciones centradas */
 .acciones {
   display: flex;
   justify-content: center;
-  margin-top: 4px;
+  gap: 10px;
+  margin-top: 2px;
 }
 
+/* Botón principal con gradiente + brillo y micro-interacciones */
 .btn-agregar {
-  background: #f5b942;
+  --grad-a: #f5b942;
+  --grad-b: #e8a92e;
+  background: linear-gradient(135deg, var(--grad-a), var(--grad-b));
   color: #fff;
-  font-weight: 700;
-  padding: 8px 22px;
+  font-weight: 800;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 10px;
+  letter-spacing: .2px;
+  box-shadow: 0 8px 18px rgba(229, 170, 46, .28);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .25s ease, filter .25s ease, background .25s ease;
 }
-.btn-agregar:hover { filter: brightness(0.95); }
+.btn-agregar::before {
+  content: '';
+  position: absolute; inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+  transition: transform .75s ease;
+}
+.btn-agregar:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(229, 170, 46, .32);
+}
+.btn-agregar:hover::before { transform: translateX(100%); }
+.btn-agregar:active { transform: translateY(0) scale(.99); }
+.btn-agregar:disabled { opacity: .6; cursor: not-allowed; box-shadow: none; }
+
+/* Variante secundaria (por si necesitas otro botón al lado) */
+.btn-secondary {
+  background: #fff;
+  color: #244b6b;
+  border: 1px solid #d7e6f1;
+  font-weight: 800;
+  padding: 10px 18px;
+  border-radius: 10px;
+  transition: transform .18s ease, box-shadow .22s ease, border-color .22s ease;
+}
+.btn-secondary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(2, 6, 23, .06);
+  border-color: #c8ddee;
+}
+
+/* Focus accesible */
+:host :where(button, .btn-agregar, .btn-secondary, .mat-form-field, .mat-radio-button):focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 10px;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * , *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}
+
+/* Responsive */
+@media (max-width: 560px) {
+  .card { border-radius: 12px; }
+  .card-header { font-size: 1rem; padding: 14px; }
+  .form { padding: 14px 12px; gap: 16px; }
+  .acciones { flex-direction: column; }
+  .btn-agregar, .btn-secondary { width: 100%; }
+}

@@ -1,5 +1,5 @@
 /* =========================
-   FINANZAS – DISEÑO COMPACTO Y LIMPIO
+   FINANZAS – DISEÑO COMPACTO, LIMPIO Y ANIMADO
    ========================= */
 
 .finz {
@@ -20,19 +20,89 @@
   padding: 1rem 0 2rem;
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  animation: finzFade .45s ease-out both;
+  position: relative;
+  overflow: hidden;
 }
 
-/* HEADER - COLOR ORIGINAL */
+@keyframes finzFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
+}
+
+/* halos suaves */
+.finz::before,
+.finz::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: .12;
+  pointer-events: none;
+  width: 60vmax;
+  height: 60vmax;
+  animation: finzFloat 16s ease-in-out infinite;
+}
+
+.finz::before {
+  background: #60a5fa;
+  top: -22vmax;
+  left: -18vmax;
+}
+
+.finz::after {
+  background: #fbbf24;
+  bottom: -22vmax;
+  right: -18vmax;
+  animation-delay: 3s;
+}
+
+@keyframes finzFloat {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1)
+  }
+
+  50% {
+    transform: translate(18px, -12px) scale(1.04)
+  }
+}
+
+/* HEADER */
 .finz__header {
   width: var(--w);
   height: 44px;
   display: grid;
   place-items: center;
-  background: #244b6b; /* Color original */
+  background: #244b6b;
   color: #fff;
   font-weight: 700;
   border-radius: var(--radius);
   font-size: 1.1rem;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .18);
+  animation: slideDown .45s ease both;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
 }
 
 /* =========================
@@ -54,7 +124,25 @@
   flex-direction: column;
   align-items: center;
   gap: 0.25rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+  transform: translateY(6px) scale(.985);
+  opacity: 0;
+  animation: kpiIn .5s cubic-bezier(.2, .8, .2, 1) .1s forwards;
+}
+
+.kpis .kpi:nth-child(2) {
+  animation-delay: .18s
+}
+
+.kpis .kpi:nth-child(3) {
+  animation-delay: .26s
+}
+
+@keyframes kpiIn {
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1)
+  }
 }
 
 .kpi label {
@@ -65,7 +153,7 @@
 
 .kinput {
   font-size: 1rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #1e293b;
 }
 
@@ -78,11 +166,24 @@
   border-radius: var(--radius);
   border: 1px solid var(--border);
   overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+  animation: tabsIn .45s ease .05s both;
+}
+
+@keyframes tabsIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
 }
 
 /* =========================
-   MOVIMIENTOS GENERALES - TABLA LIMPIA
+   MOVIMIENTOS GENERALES
    ========================= */
 .mg-wrap {
   padding: 1.5rem;
@@ -95,6 +196,7 @@
   justify-content: space-between;
   margin-bottom: 1.5rem;
   gap: 1rem;
+  animation: bodyIn .35s ease both;
 }
 
 .mg-wrap .toolbar .left {
@@ -103,119 +205,171 @@
   gap: 1rem;
 }
 
+@keyframes bodyIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
+}
+
 /* Search */
 .mg-wrap .search {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: .5rem;
   background: #fff;
   border: 1px solid var(--border);
   border-radius: 6px;
-  padding: 0.5rem 1rem;
+  padding: .5rem 1rem;
   min-width: 300px;
+  transition: border-color .25s ease, box-shadow .25s ease, transform .2s ease;
+}
+
+.mg-wrap .search:hover {
+  border-color: #cbd5e1;
+  transform: translateY(-1px);
+}
+
+.mg-wrap .search:focus-within {
+  border-color: #244b6b;
+  box-shadow: 0 0 0 3px rgba(36, 75, 107, .12)
 }
 
 .mg-wrap .search input {
-  border: none;
-  outline: none;
-  font-size: 0.9rem;
+  border: 0;
+  outline: 0;
+  font-size: .9rem;
   width: 100%;
-  background: transparent;
+  background: transparent
 }
 
 .mg-wrap .search input::placeholder {
-  color: #94a3b8;
+  color: #94a3b8
 }
 
-/* TABLA - DISEÑO MUY LIMPIO */
+/* Tabla */
 .mg-table-container {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
   background: var(--card);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .08);
+  animation: tableIn .4s ease .05s both;
+  max-height: 600px;
+  overflow-y: auto;
+}
+
+@keyframes tableIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
 }
 
 .mg-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 0.9rem;
+  font-size: .9rem;
 }
 
-/* Cabecera de tabla */
 .mg-table thead {
   background: #f8fafc;
   border-bottom: 2px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .mg-table th {
   padding: 1rem;
   text-align: left;
-  font-weight: 700;
+  font-weight: 800;
   color: #334155;
-  font-size: 0.85rem;
+  font-size: .85rem;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: .5px;
 }
 
-/* Filas de tabla */
 .mg-table tbody tr {
   border-bottom: 1px solid #f1f5f9;
-  transition: background-color 0.15s ease;
+  transition: background-color .15s ease
 }
 
 .mg-table tbody tr:hover {
-  background: #f8fafc;
+  background: #f8fafc
 }
 
 .mg-table tbody tr:last-child {
-  border-bottom: none;
+  border-bottom: none
 }
 
 .mg-table td {
   padding: 1rem;
-  color: #475569;
+  color: #475569
 }
 
-/* Columnas específicas */
 .mg-table td:first-child {
-  font-weight: 600;
+  font-weight: 700;
   color: #64748b;
   text-align: center;
-  width: 60px;
+  width: 60px
 }
 
 .mg-table td:nth-child(2) {
-  font-weight: 600;
+  font-weight: 700;
   color: #1e293b;
-  width: 25%;
+  width: 25%
 }
 
 .mg-table td:nth-child(3) {
-  width: 35%;
+  width: 35%
 }
 
 .mg-table td:nth-child(4) {
   text-align: center;
-  width: 15%;
+  width: 15%
 }
 
 .mg-table td:last-child {
   text-align: right;
-  font-weight: 700;
+  font-weight: 800;
   color: #1e293b;
   width: 25%;
-  font-variant-numeric: tabular-nums;
+  font-variant-numeric: tabular-nums
 }
 
-/* Badges */
+/* Badges con pulso leve */
 .badge {
   display: inline-block;
-  padding: 0.25rem 0.75rem;
+  padding: .25rem .75rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: .75rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: .5px;
+  animation: badgeIn .3s ease both;
+}
+
+@keyframes badgeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px)
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
 }
 
 .badge-ingreso {
@@ -242,14 +396,15 @@
 .treas-header .title {
   margin: 0;
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 800;
   color: #1e293b;
+  animation: bodyIn .35s ease both
 }
 
 .treas-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1rem;
+  gap: 1rem
 }
 
 .treas-card {
@@ -258,21 +413,39 @@
   border-radius: var(--radius);
   padding: 1.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all .25s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .1);
+  transform: translateY(6px);
+  opacity: 0;
+  animation: cardPop .45s cubic-bezier(.2, .8, .2, 1) .05s forwards;
+}
+
+.treas-grid .treas-card:nth-child(2) {
+  animation-delay: .12s
+}
+
+.treas-grid .treas-card:nth-child(3) {
+  animation-delay: .18s
+}
+
+@keyframes cardPop {
+  to {
+    opacity: 1;
+    transform: translateY(0)
+  }
 }
 
 .treas-card:hover {
   border-color: var(--primary);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, .08);
+  transform: translateY(-2px)
 }
 
 .treas-card-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
+  gap: .75rem;
+  margin-bottom: 1rem
 }
 
 .treas-card-icon {
@@ -283,19 +456,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--primary);
+  color: var(--primary)
 }
 
 .treas-card-title {
-  font-weight: 700;
+  font-weight: 800;
   color: #1e293b;
-  margin: 0;
+  margin: 0
 }
 
 .treas-card-hint {
   color: var(--muted);
-  font-size: 0.9rem;
-  margin: 0;
+  font-size: .9rem;
+  margin: 0
 }
 
 /* =========================
@@ -305,106 +478,77 @@
   text-align: center;
   padding: 3rem 2rem;
   color: var(--muted);
+  animation: bodyIn .35s ease both
 }
 
 .empty-state mat-icon {
   font-size: 3rem;
   color: #cbd5e1;
   margin-bottom: 1rem;
+  animation: iconPulse 2.6s ease-in-out infinite
+}
+
+@keyframes iconPulse {
+
+  0%,
+  100% {
+    transform: scale(1)
+  }
+
+  50% {
+    transform: scale(1.06)
+  }
 }
 
 .empty-state div {
-  font-size: 1rem;
+  font-size: 1rem
 }
 
 /* =========================
-   RESPONSIVE
-   ========================= */
-@media (max-width: 768px) {
-  .finz {
-    --w: 98%;
-    padding: 0.5rem 0 1rem;
-  }
-
-  .kpis {
-    grid-template-columns: 1fr;
-  }
-
-  .mg-wrap .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .mg-wrap .toolbar .left {
-    flex-direction: column;
-  }
-
-  .mg-wrap .search {
-    min-width: auto;
-  }
-
-  .mg-table {
-    font-size: 0.8rem;
-  }
-
-  .mg-table th,
-  .mg-table td {
-    padding: 0.75rem 0.5rem;
-  }
-
-  .treas-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Scroll suave para tablas grandes */
-.mg-table-container {
-  max-height: 600px;
-  overflow-y: auto;
-}
-
-/* Estilos para la barra de scroll */
-.mg-table-container::-webkit-scrollbar {
-  width: 6px;
-}
-
-.mg-table-container::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-.mg-table-container::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 3px;
-}
-
-.mg-table-container::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* =========================
-   SELECTOR DE MES Y BOTÓN DESCARGA
+   SELECTOR DE MES / PERIODO / DESCARGA
    ========================= */
 .mg-wrap .toolbar .right {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px
 }
 
-/* Selector de mes */
+.period-display {
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: .9rem;
+  color: #475569;
+  min-width: 160px;
+  text-align: center;
+  font-weight: 600;
+  transition: box-shadow .25s ease, transform .2s ease;
+}
+
+.period-display strong {
+  color: #334155
+}
+
+.period-display:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(2, 6, 23, .06)
+}
+
 .month-field {
-  min-width: 140px;
+  min-width: 140px
 }
 
 .month-field .mat-form-field-wrapper {
-  padding-bottom: 0;
+  padding-bottom: 0
 }
 
 .month-display-input {
   width: 100%;
   border: none;
   background: transparent;
-  font-size: 0.9rem;
-  font-weight: 600;
+  font-size: .9rem;
+  font-weight: 700;
   color: #1e293b;
   cursor: pointer;
   text-align: center;
@@ -412,7 +556,7 @@
 
 .month-display-input::placeholder {
   color: #94a3b8;
-  font-weight: normal;
+  font-weight: normal
 }
 
 .visually-hidden-input {
@@ -420,36 +564,116 @@
   opacity: 0;
   width: 0;
   height: 0;
+  pointer-events: none
+}
+
+/* Botón Excel con brillo */
+.btn--excel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  height: 40px;
+  padding: 0 16px;
+  font-size: .85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .25s ease, border-color .25s ease, background .25s ease;
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.btn--excel:hover {
+  background: #e2e8f0;
+  border-color: #94a3b8;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(2, 6, 23, .06)
+}
+
+.btn--excel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .28), transparent);
+  transition: transform .75s ease;
+}
+
+.btn--excel:hover::before {
+  transform: translateX(100%)
+}
+
+.btn--excel mat-icon {
+  font-size: 18px;
+  width: 18px;
+  height: 18px
+}
+
+.btn.btn--excel[disabled] {
+  opacity: .5;
   pointer-events: none;
+  filter: grayscale(.3)
 }
 
-/* Botón de descarga */
-.btn--excel {
-  display: flex;
+/* Botón acción turquesa */
+.toolbar-btn {
+  margin: 6px 0 14px;
+  background: #0ea5e9;
+  color: #fff;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  height: 40px;
-  padding: 0 16px;
-  font-size: 0.85rem;
-  font-weight: 600;
+  gap: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
+  transition: transform .18s ease, box-shadow .25s ease, background .25s ease;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(14, 165, 233, .25);
 }
 
-.btn--excel:hover {
-  background: #e2e8f0;
-  border-color: #94a3b8;
+.toolbar-btn::before {
+  content: "+";
+  font-weight: 800
 }
 
-.btn--excel mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
+.toolbar-btn:hover {
+  background: #0284c7;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(2, 132, 199, .3)
+}
+
+.toolbar-btn:focus {
+  outline: 2px solid rgba(14, 165, 233, .3);
+  outline-offset: 2px;
+  border-radius: 10px
+}
+
+/* =========================
+   SCROLLBAR
+   ========================= */
+.mg-table-container::-webkit-scrollbar {
+  width: 6px
+}
+
+.mg-table-container::-webkit-scrollbar-track {
+  background: #f1f5f9
+}
+
+.mg-table-container::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px
+}
+
+.mg-table-container::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8
 }
 
 /* =========================
@@ -458,184 +682,70 @@
 @media (max-width: 1024px) {
   .mg-wrap .toolbar .right {
     flex-wrap: wrap;
-    justify-content: center;
-  }
-  
-  .month-field {
-    min-width: 130px;
+    justify-content: center
   }
 }
 
 @media (max-width: 768px) {
+  .finz {
+    --w: 98%;
+    padding: .5rem 0 1rem
+  }
+
+  .kpis {
+    grid-template-columns: 1fr
+  }
+
+  .mg-wrap .toolbar {
+    flex-direction: column;
+    align-items: stretch
+  }
+
+  .mg-wrap .toolbar .left {
+    flex-direction: column
+  }
+
+  .mg-wrap .search {
+    min-width: auto
+  }
+
+  .mg-table {
+    font-size: .8rem
+  }
+
+  .mg-table th,
+  .mg-table td {
+    padding: .75rem .5rem
+  }
+
+  .treas-grid {
+    grid-template-columns: 1fr
+  }
+
   .mg-wrap .toolbar .right {
     width: 100%;
     justify-content: space-between;
+    gap: 12px
   }
-  
+
   .btn--excel span {
-    display: none;
+    display: none
   }
-  
+
   .btn--excel {
-    padding: 0 12px;
+    padding: 0 12px
   }
-}
 
-/* =========================
-   PERIODO DISPLAY Y BOTÓN DESCARGA
-   ========================= */
-.mg-wrap .toolbar .right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-/* Display del periodo seleccionado */
-.period-display {
-  padding: 8px 12px;
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  font-size: 0.9rem;
-  color: #475569;
-  min-width: 160px;
-  text-align: center;
-}
-
-.period-display strong {
-  color: #334155;
-}
-
-/* Botón de descarga */
-.btn--excel {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #f1f5f9;
-  color: #475569;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  height: 40px;
-  padding: 0 16px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  white-space: nowrap;
-}
-
-.btn--excel:hover {
-  background: #e2e8f0;
-  border-color: #94a3b8;
-}
-
-.btn--excel mat-icon {
-  font-size: 18px;
-  width: 18px;
-  height: 18px;
-}
-
-/* =========================
-   RESPONSIVE
-   ========================= */
-@media (max-width: 1024px) {
-  .mg-wrap .toolbar .right {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-}
-
-@media (max-width: 768px) {
-  .mg-wrap .toolbar .right {
-    width: 100%;
-    justify-content: space-between;
-    gap: 12px;
-  }
-  
   .period-display {
     min-width: 140px;
-    font-size: 0.85rem;
-  }
-  
-  .btn--excel span {
-    display: none;
-  }
-  
-  .btn--excel {
-    padding: 0 12px;
+    font-size: .85rem
   }
 }
 
 @media (max-width: 480px) {
   .period-display {
     min-width: 120px;
-    font-size: 0.8rem;
-    padding: 6px 8px;
+    font-size: .8rem;
+    padding: 6px 8px
   }
-}
-
-/* Selector de mes */
-.month-field {
-  min-width: 140px;
-}
-
-.month-field .mat-form-field-wrapper {
-  padding-bottom: 0;
-}
-
-.month-display-input {
-  width: 100%;
-  border: none;
-  background: transparent;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #1e293b;
-  cursor: pointer;
-  text-align: center;
-}
-
-.month-display-input::placeholder {
-  color: #94a3b8;
-  font-weight: normal;
-}
-
-.visually-hidden-input {
-  position: absolute;
-  opacity: 0;
-  width: 0;
-  height: 0;
-  pointer-events: none;
-}
-.btn.btn--excel[disabled] {
-  opacity: .5;
-  pointer-events: none;
-  filter: grayscale(0.3);
-}
-
-.toolbar-btn {
-  margin: 6px 0 14px;
-  background: #0ea5e9; /* acento turquesa tipo Material “info” */
-  color: #fff;
-  border: 1px solid transparent;
-  border-radius: 12px;
-  padding: 10px 14px;
-  font-weight: 700;
-  letter-spacing: 0.2px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: var(--shadow);
-  cursor: pointer;
-  transition: transform 0.08s ease, background 0.2s ease;
-}
-.toolbar-btn::before {
-  content: "+";
-  font-weight: 800;
-}
-.toolbar-btn:hover {
-  background: #0284c7;
-  transform: translateY(-1px);
-}
-.toolbar-btn:focus {
-  outline: 2px solid rgba(14, 165, 233, 0.3);
 }

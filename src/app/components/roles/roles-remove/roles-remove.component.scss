@@ -1,50 +1,72 @@
-/* Contenedor */
+/* =========================
+   WRAPPER + CARD – MODERNO, GRADIENTE Y ANIMADO
+   ========================= */
+
+/* Fondo con fade-in (sobrio) */
 .wrapper {
   display: grid;
   place-items: center;
   min-height: calc(100vh - 64px);
   background: #f5f7fa;
   padding: 16px;
+  animation: wrapFade .45s ease-out both;
 }
+@keyframes wrapFade { from { opacity: 0 } to { opacity: 1 } }
 
-/* Card (Material surface + elevation) */
+/* Card con pop-in y sombra suave */
 .card {
   width: 100%;
   max-width: 880px;
   border-radius: 12px;
   background: #fff;
-  /* elevation 3 */
+  border: 1px solid rgba(207,227,237,.6);
   box-shadow:
+    0 18px 40px rgba(25,55,100,.08),
     0 3px 5px -1px rgba(0,0,0,.2),
     0 6px 10px 0 rgba(0,0,0,.14),
     0 1px 18px 0 rgba(0,0,0,.12);
   overflow: hidden;
-  border: 1px solid rgba(207,227,237,.6);
+  animation: cardPop .55s cubic-bezier(.2,.8,.2,1) .05s both;
+}
+@keyframes cardPop {
+  from { opacity: 0; transform: translateY(10px) scale(.985) }
+  to   { opacity: 1; transform: translateY(0) scale(1) }
 }
 
-/* Header (color primario, alto contraste) */
+/* =========================
+   HEADER – DEGRADADO + SLIDE
+   ========================= */
 .card-header {
-  background: #244b6b;
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
   color: #fff;
-  font-weight: 700;
-  padding: 14px 20px;
-  letter-spacing: .3px;
+  font-weight: 800;
+  padding: 16px 20px;
+  letter-spacing: .35px;
   display: flex;
   align-items: center;
   gap: 10px;
+  text-transform: uppercase;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
+  animation: slideDown .45s ease both;
+}
+@keyframes slideDown { from { opacity: 0; transform: translateY(-8px) } to { opacity: 1; transform: translateY(0) } }
 
-  .subtitle {
-    font-weight: 400;
-    opacity: .9;
-    margin-left: auto;
-    font-size: .9rem;
-  }
+.card-header .subtitle {
+  font-weight: 400;
+  opacity: .9;
+  margin-left: auto;
+  font-size: .9rem;
+  text-transform: none;
 }
 
-/* Cuerpo */
+/* =========================
+   CUERPO – ENTRADA SUAVE
+   ========================= */
 .card-content {
   padding: 16px 20px 20px;
+  animation: bodyIn .35s ease .1s both;
 }
+@keyframes bodyIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
 
 .row {
   display: grid;
@@ -52,66 +74,115 @@
   gap: 12px;
   margin: 12px 0;
 }
-
 .w-full { width: 100%; }
 
-/* Tabla (mat-table look & feel) */
+/* Si usas Angular Material: asegurar ancho completo */
+:host ::ng-deep .card-content .mat-form-field { width: 100%; }
+
+/* =========================
+   TABLA – STICKY, DEGRADADO Y HOVER
+   ========================= */
 .table-wrap { margin-top: 8px; }
 
 .table {
   width: 100%;
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
   border: 1px solid #e0eef6;
   background: #fff;
   table-layout: fixed;
+  box-shadow: 0 6px 16px rgba(25,55,100,.05);
+  animation: tableIn .4s ease .05s both;
+}
+@keyframes tableIn { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: translateY(0) } }
 
-  thead th {
-    background: #f7fbff;
-    color: #244b6b;
-    font-weight: 700;
-    border-bottom: 1px solid #e3edf4;
-  }
-
-  td, th {
-    padding: 12px 14px;
-    vertical-align: middle;
-  }
-
-  tbody tr {
-    transition: background .15s ease, box-shadow .15s ease;
-  }
-
-  tbody tr:hover {
-    background: #f9fcff;
-  }
-
-  /* Botones de acción dentro de celdas */
-  .cell-actions {
-    display: flex;
-    gap: 8px;
-    justify-content: flex-end;
-
-    .mat-stroked-button {
-      border-color: #d5e8f2;
-    }
-    .mat-stroked-button:hover {
-      background: #f3faff;
-    }
-  }
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: linear-gradient(180deg, #f8fcff, #f3f9ff);
+  color: #516b85;
+  font-weight: 800;
+  border-bottom: 1px solid #e3edf4;
+  letter-spacing: .2px;
+  text-transform: uppercase;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.6);
 }
 
-/* Loader & estados vacíos */
+.table td,
+.table th {
+  padding: 12px 14px;
+  vertical-align: middle;
+}
+
+.table tbody tr {
+  transition: background .18s ease, box-shadow .18s ease;
+}
+.table tbody tr:nth-child(odd) { background: #fcfeff; }
+.table tbody tr:hover {
+  background: #f3f9ff;
+}
+
+/* Acciones dentro de celdas */
+.table .cell-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+/* Convierte outlined en “rellenos” elegantes como en otros módulos */
+.table .cell-actions .mat-stroked-button.mat-primary,
+.table .cell-actions button[mat-stroked-button][color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  letter-spacing: .2px;
+  height: 36px;
+  padding: 0 14px;
+  box-shadow: 0 4px 12px rgba(36,75,107,.25);
+  transition: transform .2s ease, box-shadow .25s ease;
+}
+.table .cell-actions .mat-stroked-button.mat-primary:hover,
+.table .cell-actions button[mat-stroked-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(30,59,85,.3);
+}
+
+.table .cell-actions .mat-stroked-button.mat-accent,
+.table .cell-actions button[mat-stroked-button][color="accent"] {
+  background: linear-gradient(135deg, #43a047, #2e7d32);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
+  height: 36px;
+  padding: 0 14px;
+  box-shadow: 0 4px 12px rgba(46,125,50,.25);
+  transition: transform .2s ease, box-shadow .25s ease;
+}
+.table .cell-actions .mat-stroked-button[disabled] {
+  opacity: .65;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* =========================
+   LOADER & EMPTY – PULSE SUAVE
+   ========================= */
 .loader {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 8px 0;
   color: #244b6b;
+  animation: pulse 2.2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100% { transform: scale(1) } 50% { transform: scale(1.04) } }
 
-  .mat-progress-spinner circle {
-    stroke: #244b6b;
-  }
+.loader .mat-progress-spinner circle {
+  stroke: #244b6b;
 }
 
 .empty {
@@ -122,9 +193,21 @@
   border-radius: 8px;
   display: grid;
   place-items: center;
+  animation: bodyIn .35s ease .05s both;
 }
 
-/* Responsive */
+/* =========================
+   ACCESIBILIDAD
+   ========================= */
+:host :where(button, a, .mat-form-field, .table thead th):focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
 @media (max-width: 720px) {
   .card { margin: 0 8px; }
   .table td, .table th { padding: 10px; }

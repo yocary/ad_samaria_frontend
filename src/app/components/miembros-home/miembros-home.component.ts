@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -13,7 +13,8 @@ import jsPDF from 'jspdf';
 @Component({
   selector: 'app-miembros-home',
   templateUrl: './miembros-home.component.html',
-  styleUrls: ['./miembros-home.component.scss']
+  styleUrls: ['./miembros-home.component.scss'],
+    encapsulation: ViewEncapsulation.None
 })
 export class MiembrosHomeComponent implements OnInit, OnDestroy {
   search = new FormControl('');

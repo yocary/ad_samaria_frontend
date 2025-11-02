@@ -1,49 +1,51 @@
-<div class="card">
-  <div class="card__header">MIEMBROS</div>
+<div class="miembros">
+  <!-- ENCABEZADO -->
+  <div class="miembros__header">MIEMBROS</div>
 
-  <div class="toolbar">
-    <div class="btns">
+  <!-- TOOLBAR -->
+  <div class="miembros__toolbar">
+    <div class="miembros__btns">
       <button mat-raised-button color="primary" (click)="agregarPersona()">+ Agregar Persona</button>
       <button mat-raised-button color="primary" (click)="agregarFamilia()">+ Agregar Familia</button>
     </div>
 
-    <div class="search">
+    <div class="miembros__search">
       <mat-icon>search</mat-icon>
       <input [formControl]="search" placeholder="Buscar" />
     </div>
   </div>
 
-  <div class="table">
-    <table mat-table [dataSource]="filtered">
+  <!-- TABLA -->
+  <div class="miembros__table">
+    <table mat-table [dataSource]="filtered" class="custom-table">
 
-      <!-- Columna nombre -->
+      <!-- NOMBRE -->
       <ng-container matColumnDef="nombre">
         <th mat-header-cell *matHeaderCellDef>Nombre</th>
         <td mat-cell *matCellDef="let r">{{ r.nombre }}</td>
       </ng-container>
 
-      <!-- Columna acciones -->
+      <!-- ACCIONES -->
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let row">
           <button mat-stroked-button color="primary" (click)="verFicha(row.id, row.nombre)">
             Ver ficha
           </button>
-
-          <!-- SOLO ADMIN -->
           <button mat-stroked-button color="accent" *ngIf="esAdministrador()" (click)="crearUsuarioPara(row)">
             Crear usuario
           </button>
         </td>
       </ng-container>
 
-      <!-- Encabezados y filas -->
-      <tr mat-header-row *matHeaderRowDef="['nombre', 'acciones']"></tr>
+      <!-- FILAS -->
+      <tr mat-header-row *matHeaderRowDef="['nombre', 'acciones']" class="gradient-header"></tr>
       <tr mat-row *matRowDef="let row; columns: ['nombre', 'acciones']"></tr>
     </table>
   </div>
 
-  <div class="footer">
+  <!-- FOOTER -->
+  <div class="miembros__footer">
     <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
   </div>
 </div>
