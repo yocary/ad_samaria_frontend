@@ -6,10 +6,18 @@
 
     <!-- Tabs simples -->
     <div class="tabs">
-      <button class="tab" [class.active]="tabActivo === 'integrantes'" (click)="cambiarTab('integrantes')">
+      <button
+        class="tab"
+        [class.active]="tabActivo === 'integrantes'"
+        (click)="cambiarTab('integrantes')"
+      >
         Integrantes
       </button>
-      <button class="tab" [class.active]="tabActivo === 'eventos'" (click)="cambiarTab('eventos')">
+      <button
+        class="tab"
+        [class.active]="tabActivo === 'eventos'"
+        (click)="cambiarTab('eventos')"
+      >
         Eventos
       </button>
     </div>
@@ -18,40 +26,66 @@
       <!-- INTEGRANTES -->
       <ng-container *ngSwitchCase="'integrantes'">
         <div class="bar">
-          <div class="search-container">
-            <mat-form-field appearance="outline"
-                            class="search"
-                            floatLabel="auto"
-                            subscriptSizing="dynamic">
+          <!-- Render diferido para evitar doble-outline en el primer paint -->
+          <div class="search-container" *ngIf="ready">
+            <mat-form-field
+              appearance="outline"
+              floatLabel="always"
+              class="search"
+              subscriptSizing="dynamic"
+            >
               <mat-label>Buscar persona (mín. 2 letras)</mat-label>
-              <input type="text"
-                     matInput
-                     [formControl]="personaQuery"
-                     [matAutocomplete]="auto"
-                     autocomplete="off" />
+              <input
+                type="text"
+                matInput
+                [formControl]="personaQuery"
+                [matAutocomplete]="auto"
+                autocomplete="off"
+              />
 
-              <button mat-icon-button matSuffix *ngIf="personaQuery.value" (click)="limpiarSeleccion()">
+              <button
+                mat-icon-button
+                matSuffix
+                *ngIf="personaQuery.value"
+                (click)="limpiarSeleccion()"
+                aria-label="Limpiar búsqueda"
+              >
                 <mat-icon>close</mat-icon>
               </button>
 
-              <mat-autocomplete #auto="matAutocomplete"
-                                [displayWith]="displayPersona"
-                                autoActiveFirstOption
-                                panelClass="search-panel"
-                                (optionSelected)="elegir($event.option.value)">
-                <mat-option *ngFor="let p of opcionesFiltradas$ | async" [value]="p">
+              <mat-autocomplete
+                #auto="matAutocomplete"
+                [displayWith]="displayPersona"
+                autoActiveFirstOption
+                panelClass="search-panel"
+                (optionSelected)="elegir($event.option.value)"
+              >
+                <mat-option
+                  *ngFor="let p of opcionesFiltradas$ | async"
+                  [value]="p"
+                >
                   {{ p.nombre }}
                 </mat-option>
 
-                <ng-container *ngIf="(opcionesFiltradas$ | async)?.length === 0 && (personaQuery.value?.length || 0) >= 2">
+                <ng-container
+                  *ngIf="
+                    (opcionesFiltradas$ | async)?.length === 0 &&
+                    (personaQuery.value?.length || 0) >= 2
+                  "
+                >
                   <mat-option disabled>Sin resultados</mat-option>
                 </ng-container>
               </mat-autocomplete>
             </mat-form-field>
           </div>
 
-          <button mat-raised-button color="primary" class="btn-add"
-                  (click)="agregar()" [disabled]="guardando || !seleccionado">
+          <button
+            mat-raised-button
+            color="primary"
+            class="btn-add"
+            (click)="agregar()"
+            [disabled]="guardando || !seleccionado"
+          >
             + Agregar miembro
           </button>
         </div>
@@ -59,7 +93,10 @@
         <!-- Tabla de integrantes -->
         <div class="table-wrap">
           <div class="loader" *ngIf="cargandoMiembros">
-            <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+            <mat-progress-spinner
+              mode="indeterminate"
+              diameter="24"
+            ></mat-progress-spinner>
             <span>Cargando integrantes…</span>
           </div>
 
@@ -72,11 +109,19 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let m of miembros; let i = index; trackBy: trackByMiembro">
+              <tr
+                *ngFor="let m of miembros; let i = index; trackBy: trackByMiembro"
+              >
                 <td>{{ i + 1 }}</td>
                 <td>{{ m.nombre }}</td>
                 <td>
-                  <button mat-stroked-button color="warn" (click)="quitar(m.id)">Quitar</button>
+                  <button
+                    mat-stroked-button
+                    color="warn"
+                    (click)="quitar(m.id)"
+                  >
+                    Quitar
+                  </button>
                 </td>
               </tr>
             </tbody>
@@ -92,13 +137,17 @@
       <ng-container *ngSwitchCase="'eventos'">
         <app-planificacion-eventos
           [liderazgoId]="liderazgoId"
-          [liderazgoNombre]="liderazgoNombre">
+          [liderazgoNombre]="liderazgoNombre"
+        >
         </app-planificacion-eventos>
       </ng-container>
     </ng-container>
 
+    <!-- Pie -->
     <div class="footer">
-      <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
+      <button mat-stroked-button color="primary" (click)="regresar()">
+        Regresar
+      </button>
     </div>
   </div>
 </div>

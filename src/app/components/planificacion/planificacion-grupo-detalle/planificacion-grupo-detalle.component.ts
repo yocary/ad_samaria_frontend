@@ -51,45 +51,51 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit(): void {
-    this.liderazgoId = Number(this.route.snapshot.paramMap.get('id'));
-    this.liderazgoNombre =
-      this.route.snapshot.queryParamMap.get('nombre') || '';
+ready = false;
 
-    this.cargarMiembros();
+ngOnInit(): void {
+  // Espera un ciclo para que Angular Material calcule correctamente el outline
+  setTimeout(() => {
+    this.ready = true;
+  });
 
-    // Stream para autocomplete (robusto contra objetos/string)
-    this.opcionesFiltradas$ = this.personaQuery.valueChanges.pipe(
-      startWith(this.personaQuery.value ?? ''),
-      debounceTime(250),
-      map((v) => (typeof v === 'string' ? v : v?.nombre ?? '')),
-      distinctUntilChanged(),
-      switchMap((term: string) => {
-        const q = term.trim();
-        if (!q) {
-          this.seleccionado = undefined; // si borran, limpiamos selección
-        }
-        return q.length < 2
-          ? of<PersonaMini[]>([])
-          : this.miembrosSvc.buscarMin$(q);
-      })
-    );
+  this.liderazgoId = Number(this.route.snapshot.paramMap.get('id'));
+  this.liderazgoNombre =
+    this.route.snapshot.queryParamMap.get('nombre') || '';
 
-    // Obtener rol "miembro" del liderazgo
-    this.liderazgoSvc.listarRoles(this.liderazgoId).subscribe({
-      next: (roles) => {
-        if (roles && roles.length) {
-          const rMiembro = roles.find(
-            (r: any) => (r.nombre || '').toLowerCase().trim() === 'miembro'
-          );
-          this.rolBaseId = rMiembro?.id ?? roles[0].id;
-        } else {
-          this.rolBaseId = null;
-        }
-      },
-      error: () => (this.rolBaseId = null),
-    });
-  }
+  this.cargarMiembros();
+
+  this.opcionesFiltradas$ = this.personaQuery.valueChanges.pipe(
+    startWith(this.personaQuery.value ?? ''),
+    debounceTime(250),
+    map((v) => (typeof v === 'string' ? v : v?.nombre ?? '')),
+    distinctUntilChanged(),
+    switchMap((term: string) => {
+      const q = term.trim();
+      if (!q) {
+        this.seleccionado = undefined;
+      }
+      return q.length < 2
+        ? of<PersonaMini[]>([])
+        : this.miembrosSvc.buscarMin$(q);
+    })
+  );
+
+  this.liderazgoSvc.listarRoles(this.liderazgoId).subscribe({
+    next: (roles) => {
+      if (roles && roles.length) {
+        const rMiembro = roles.find(
+          (r: any) => (r.nombre || '').toLowerCase().trim() === 'miembro'
+        );
+        this.rolBaseId = rMiembro?.id ?? roles[0].id;
+      } else {
+        this.rolBaseId = null;
+      }
+    },
+    error: () => (this.rolBaseId = null),
+  });
+}
+
 
   // Cambiar tab (Integrantes/Eventos)
   cambiarTab(tab: 'integrantes' | 'eventos'): void {

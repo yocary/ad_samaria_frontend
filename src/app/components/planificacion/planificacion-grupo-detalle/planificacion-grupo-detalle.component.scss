@@ -179,3 +179,21 @@ tr:hover td { background: #f9fcff; }
   }
   .search-container { width: 100%; }
 }
+/* --- Fix inicial para mat-form-field outline --- */
+.search .mat-mdc-text-field-wrapper {
+  min-height: 56px;
+  transition: none !important;
+}
+
+.search .mat-mdc-form-field-flex {
+  align-items: center;
+}
+
+/* Evita que el contenedor parpadee o cambie de altura al primer render */
+.search .mat-mdc-form-field-outline-start,
+.search .mat-mdc-form-field-outline-end {
+  transition: none !important;
+}
+.search-container {
+  min-height: 72px; /* evita que el contenedor cambie de tamaño durante el render diferido */
+}
