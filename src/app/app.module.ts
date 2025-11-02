@@ -63,6 +63,7 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AnalyticsService } from './services/analytics.service';
 import { AnalyticsInterceptor } from './core/interceptors/analytics.interceptor';
 import { AnalyticsApiInterceptor } from './interceptors/analytics-api.interceptor';
+import { MatOutlineFixDirective } from './shared/mat-outline-fix.directive';
 
 
 export const MY_DATE_FORMATS = {
@@ -116,6 +117,7 @@ export const MY_DATE_FORMATS = {
     CambiarPasswordDialogComponent,
     DialogDiezmosComponent,
     DialogAddDiezmoComponent,
+    MatOutlineFixDirective
   ],
   imports: [
     FormsModule,
@@ -138,6 +140,7 @@ export const MY_DATE_FORMATS = {
       MatDatepickerModule,
     MatNativeDateModule,
   ],
+  
   providers: [
     DatePipe,
     SpinnerService,

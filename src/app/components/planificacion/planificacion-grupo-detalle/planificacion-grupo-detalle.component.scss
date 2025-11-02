@@ -1,4 +1,4 @@
-/* Layout general */
+/* ========= LAYOUT ========= */
 .wrap {
   display: flex;
   align-items: flex-start;
@@ -7,32 +7,28 @@
   background: #f5f7fa;
   min-height: 100vh;
 }
-
-/* Tarjeta contenedora */
 .card {
   width: 100%;
   max-width: 880px;
   background: #fff;
   border-radius: 12px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 16px rgba(0,0,0,.08);
   border: 1px solid #cde7f0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
 }
-
-/* Encabezado principal */
 .card__header {
   background: #244b6b;
   color: #fff;
   font-weight: 700;
   font-size: 1.2rem;
-  letter-spacing: 0.3px;
+  letter-spacing: .3px;
   text-align: center;
   padding: 16px;
 }
 
-/* Tabs */
+/* ========= TABS ========= */
 .tabs {
   display: flex;
   background: #f0f4f7;
@@ -47,18 +43,12 @@
   color: #555;
   border: none;
   background: transparent;
-  transition: all 0.2s;
+  transition: all .2s;
 }
-.tab:hover:not(.active) {
-  background: #eaf2f7;
-}
-.tab.active {
-  background: #ffffff;
-  border-bottom: 3px solid #f5b942;
-  color: #244b6b;
-}
+.tab:hover:not(.active) { background: #eaf2f7; }
+.tab.active { background: #fff; border-bottom: 3px solid #f5b942; color: #244b6b; }
 
-/* Barra superior (buscador + botón agregar) */
+/* ========= BARRA SUPERIOR ========= */
 .bar {
   display: flex;
   gap: 16px;
@@ -66,46 +56,91 @@
   padding: 20px;
   background: #fafcff;
   border-bottom: 1px solid #e5eef5;
+}
+.search-container { flex: 1; position: relative; }
+
+/* ====== PILL INPUT (sin mat-form-field) ====== */
+.pill-input {
+  display: block;
   position: relative;
+  width: 100%;
+  height: 44px;
+  border: 1px solid #d9e4ea;
+  border-radius: 22px;
+  padding: 0 44px 0 14px; /* espacio para el botón clear */
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0,0,0,.02) inset;
 }
 
-/* Contenedor del buscador */
-.search-container {
-  flex: 1;
-  position: relative;
+.pill-label {
+  position: absolute;
+  left: 14px;
+  top: -10px;
+  background: #fff;
+  padding: 0 6px;
+  font-size: 12px;
+  color: #6b7c93;
+  line-height: 1;
 }
-.search { width: 100%; }
 
-/* Parche visual para evitar “sobre cuadro” al primer render (MDC + legacy) */
-.search .mat-mdc-text-field-wrapper { align-items: center; }
-.search .mat-mdc-form-field-infix { padding: 10px 0 12px; }
-.search .mat-form-field-flex { align-items: center; }          /* legacy */
-.search .mat-form-field-infix { padding: 10px 0 12px; }        /* legacy */
+.pill-control {
+  position: absolute;
+  left: 12px;
+  right: 44px; /* deja espacio a la derecha para el botón clear */
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: #1d2b3a;
+}
 
-/* Panel del autocomplete */
+.pill-control::placeholder { color: #9aa8b6; }
+
+.pill-clear {
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+  line-height: 32px;
+  color: #75879a;
+}
+.pill-clear:hover { background: #eef3f8; }
+
+/* Estados visuales */
+.pill-input:focus-within {
+  border-color: #1976d2;
+  box-shadow: 0 0 0 3px rgba(25,118,210,.08);
+}
+
+/* ========= AUTOCOMPLETE PANEL ========= */
 .search-panel.mat-mdc-autocomplete-panel {
   border: 1px solid #d9e4ea;
   box-shadow: 0 4px 12px rgba(0,0,0,.1);
   border-radius: 6px;
 }
 
-/* Botón agregar */
+/* ========= BOTÓN AGREGAR ========= */
 .btn-add {
   font-weight: 600;
   color: #fff;
   background: #f5b942 !important;
   height: 56px;
   min-width: 140px;
-  margin-top: 0;
   white-space: nowrap;
 }
-.btn-add:hover { filter: brightness(0.95); }
-.btn-add:disabled {
-  background: #cccccc !important;
-  color: #666666;
-}
+.btn-add:hover { filter: brightness(.95); }
+.btn-add:disabled { background: #ccc !important; color: #666; }
 
-/* Tabla de miembros */
+/* ========= TABLA ========= */
 .table-wrap { padding: 16px 20px; }
 .table {
   width: 100%;
@@ -120,14 +155,14 @@ th {
   text-align: left;
   padding: 12px;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: .95rem;
   border-bottom: 2px solid #e5eef5;
 }
 td {
   padding: 12px;
   border-top: 1px solid #eef4f8;
   vertical-align: middle;
-  font-size: 0.95rem;
+  font-size: .95rem;
 }
 tr:hover td { background: #f9fcff; }
 
@@ -135,65 +170,23 @@ tr:hover td { background: #f9fcff; }
   padding: 16px;
   text-align: center;
   color: #777;
-  font-size: 0.9rem;
+  font-size: .9rem;
   font-style: italic;
 }
 
-/* Loader */
-.loader {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  color: #666;
-  font-size: 0.95rem;
-  padding: 16px;
-}
+/* Loader & Footer */
+.loader { display: flex; align-items: center; gap: 10px; color: #666; font-size: .95rem; padding: 16px; }
+.footer { display: flex; justify-content: flex-end; padding: 14px 20px; border-top: 1px solid #e5eef5; background: #f9fbfd; }
 
-/* Pie */
-.footer {
-  display: flex;
-  justify-content: flex-end;
-  padding: 14px 20px;
-  border-top: 1px solid #e5eef5;
-  background: #f9fbfd;
-}
-
-/* Scroll del panel (si aplica) */
+/* Scroll panel */
 .search-panel .cdk-virtual-scroll-content-wrapper::-webkit-scrollbar,
 .search-panel::-webkit-scrollbar { width: 6px; }
 .search-panel .cdk-virtual-scroll-content-wrapper::-webkit-scrollbar-thumb,
-.search-panel::-webkit-scrollbar-thumb {
-  background: #ccc;
-  border-radius: 4px;
-}
+.search-panel::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .bar {
-    flex-direction: column;
-    gap: 12px;
-  }
-  .btn-add {
-    width: 100%;
-    height: 48px;
-  }
+  .bar { flex-direction: column; gap: 12px; }
+  .btn-add { width: 100%; height: 48px; }
   .search-container { width: 100%; }
-}
-/* --- Fix inicial para mat-form-field outline --- */
-.search .mat-mdc-text-field-wrapper {
-  min-height: 56px;
-  transition: none !important;
-}
-
-.search .mat-mdc-form-field-flex {
-  align-items: center;
-}
-
-/* Evita que el contenedor parpadee o cambie de altura al primer render */
-.search .mat-mdc-form-field-outline-start,
-.search .mat-mdc-form-field-outline-end {
-  transition: none !important;
-}
-.search-container {
-  min-height: 72px; /* evita que el contenedor cambie de tamaño durante el render diferido */
 }

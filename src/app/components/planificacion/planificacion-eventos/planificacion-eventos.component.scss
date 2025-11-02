@@ -1,97 +1,65 @@
-.wrap { 
-  display: grid; 
-  gap: 12px; 
-}
+.wrap { display: grid; gap: 12px; }
 
 .toolbar {
-  display: flex; 
-  align-items: center; 
-  gap: 12px; 
-  justify-content: space-between;
-  
-  .right { 
-    display: flex; 
-    align-items: center; 
-    gap: 10px; 
-  }
-  
-  .search { 
-    min-width: 260px; 
-  }
-  
-  .small { 
-    width: 170px; 
-  }
+  display: flex; align-items: center; gap: 12px; justify-content: space-between;
+
+  .right { display: flex; align-items: center; gap: 10px; }
+  .small { width: 170px; }
+  /* La clase .search ahora es el pill, no un mat-form-field */
+  .search { min-width: 260px; }
 }
 
+/* ====== PILL INPUT (igual al usado en Integrantes) ====== */
+.pill-input {
+  display: block;
+  position: relative;
+  width: 260px;              /* coincide con min-width */
+  height: 44px;
+  border: 1px solid #d9e4ea;
+  border-radius: 22px;
+  padding: 0 44px 0 14px;
+  background: #fff;
+  box-shadow: 0 1px 0 rgba(0,0,0,.02) inset;
+}
+.pill-label {
+  position: absolute;
+  left: 14px;
+  top: -10px;
+  background: #fff;
+  padding: 0 6px;
+  font-size: 12px;
+  color: #6b7c93;
+  line-height: 1;
+}
+.pill-control {
+  position: absolute;
+  left: 12px; right: 44px; top: 0; bottom: 0;
+  height: 100%;
+  border: none; outline: none; background: transparent;
+  font-size: 14px; color: #1d2b3a;
+}
+.pill-clear {
+  position: absolute; right: 6px; top: 6px;
+  width: 32px; height: 32px; border: none; border-radius: 50%;
+  background: transparent; cursor: pointer; font-size: 16px; line-height: 32px;
+  color: #75879a;
+}
+.pill-clear:hover { background: #eef3f8; }
+.pill-input:focus-within { border-color: #1976d2; box-shadow: 0 0 0 3px rgba(25,118,210,.08); }
+
+/* ====== Tabla y botones (lo tuyo) ====== */
 .table {
-  border: 1px solid #e0eef6; 
-  border-radius: 8px; 
-  overflow: hidden;
-  
-  table { 
-    width: 100%; 
-  }
-  
-  th { 
-    background: #f7fbff; 
-  }
-  
-  td, th { 
-    padding: 10px 12px; 
-  }
-  
-  // Específico para la columna de acciones - SOLO CORREGIR ESPACIADO
+  border: 1px solid #e0eef6; border-radius: 8px; overflow: hidden;
+  table { width: 100%; }
+  th { background: #f7fbff; }
+  td, th { padding: 10px 12px; }
+
   .mat-column-acciones {
-    button {
-      margin-right: 8px; // Espacio entre botones
-      
-      &:last-child {
-        margin-right: 0; // Quitar margen al último botón
-      }
-    }
+    button { margin-right: 8px; &:last-child { margin-right: 0; } }
   }
 }
+.loader { display: flex; align-items: center; gap: 10px; color: #244b6b; padding: 8px 0; }
+.empty { padding: 14px; color: #777; text-align: center; }
 
-.loader {
-  display: flex; 
-  align-items: center; 
-  gap: 10px; 
-  color: #244b6b; 
-  padding: 8px 0;
-}
-
-.empty { 
-  padding: 14px; 
-  color: #777; 
-  text-align: center; 
-}
-
-.btn-amber {
-  background: #f5b942; 
-  color: #fff;
-  
-  &:hover { 
-    filter: brightness(.95); 
-  }
-}
-
-.btn-amber {
-  background: #f5b942; 
-  color: #fff; // Letras blancas
-  margin-right: 8px;
-  
-  &:hover { 
-    filter: brightness(.95); 
-  }
-}
-
-// Asegurar que el botón Ofrenda (color accent) también tenga letras blancas
-button[color="accent"] {
-  color: #fff !important;
-  margin-right: 8px;
-  
-  &:last-child {
-    margin-right: 0;
-  }
-}
+.btn-amber { background: #f5b942; color: #fff; margin-right: 8px; &:hover { filter: brightness(.95); } }
+button[color="accent"] { color: #fff !important; margin-right: 8px; &:last-child { margin-right: 0; } }

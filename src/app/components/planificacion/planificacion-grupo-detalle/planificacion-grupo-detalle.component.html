@@ -1,5 +1,6 @@
 <div class="wrap">
   <div class="card">
+    <!-- Encabezado -->
     <div class="card__header">
       {{ liderazgoNombre | uppercase }}
     </div>
@@ -18,66 +19,53 @@
       <!-- INTEGRANTES -->
       <ng-container *ngSwitchCase="'integrantes'">
         <div class="bar">
+          <!-- Buscador SIN mat-form-field -->
           <div class="search-container">
-            <mat-form-field
-              #matField
-              appearance="outline"
-              floatLabel="always"
-              class="search"
-              subscriptSizing="dynamic"
-            >
-              <mat-label>Buscar persona (mín. 2 letras)</mat-label>
+            <label class="pill-input">
+              <span class="pill-label">Buscar persona (mín. 2 letras)</span>
 
               <input
+                class="pill-control"
                 type="text"
-                matInput
                 [formControl]="personaQuery"
                 [matAutocomplete]="auto"
                 autocomplete="off"
+                autocapitalize="off"
+                spellcheck="false"
               />
 
               <button
-                mat-icon-button
-                matSuffix
+                type="button"
+                class="pill-clear"
                 *ngIf="personaQuery.value"
                 (click)="limpiarSeleccion()"
-                aria-label="Limpiar búsqueda"
-              >
-                <mat-icon>close</mat-icon>
+                aria-label="Limpiar búsqueda">✕
               </button>
+            </label>
 
-              <mat-autocomplete
-                #auto="matAutocomplete"
-                [displayWith]="displayPersona"
-                autoActiveFirstOption
-                panelClass="search-panel"
-                (optionSelected)="elegir($event.option.value)"
-              >
-                <mat-option *ngFor="let p of opcionesFiltradas$ | async" [value]="p">
-                  {{ p.nombre }}
-                </mat-option>
+            <mat-autocomplete
+              #auto="matAutocomplete"
+              [displayWith]="displayPersona"
+              autoActiveFirstOption
+              panelClass="search-panel"
+              (optionSelected)="elegir($event.option.value)">
+              <mat-option *ngFor="let p of opcionesFiltradas$ | async" [value]="p">
+                {{ p.nombre }}
+              </mat-option>
 
-                <ng-container
-                  *ngIf="(opcionesFiltradas$ | async)?.length === 0 && (personaQuery.value?.length || 0) >= 2"
-                >
-                  <mat-option disabled>Sin resultados</mat-option>
-                </ng-container>
-              </mat-autocomplete>
-            </mat-form-field>
+              <ng-container *ngIf="(opcionesFiltradas$ | async)?.length === 0 && (personaQuery.value?.length || 0) >= 2">
+                <mat-option disabled>Sin resultados</mat-option>
+              </ng-container>
+            </mat-autocomplete>
           </div>
 
-          <button
-            mat-raised-button
-            color="primary"
-            class="btn-add"
-            (click)="agregar()"
-            [disabled]="guardando || !seleccionado"
-          >
+          <button mat-raised-button color="primary" class="btn-add"
+                  (click)="agregar()" [disabled]="guardando || !seleccionado">
             + Agregar miembro
           </button>
         </div>
 
-        <!-- Tabla de integrantes -->
+        <!-- Tabla -->
         <div class="table-wrap">
           <div class="loader" *ngIf="cargandoMiembros">
             <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
@@ -118,7 +106,7 @@
       </ng-container>
     </ng-container>
 
-    <!-- Pie -->
+    <!-- Footer -->
     <div class="footer">
       <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
     </div>

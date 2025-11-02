@@ -1,15 +1,8 @@
-import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
-import { MatFormField } from '@angular/material/form-field';
+import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
-import {
-  debounceTime,
-  distinctUntilChanged,
-  map,
-  startWith,
-  switchMap,
-} from 'rxjs/operators';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 import { LiderazgoService } from 'src/app/services/liderazgo.service';
@@ -24,24 +17,21 @@ interface Miembro {
 @Component({
   selector: 'app-planificacion-grupo-detalle',
   templateUrl: './planificacion-grupo-detalle.component.html',
-  styleUrls: ['./planificacion-grupo-detalle.component.scss'],
+  styleUrls: ['./planificacion-grupo-detalle.component.scss']
 })
-export class PlanificacionGrupoDetalleComponent implements OnInit, AfterViewInit {
-  @ViewChild(MatFormField) matField!: MatFormField;
-
+export class PlanificacionGrupoDetalleComponent implements OnInit {
   liderazgoId!: number;
   liderazgoNombre = '';
 
   // Tabs
   tabActivo: 'integrantes' | 'eventos' = 'integrantes';
 
-  // Buscar/Agregar integrantes
-  // Control acepta texto (mientras escribe) o el objeto seleccionado
-personaQuery = new FormControl('');
+  // Autocomplete
+  personaQuery = new FormControl('');                // deja string u objeto
   opcionesFiltradas$!: Observable<PersonaMini[]>;
-  seleccionado?: PersonaMini;
+  seleccionado?: PersonaMini;                        // último elegido
 
-  // Listado integrantes
+  // Listado
   miembros: Miembro[] = [];
   cargandoMiembros = true;
   guardando = false;
@@ -61,108 +51,94 @@ personaQuery = new FormControl('');
 
     this.cargarMiembros();
 
-    // Stream para autocomplete (si es objeto toma su nombre; si es string usa tal cual)
+    // Stream de búsqueda: usa string para buscar, pero NO pisa el objeto al seleccionar
     this.opcionesFiltradas$ = this.personaQuery.valueChanges.pipe(
       startWith(this.personaQuery.value ?? ''),
       debounceTime(250),
-      map(v => (typeof v === 'string' ? v : v?.nombre ?? '')),
+      map(v => typeof v === 'string' ? v : (v?.nombre || '')),
       distinctUntilChanged(),
       switchMap((term: string) => {
-        const q = term.trim();
+        const q = (term || '').trim();
         if (!q) {
-          this.seleccionado = undefined;
+          this.seleccionado = undefined; // si borran input, limpias selección
         }
         return q.length < 2 ? of<PersonaMini[]>([]) : this.miembrosSvc.buscarMin$(q);
       })
     );
 
-    // Obtener rol "miembro" del liderazgo
+    // Rol “miembro” del liderazgo
     this.liderazgoSvc.listarRoles(this.liderazgoId).subscribe({
       next: (roles) => {
-        if (roles && roles.length) {
+        if (roles?.length) {
           const rMiembro = roles.find((r: any) => (r.nombre || '').toLowerCase().trim() === 'miembro');
           this.rolBaseId = rMiembro?.id ?? roles[0].id;
         } else {
           this.rolBaseId = null;
         }
       },
-      error: () => (this.rolBaseId = null),
+      error: () => this.rolBaseId = null
     });
   }
 
-  // Fuerza el recalculo del notch/outline para evitar el “doble cuadro” en el primer render
-  ngAfterViewInit(): void {
-    setTimeout(() => {
-      try {
-        // API interna de MDC; funciona en Angular Material MDC
-        (this.matField as any)?._foundation?.updateOutlineGap?.();
-      } catch {
-        // ignorar si no existe en alguna versión
-      }
-    });
-  }
+  // Tabs
+  cambiarTab(tab: 'integrantes' | 'eventos'): void { this.tabActivo = tab; }
 
-  // Cambiar tab (Integrantes/Eventos)
-  cambiarTab(tab: 'integrantes' | 'eventos'): void {
-    this.tabActivo = tab;
-  }
-
-  // Cargar integrantes del liderazgo
+  // Data
   cargarMiembros(): void {
     this.cargandoMiembros = true;
     this.liderazgoSvc.listarMiembros(this.liderazgoId).subscribe({
       next: (res: any[]) => {
         this.miembros = (res || []).map((r: any) => ({
           id: r.id ?? r.miembroId ?? r.liderazgoMiembroId,
-          nombre: r.nombre ?? r.nombrePersona ?? r.miembroNombre ?? r.persona ?? '',
+          nombre: r.nombre ?? r.nombrePersona ?? r.miembroNombre ?? r.persona ?? ''
         }));
         this.cargandoMiembros = false;
       },
       error: () => {
         this.miembros = [];
         this.cargandoMiembros = false;
-      },
+      }
     });
   }
 
-  // displayWith del autocomplete
-  displayPersona = (p?: PersonaMini | null): string => p?.nombre ?? '';
+  // Autocomplete helpers
+  displayPersona = (v: any): string => (typeof v === 'string' ? v : (v?.nombre || ''));
 
-  // Selección desde el autocomplete: guarda el OBJETO en el control
   elegir(p: PersonaMini): void {
     this.seleccionado = p;
-    this.personaQuery.setValue(p, { emitEvent: false }); // objeto, no string
+    // MUY IMPORTANTE: guarda el OBJETO en el control (para que displayWith muestre el nombre)
+    this.personaQuery.setValue(p, { emitEvent: false });
   }
 
   limpiarSeleccion(): void {
     this.seleccionado = undefined;
-    this.personaQuery.setValue('', { emitEvent: true }); // vuelve a modo texto
+    this.personaQuery.setValue('', { emitEvent: true });
   }
 
-  // Agregar miembro
+  // Acciones
   agregar(): void {
     if (!this.seleccionado) return;
-
     this.guardando = true;
     const ROL_ID_POR_DEFECTO = 0;
 
-    this.liderazgoSvc
-      .agregarMiembro(this.liderazgoId, this.seleccionado.id, this.rolBaseId ?? ROL_ID_POR_DEFECTO)
-      .subscribe({
-        next: () => {
-          this.guardando = false;
-          Swal.fire('Éxito', 'Miembro agregado correctamente', 'success');
-          this.limpiarSeleccion();
-          this.cargarMiembros();
-        },
-        error: () => {
-          this.guardando = false;
-          Swal.fire('Error', 'El miembro ya se encuentra en el ministerio', 'error');
-        },
-      });
+    this.liderazgoSvc.agregarMiembro(
+      this.liderazgoId,
+      this.seleccionado.id,
+      this.rolBaseId ?? ROL_ID_POR_DEFECTO
+    ).subscribe({
+      next: () => {
+        this.guardando = false;
+        Swal.fire('Éxito', 'Miembro agregado correctamente', 'success');
+        this.limpiarSeleccion();
+        this.cargarMiembros();
+      },
+      error: () => {
+        this.guardando = false;
+        Swal.fire('Error', 'El miembro ya se encuentra en el ministerio', 'error');
+      }
+    });
   }
 
-  // Quitar miembro
   quitar(miembroId: number): void {
     Swal.fire({
       title: '¿Quitar miembro?',
@@ -170,24 +146,20 @@ personaQuery = new FormControl('');
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí, quitar',
-      cancelButtonText: 'Cancelar',
-    }).then((r) => {
+      cancelButtonText: 'Cancelar'
+    }).then(r => {
       if (!r.isConfirmed) return;
       this.liderazgoSvc.eliminarMiembro(this.liderazgoId, miembroId).subscribe({
         next: () => {
-          this.miembros = this.miembros.filter((m) => m.id !== miembroId);
+          this.miembros = this.miembros.filter(m => m.id !== miembroId);
           Swal.fire('Eliminado', 'Miembro quitado del ministerio', 'success');
         },
-        error: () => Swal.fire('Error', 'No se pudo quitar el miembro', 'error'),
+        error: () => Swal.fire('Error', 'No se pudo quitar el miembro', 'error')
       });
     });
   }
 
-  trackByMiembro(_: number, m: Miembro): number {
-    return m.id;
-  }
+  trackByMiembro(_: number, m: Miembro): number { return m.id; }
 
-  regresar(): void {
-    this.router.navigate(['/planificacion']);
-  }
+  regresar(): void { this.router.navigate(['/planificacion']); }
 }

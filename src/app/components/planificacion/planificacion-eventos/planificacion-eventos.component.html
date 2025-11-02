@@ -22,13 +22,25 @@
         </mat-select>
       </mat-form-field>
 
-      <mat-form-field appearance="outline" class="search">
-        <mat-label>Buscar</mat-label>
-        <input matInput [formControl]="search" />
-        <button mat-icon-button matSuffix *ngIf="search.value" (click)="search.setValue('')">
-          <mat-icon>close</mat-icon>
+      <!-- 🔧 Buscador SIN mat-form-field (estilo pill estable) -->
+      <label class="pill-input search">
+        <span class="pill-label">Buscar</span>
+        <input
+          class="pill-control"
+          type="text"
+          [formControl]="search"
+          autocomplete="off"
+          autocapitalize="off"
+          spellcheck="false"
+        />
+        <button
+          type="button"
+          class="pill-clear"
+          *ngIf="search.value"
+          (click)="search.setValue('')"
+          aria-label="Limpiar búsqueda">✕
         </button>
-      </mat-form-field>
+      </label>
     </div>
   </div>
 
@@ -59,7 +71,6 @@
         <td mat-cell *matCellDef="let r">{{ r.totalAsistencias ?? '—' }}</td>
       </ng-container>
 
-            <!-- Nueva columna para Total ofrenda -->
       <ng-container matColumnDef="totalOfrenda">
         <th mat-header-cell *matHeaderCellDef>Total ofrenda</th>
         <td mat-cell *matCellDef="let r">
