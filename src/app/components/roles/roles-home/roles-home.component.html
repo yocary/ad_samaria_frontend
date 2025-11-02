@@ -1,14 +1,21 @@
 <div class="wrap">
   <div class="card">
-    <div class="card__header">Roles</div>
+    <div class="card__header">ROLES</div>
 
     <div class="card__body">
-      <button mat-raised-button color="primary" class="btn" (click)="goAdd()">Agregar Rol</button>
-      <button mat-raised-button color="warn" class="btn" (click)="goRemove()">Eliminar Rol</button>
+      <button mat-raised-button color="primary" class="btn btn--primary" (click)="goAdd()">
+        Agregar Rol
+      </button>
+
+      <button mat-raised-button color="warn" class="btn btn--warn" (click)="goRemove()">
+        Eliminar Rol
+      </button>
     </div>
 
-    <div class="card__footer">
-      <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
+    <div class="miembros__footer">
+      <button mat-stroked-button color="primary" class="btn btn--outline" (click)="regresar()">
+        Regresar
+      </button>
     </div>
   </div>
 </div>

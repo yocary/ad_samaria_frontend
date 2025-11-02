@@ -34,15 +34,18 @@ export class FamiliasComponent implements OnInit {
     this.families.listarFamilias(q).subscribe((list) => (this.data = list));
   }
 
-  openAdd(): void {
-    const ref = this.dialog.open(DialogAddFamilyComponent, {
-      width: '560px',
-      disableClose: true,
-    });
-    ref
-      .afterClosed()
-      .subscribe((ok) => ok && this.cargar(this.search.value ?? ''));
-  }
+openAdd(): void {
+  const ref = this.dialog.open(DialogAddFamilyComponent, {
+    panelClass: 'fam-dialog-panel',
+    width: 'min(720px, 96vw)',
+    maxWidth: '96vw',
+    autoFocus: false,
+    restoreFocus: true,
+    disableClose: true
+  });
+  ref.afterClosed().subscribe(ok => ok && this.cargar(this.search.value ?? ''));
+}
+
 
   openEdit(fam: Family): void {
     console.log('Editando familia:', fam); // 👈 para ver en consola

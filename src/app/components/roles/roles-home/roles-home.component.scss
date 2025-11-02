@@ -1,232 +1,158 @@
 /* =========================
-   WRAP + CARD – ESTILO MODERNO Y ANIMADO
+   ROLES – UNIFICADO SAMARIA
    ========================= */
 
-/* Fondo con halos sutiles y fade-in */
-.wrap {
-  min-height: 100vh;
-  display: grid;
-  place-items: center;
-  background: #f5f7fa;
-  padding: 16px;
-  position: relative;
-  overflow: hidden;
-  animation: wrapFade .45s ease-out both;
+/* Fondo con halos sutiles + fade-in */
+.wrap{
+  min-height:100vh;
+  display:grid;
+  place-items:start center;
+  background:#f5f7fa;
+  padding: clamp(12px,3vw,24px);
+  position:relative;
+  overflow:hidden;
+  animation:wrapFade .45s ease-out both;
+}
+@keyframes wrapFade{from{opacity:0}to{opacity:1}}
 
-  &::before, &::after {
-    content: '';
-    position: absolute;
-    width: 60vmax; height: 60vmax;
-    border-radius: 50%;
-    filter: blur(60px);
-    opacity: .14;
-    pointer-events: none;
-    animation: floatBg 16s ease-in-out infinite;
-  }
-  &::before { background: #4fc3f7; top: -22vmax; left: -16vmax; }
-  &::after  { background: #ffd54f; bottom: -24vmax; right: -18vmax; animation-delay: 3s; }
+.wrap::before,
+.wrap::after{
+  content:'';
+  position:absolute;
+  width:60vmax; height:60vmax;
+  border-radius:50%;
+  filter:blur(60px);
+  opacity:.12;
+  pointer-events:none;
+  animation:floatBg 16s ease-in-out infinite;
+}
+.wrap::before{ background:#4fc3f7; top:-24vmax; left:-18vmax; }
+.wrap::after { background:#ffd54f; bottom:-24vmax; right:-18vmax; animation-delay:3s; }
+@keyframes floatBg{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(18px,-12px) scale(1.04)}}
+
+/* Card contenedor */
+.card{
+  width:min(900px,96vw);
+  background:#fff;
+  border:1px solid #cfe0ef;
+  border-radius:14px;
+  box-shadow:0 18px 40px rgba(25,55,100,.08);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+  animation:cardPop .55s cubic-bezier(.2,.8,.2,1) .05s both;
+}
+@keyframes cardPop{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* Header con gradiente */
+.card__header{
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
+  color:#fff;
+  font-weight:800;
+  letter-spacing:.35px;
+  text-transform:uppercase;
+  text-align:center;
+  padding:16px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18);
+  animation:slideDown .45s ease both;
+}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Cuerpo: botones centrados y con wrap en móvil */
+.card__body{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  justify-content:center;
+  align-items:center;
+  padding:18px 16px 8px;
+  animation:bodyIn .35s ease .08s both;
+}
+@keyframes bodyIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Footer “Regresar” */
+.miembros__footer{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding:12px 16px 16px;
+  border-top:1px solid #e0eef6;
 }
 
-@keyframes wrapFade { from { opacity: 0 } to { opacity: 1 } }
-@keyframes floatBg { 0%,100% { transform: translate(0,0) scale(1) } 50% { transform: translate(18px,-12px) scale(1.04) } }
+/* =========================
+   BOTONES – ESTILO SAMARIA
+   ========================= */
 
-/* Card (Material surface + elevación) con pop-in */
-.card {
-  width: 100%;
-  max-width: 520px;
-  border-radius: 14px;
-  background: #fff;
-  border: 1px solid rgba(205,231,240,.6);
-  overflow: hidden;
-  box-shadow:
-    0 2px 4px -1px rgba(0,0,0,.2),
-    0 4px 5px 0 rgba(0,0,0,.14),
-    0 1px 10px 0 rgba(0,0,0,.12);
-  animation: cardPop .55s cubic-bezier(.2,.8,.2,1) .05s both;
+.btn{
+  border:none;
+  border-radius:10px;
+  font-weight:800;
+  letter-spacing:.2px;
+  height:40px;
+  padding:10px 18px;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:transform .18s ease, box-shadow .25s ease, filter .25s ease, background .25s ease, color .25s ease, border-color .25s ease;
+  box-shadow:0 8px 18px rgba(2,6,23,.06);
 }
 
-@keyframes cardPop {
-  from { opacity: 0; transform: translateY(10px) scale(.985); }
-  to   { opacity: 1; transform: translateY(0)   scale(1); }
+/* Brillo */
+.btn::before{
+  content:'';
+  position:absolute; inset:0;
+  transform:translateX(-120%);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+  transition:transform .75s ease;
+}
+.btn:hover{ transform:translateY(-2px); box-shadow:0 12px 24px rgba(2,6,23,.10); }
+.btn:hover::before{ transform:translateX(120%); }
+.btn:active{ transform:translateY(0) scale(.98); }
+
+/* Primario – Azul degradado */
+.btn--primary{
+  color:#fff;
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
+  box-shadow:0 6px 16px rgba(36,75,107,.22);
 }
 
-/* Header con gradiente y slide-down */
-.card__header {
-  background: linear-gradient(135deg, #244b6b, #1e3b55);
-  color: #fff;
-  font-weight: 800;
-  text-align: center;
-  padding: 16px;
-  letter-spacing: .35px;
-  text-transform: uppercase;
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.18);
-  animation: slideDown .45s ease both;
+/* Peligro – Rojo degradado */
+.btn--warn{
+  color:#fff;
+  background:linear-gradient(135deg,#ef5350,#c62828);
+  box-shadow:0 6px 16px rgba(198,40,40,.22);
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* Outline blanco que se vuelve degradado al hover (para REGRESAR) */
+.btn--outline{
+  background:#fff;
+  color:#244b6b;
+  border:1px solid #244b6b;
+  box-shadow:0 6px 14px rgba(36,75,107,.14);
+}
+.btn--outline:hover{
+  color:#fff;
+  border-color:transparent;
+  background:linear-gradient(135deg,#244b6b,#1e3b55);
+  box-shadow:0 12px 24px rgba(36,75,107,.28);
 }
 
-/* Body con field-in stagger */
-.card__body {
-  display: grid;
-  gap: 18px;
-  padding: 18px 16px 8px;
-  animation: bodyIn .4s ease .1s both;
+/* Accesibilidad */
+.card :where(.btn):focus-visible{
+  outline:2px solid #ffd54f;
+  outline-offset:2px;
+  border-radius:8px;
 }
 
-@keyframes bodyIn {
-  from { opacity: 0; transform: translateY(6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Campos Material: hover + focus glow */
-.mat-form-field { width: 100%; }
-
-.mat-form-field .mat-mdc-form-field-flex {
-  background: #f7fbff;
-  border: 1px solid #e0e7ef;
-  border-radius: 10px;
-  padding: 0 14px;
-  transition: border-color .25s ease, box-shadow .25s ease, transform .2s ease;
-}
-
-.mat-form-field .mat-mdc-form-field-flex:hover {
-  background: #fff;
-  border-color: #cbd5e1;
-  transform: translateY(-1px);
-}
-
-.mat-form-field.mat-focused .mat-mdc-form-field-flex {
-  border-color: #244b6b;
-  box-shadow: 0 0 0 3px rgba(36,75,107,.12);
-  background: #fff;
-}
-
-/* Grupo de radios con micro-interacciones */
-.rol-group {
-  display: grid;
-  gap: 10px;
-
-  .rol-title {
-    font-weight: 800;
-    color: #244b6b;
-    letter-spacing: .3px;
-  }
-
-  .radio-col {
-    display: grid;
-    gap: 8px;
-
-    .mat-radio-button {
-      padding: 4px 2px;
-      border-radius: 8px;
-      transition: background-color .2s ease, transform .2s ease;
-    }
-
-    .mat-radio-button:hover {
-      background: #f3f9ff;
-      transform: translateY(-1px);
-    }
-  }
-}
-
-/* Footer con botones y animaciones */
-.card__footer {
-  padding: 10px 16px 16px;
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
-  animation: footerIn .4s ease .15s both;
-}
-
-@keyframes footerIn { from { opacity: 0; transform: translateY(8px) } to { opacity: 1; transform: translateY(0) } }
-
-.card__footer .btn {
-  min-width: 160px;
-  font-weight: 800;
-  letter-spacing: .2px;
-  height: 44px;
-  border-radius: 10px;
-  transition: transform .2s ease, box-shadow .25s ease, filter .2s ease;
-}
-
-/* Primario con gradiente + brillo */
-.card__footer .btn-primary {
-  background: linear-gradient(135deg, #f5b942, #f1a41f);
-  color: #fff;
-  border: none;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 6px 16px rgba(241,164,31,.28);
-}
-
-.card__footer .btn-primary::before {
-  content: '';
-  position: absolute; inset: 0;
-  transform: translateX(-100%);
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,.32), transparent);
-  transition: transform .75s ease;
-}
-
-.card__footer .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 22px rgba(241,164,31,.34);
-}
-
-.card__footer .btn-primary:hover::before { transform: translateX(100%); }
-
-.card__footer .btn-primary:active {
-  transform: translateY(0);
-  box-shadow: 0 4px 12px rgba(241,164,31,.26);
-}
-
-/* Outline suave */
-.card__footer .btn-outline {
-  border: 1px solid #d5e8f2;
-  color: #1f2d3d;
-  background: #fff;
-}
-
-.card__footer .btn-outline:hover {
-  background: #f3faff;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(36,75,107,.14);
-}
-
-.card__footer .btn-outline:active { transform: translateY(0); }
-
-/* Ayudas/errores de Material */
-.mat-hint { color: #6e7f91; }
-.mat-error { font-size: .86rem; }
-
-/* Micro-interacciones Material (Angular Material MDC) */
-:host ::ng-deep .mat-mdc-raised-button.mat-primary {
-  background-color: #244b6b;
-}
-:host ::ng-deep .mat-mdc-raised-button.mat-primary:hover {
-  filter: brightness(.95);
-}
-
-/* Focus accesible */
-.card :where(button, a, .mat-form-field, .mat-radio-button):focus-visible {
-  outline: 2px solid #ffd54f;
-  outline-offset: 2px;
-  border-radius: 8px;
-}
-
-/* Reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: .01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: .01ms !important;
-  }
-}
+/* Integra con Angular Material (no pelearnos con mat-raised-button) */
+:host ::ng-deep .mat-mdc-raised-button{ background:transparent; box-shadow:none; color:inherit; }
+:host ::ng-deep .mat-mdc-unelevated-button{ background:transparent; }
+:host ::ng-deep .mat-mdc-stroked-button{ background:transparent; }
 
 /* Responsive */
-@media (max-width: 560px) {
-  .card { margin: 0 8px; }
-  .card__footer { justify-content: center; }
+@media (max-width:560px){
+  .card__header{ font-size:1.02rem; padding:14px; }
+  .card__body .btn{ width:100%; }
+  .miembros__footer{ justify-content:center; }
+  .miembros__footer .btn{ width:100%; max-width:420px; }
 }

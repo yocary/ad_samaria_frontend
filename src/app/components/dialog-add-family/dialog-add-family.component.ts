@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { MatDialogRef } from '@angular/material/dialog';
 import { FormControl, Validators } from '@angular/forms';
 import { FamiliesService } from 'src/app/services/families.service';
@@ -7,6 +7,8 @@ import Swal from 'sweetalert2';
 @Component({
   selector: 'app-dialog-add-family',
   templateUrl: './dialog-add-family.component.html',
+  styleUrls: ['./dialog-add-family.component.scss'],
+    encapsulation: ViewEncapsulation.None,
 })
 export class DialogAddFamilyComponent {
   name = new FormControl('', [Validators.required, Validators.maxLength(120)]);

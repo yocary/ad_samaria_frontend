@@ -54,3 +54,118 @@
 .search { margin-left:auto; width: min(420px, 100%); }
 .board__title { font-weight:700; margin:10px 0; }
 .table { width:100%; }
+/* =========================
+   BOTONES – ESTILO UNIFICADO (solo estilos de botones)
+   ========================= */
+
+/* --- Botón “+ Agregar familia” (header) --- */
+.board__header button[mat-raised-button][color="primary"]{
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  height:40px;
+  padding:0 16px;
+  font-weight:800;
+  letter-spacing:.2px;
+  box-shadow:0 8px 18px rgba(36,75,107,.22);
+  position:relative; overflow:hidden;
+  transition: transform .18s ease, box-shadow .25s ease;
+}
+.board__header button[mat-raised-button][color="primary"]::before{
+  content:''; position:absolute; inset:0; transform:translateX(-120%);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+  transition: transform .75s ease;
+}
+.board__header button[mat-raised-button][color="primary"]:hover{
+  transform: translateY(-2px);
+  box-shadow:0 12px 26px rgba(30,59,85,.28);
+}
+.board__header button[mat-raised-button][color="primary"]:hover::before{
+  transform:translateX(120%);
+}
+
+/* --- Botones de ACCIONES dentro de la tabla --- */
+.table td:last-child button[mat-stroked-button][color="primary"]{
+  /* Convertimos 'stroked' en “relleno elegante” */
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  height:36px;
+  padding:0 14px;
+  font-weight:700;
+  letter-spacing:.2px;
+  box-shadow:0 4px 12px rgba(36,75,107,.25);
+  position:relative; overflow:hidden;
+  transition: transform .18s ease, box-shadow .25s ease;
+}
+.table td:last-child button[mat-stroked-button][color="primary"]::before{
+  content:''; position:absolute; inset:0; transform:translateX(-120%);
+  background:linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+  transition: transform .75s ease;
+}
+.table td:last-child button[mat-stroked-button][color="primary"]:hover{
+  transform: translateY(-2px);
+  box-shadow:0 10px 22px rgba(30,59,85,.28);
+}
+.table td:last-child button[mat-stroked-button][color="primary"]:hover::before{
+  transform:translateX(120%);
+}
+
+.table td:last-child button[mat-raised-button][color="warn"]{
+  background: linear-gradient(135deg, #ef5350, #c62828);
+  color:#fff;
+  border:none;
+  border-radius:8px;
+  height:36px;
+  padding:0 14px;
+  font-weight:800;
+  box-shadow:0 4px 12px rgba(198,40,40,.25);
+  transition: transform .18s ease, box-shadow .25s ease;
+}
+.table td:last-child button[mat-raised-button][color="warn"]:hover{
+  transform: translateY(-2px);
+  box-shadow:0 10px 22px rgba(198,40,40,.35);
+}
+
+/* --- Botón “Regresar” (footer) como outline elegante --- */
+.footer button[mat-stroked-button][color="primary"]{
+  background:#fff;
+  color:#244b6b;
+  border:1px solid #244b6b !important;
+  border-radius:10px;
+  height:38px;
+  padding:0 16px;
+  font-weight:800;
+  letter-spacing:.2px;
+  box-shadow:0 6px 14px rgba(36,75,107,.14);
+  position:relative; overflow:hidden;
+  transition: transform .18s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
+}
+.footer button[mat-stroked-button][color="primary"]::before{
+  content:''; position:absolute; inset:0; transform:translateX(-120%);
+  background:linear-gradient(90deg, transparent, rgba(36,75,107,.18), transparent);
+  transition: transform .75s ease;
+}
+.footer button[mat-stroked-button][color="primary"]:hover{
+  background:#244b6b;
+  color:#fff;
+  transform: translateY(-2px);
+  box-shadow:0 12px 24px rgba(36,75,107,.28);
+}
+.footer button[mat-stroked-button][color="primary"]:hover::before{
+  transform:translateX(120%);
+}
+
+/* --- Accesibilidad focus para todos los botones de esta vista --- */
+.wrap :where(button)[mat-raised-button],
+.wrap :where(button)[mat-stroked-button]{
+  outline: none;
+}
+.wrap :where(button)[mat-raised-button]:focus-visible,
+.wrap :where(button)[mat-stroked-button]:focus-visible{
+  outline:2px solid #ffd54f;
+  outline-offset:2px;
+  border-radius:8px;
+}

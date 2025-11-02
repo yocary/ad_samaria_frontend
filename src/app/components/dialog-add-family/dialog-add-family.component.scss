@@ -1,25 +1,127 @@
-.fam-dialog{
+/* =========================
+   DIALOGO FAMILIA – BASE
+   ========================= */
+
+.fam-dialog {
   background: #f6f8fb;
   border-radius: 12px;
   border: 1px solid #cfe0ef;
   overflow: hidden;
 }
 
-::ng-deep .mat-dialog-container { padding: 0; }
-
-.fam-dialog__header{
-  background: #254b72;
-  color:#fff;
-  font-weight:800;
-  padding: 12px 16px;
+/* Quita padding interno del contenedor del dialog */
+::ng-deep .mat-dialog-container {
+  padding: 0;
 }
 
-.fam-dialog__body{ padding: 16px; }
-.fam-dialog__actions{
-  display:flex;
-  gap:12px;
-  justify-content:center;
+/* Header */
+h2[mat-dialog-title] {
+  background: #254b72;
+  color: #fff;
+  font-weight: 800;
+  margin: 0;
+  padding: 12px 16px;
+  border-radius: 8px 8px 0 0;
+}
+
+/* Cuerpo */
+mat-dialog-content {
+  padding: 16px;
+}
+
+/* Acciones */
+mat-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
   padding: 0 16px 16px;
 }
 
-.w-full{ width:100%; }
+/* =========================
+   BOTONES – ESTILO UNIFICADO
+   ========================= */
+
+/* Botón primario (Guardar) */
+mat-dialog-actions button[mat-raised-button][color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 8px 20px;
+  height: 38px;
+  box-shadow: 0 8px 18px rgba(36, 75, 107, 0.25);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+mat-dialog-actions button[mat-raised-button][color="primary"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transition: transform 0.75s ease;
+}
+
+mat-dialog-actions button[mat-raised-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(36, 75, 107, 0.35);
+}
+
+mat-dialog-actions button[mat-raised-button][color="primary"]:hover::before {
+  transform: translateX(120%);
+}
+
+/* Botón cancelar (outline elegante) */
+mat-dialog-actions button[mat-stroked-button] {
+  background: #fff;
+  color: #244b6b;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 8px 20px;
+  height: 38px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.14);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+mat-dialog-actions button[mat-stroked-button]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(36, 75, 107, 0.18), transparent);
+  transition: transform 0.75s ease;
+}
+
+mat-dialog-actions button[mat-stroked-button]:hover {
+  background: #244b6b;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.28);
+}
+
+mat-dialog-actions button[mat-stroked-button]:hover::before {
+  transform: translateX(120%);
+}
+
+/* Accesibilidad */
+mat-dialog-actions button:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* =========================
+   FORM FIELD
+   ========================= */
+
+.w-full {
+  width: 100%;
+}

@@ -48,3 +48,106 @@ td, th { padding: 10px 12px; }
 
 /* Utilidades */
 .mr-8 { margin-right: 8px; }
+/* =========================
+   BOTONES – ESTILO UNIFICADO (solo botones)
+   ========================= */
+
+/* Botones primarios (Guardar / Agregar / Confirmar, etc.) */
+button[mat-raised-button][color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 8px 18px;
+  height: 38px;
+  box-shadow: 0 8px 18px rgba(36, 75, 107, 0.25);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.25s ease;
+}
+
+button[mat-raised-button][color="primary"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.28), transparent);
+  transition: transform 0.75s ease;
+}
+
+button[mat-raised-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(36, 75, 107, 0.35);
+}
+
+button[mat-raised-button][color="primary"]:hover::before {
+  transform: translateX(120%);
+}
+
+/* Botones secundarios (Cancelar / Volver / Cerrar, etc.) */
+button[mat-stroked-button],
+button[mat-button]:not([color="warn"]) {
+  background: #fff;
+  color: #244b6b;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 8px 18px;
+  height: 38px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.14);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s ease, box-shadow 0.25s ease, background 0.25s ease, color 0.25s ease;
+}
+
+button[mat-stroked-button]::before,
+button[mat-button]:not([color="warn"])::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(36, 75, 107, 0.18), transparent);
+  transition: transform 0.75s ease;
+}
+
+button[mat-stroked-button]:hover,
+button[mat-button]:not([color="warn"]):hover {
+  background: #244b6b;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.28);
+}
+
+button[mat-stroked-button]:hover::before,
+button[mat-button]:not([color="warn"]):hover::before {
+  transform: translateX(120%);
+}
+
+/* Botones de advertencia (Eliminar / Quitar, etc.) */
+button[mat-raised-button][color="warn"] {
+  background: linear-gradient(135deg, #ef5350, #c62828);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 8px 18px;
+  height: 38px;
+  box-shadow: 0 6px 14px rgba(198, 40, 40, 0.25);
+  transition: transform 0.18s ease, box-shadow 0.25s ease;
+}
+
+button[mat-raised-button][color="warn"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(198, 40, 40, 0.35);
+}
+
+/* Accesibilidad */
+button:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}

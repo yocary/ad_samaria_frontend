@@ -237,3 +237,99 @@
   .miembros__search { height: 36px; padding: 0 10px; }
   .custom-table { min-width: 420px; }
 }
+/* ===== Botones “rellenos elegantes” (igual que en otros módulos) ===== */
+.btn{
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: .2px;
+  height: 40px;
+  padding: 10px 16px;
+  color: #fff;
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  box-shadow: 0 8px 18px rgba(2,6,23,.08), 0 4px 12px rgba(36,75,107,.22);
+  transition: transform .18s ease, box-shadow .25s ease, filter .25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Brillo al pasar */
+.btn::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+  transition: transform .75s ease;
+}
+
+.btn:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(2,6,23,.12), 0 10px 22px rgba(30,59,85,.28);
+}
+.btn:hover::before{ transform: translateX(120%); }
+
+/* Variante principal (coincide con el resto) */
+.btn--primary{
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+}
+
+/* Asegura que el estilo de Material no “pinte” encima */
+:host ::ng-deep .miembros__btns .mat-mdc-raised-button.mat-primary {
+  background: transparent; /* el gradiente lo da .btn */
+  box-shadow: none;        /* usamos el de .btn */
+  color: inherit;          /* hereda #fff */
+}
+
+/* Microajuste de focus para accesibilidad (igual a otros módulos) */
+.miembros :where(.btn):focus-visible{
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* ==== BOTÓN REGRESAR ==== */
+.miembros__footer button[mat-stroked-button][color="primary"] {
+  background: #fff;
+  color: #244b6b;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 8px 20px;
+  height: 38px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.14);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+}
+
+/* Brillo animado al pasar */
+.miembros__footer button[mat-stroked-button][color="primary"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(36, 75, 107, 0.18), transparent);
+  transition: transform 0.75s ease;
+}
+
+/* Hover elegante */
+.miembros__footer button[mat-stroked-button][color="primary"]:hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.28);
+}
+
+.miembros__footer button[mat-stroked-button][color="primary"]:hover::before {
+  transform: translateX(120%);
+}
+
+/* Accesibilidad */
+.miembros__footer button[mat-stroked-button][color="primary"]:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
