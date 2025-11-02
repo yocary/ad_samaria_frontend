@@ -71,19 +71,19 @@
         <td mat-cell *matCellDef="let r">{{ r.totalAsistencias ?? '—' }}</td>
       </ng-container>
 
-      <ng-container matColumnDef="totalOfrenda">
+      <!-- <ng-container matColumnDef="totalOfrenda">
         <th mat-header-cell *matHeaderCellDef>Total ofrenda</th>
         <td mat-cell *matCellDef="let r">
           {{ r.totalOfrenda ? ('Q ' + (r.totalOfrenda | number:'1.2-2')) : '—' }}
         </td>
-      </ng-container>
+      </ng-container> -->
 
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let r">
           <button mat-raised-button class="btn-amber" (click)="abrirAsistencia(r)">Asistencia</button>
           <button mat-raised-button color="primary" (click)="abrirObservacion(r)">Observación</button>
-          <button mat-raised-button color="accent" (click)="abrirOfrenda(r)">Ofrenda</button>
+          <!-- <button mat-raised-button color="accent" (click)="abrirOfrenda(r)">Ofrenda</button> -->
         </td>
       </ng-container>
 

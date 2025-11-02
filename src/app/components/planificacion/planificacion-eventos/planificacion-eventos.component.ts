@@ -18,7 +18,7 @@ import { OfrendaDialogComponent, OfrendaPayload } from '../ofrenda-dialog/ofrend
 
 type EventoRow = EventoItem & { 
   totalAsistencias?: number;
-  totalOfrenda?: number; // Nueva propiedad
+  // totalOfrenda?: number; // Nueva propiedad
 };
 
 
@@ -40,7 +40,7 @@ export class PlanificacionEventosComponent implements OnInit, OnDestroy {
 
   eventos: EventoRow[] = [];
   filtrados: EventoRow[] = [];
-  displayed = ['n', 'nombre', 'fecha', 'totalAsistencias', 'totalOfrenda', 'acciones'];
+  displayed = ['n', 'nombre', 'fecha', 'totalAsistencias', 'acciones'];
 
   private destroy$ = new Subject<void>();
 
@@ -129,10 +129,10 @@ export class PlanificacionEventosComponent implements OnInit, OnDestroy {
     totalesAsistencia.forEach((t, i) => (eventos[i].totalAsistencias = t ?? undefined));
     
     // Cargar totales de ofrenda después
-    forkJoin(reqsOfrenda).subscribe((totalesOfrenda) => {
-      totalesOfrenda.forEach((t, i) => (eventos[i].totalOfrenda = t ?? undefined));
-      this.applyFilter((this.search.value as string) || '');
-    });
+    // forkJoin(reqsOfrenda).subscribe((totalesOfrenda) => {
+    //   totalesOfrenda.forEach((t, i) => (eventos[i].totalOfrenda = t ?? undefined));
+    //   this.applyFilter((this.search.value as string) || '');
+    // });
   });
 }
   applyFilter(q: string): void {
@@ -259,13 +259,12 @@ private mostrarSwalObservacion(e: EventoItem, valorInicial: string): void {
 
   private exportCSV(): void {
   const rows = [
-    ['No.', 'Nombre', 'Fecha', 'Total asistencias', 'Total ofrenda'], // Agregar nueva columna
+    ['No.', 'Nombre', 'Fecha', 'Total asistencias'], // Agregar nueva columna
     ...this.filtrados.map((e, i) => [
       `${i + 1}`,
       e.nombre,
       e.fecha,
       `${e.totalAsistencias ?? ''}`,
-      `${e.totalOfrenda ?? ''}` // Nueva columna
     ]),
   ];
   const csv = rows
@@ -285,13 +284,12 @@ private mostrarSwalObservacion(e: EventoItem, valorInicial: string): void {
 
 private exportXLSX(): void {
   const data = [
-    ['No.', 'Nombre', 'Fecha', 'Total asistencias', 'Total ofrenda'],
+    ['No.', 'Nombre', 'Fecha', 'Total asistencias'],
     ...this.filtrados.map((e, i) => [
       i + 1,
       e.nombre,
       e.fecha,
       e.totalAsistencias ?? '',
-      e.totalOfrenda ?? ''
     ]),
   ];
 
@@ -372,73 +370,73 @@ private exportXLSX(): void {
 //   });
 // }
 
-abrirOfrenda(e?: EventoItem): void {
-  if (!e) return;
+// abrirOfrenda(e?: EventoItem): void {
+//   if (!e) return;
 
-  this.lidSvc.listarOfrendasPorEvento(e.id).subscribe({
-    next: (ofrendas) => {
-      const ofrendaExistente = ofrendas.length > 0 ? ofrendas[0] : undefined;
+//   this.lidSvc.listarOfrendasPorEvento(e.id).subscribe({
+//     next: (ofrendas) => {
+//       const ofrendaExistente = ofrendas.length > 0 ? ofrendas[0] : undefined;
       
-      const ref = this.dialog.open(OfrendaDialogComponent, {
-        width: '420px',
-        data: {
-          liderazgoNombre: this.liderazgoNombre,
-          eventos: this.eventos,
-          eventoIdDefault: e.id,
-          ofrendaExistente: ofrendaExistente
-        }
-      });
+//       const ref = this.dialog.open(OfrendaDialogComponent, {
+//         width: '420px',
+//         data: {
+//           liderazgoNombre: this.liderazgoNombre,
+//           eventos: this.eventos,
+//           eventoIdDefault: e.id,
+//           ofrendaExistente: ofrendaExistente
+//         }
+//       });
 
-      ref.afterClosed().subscribe((payload?: OfrendaPayload) => {
-        if (!payload) return;
+//       ref.afterClosed().subscribe((payload?: OfrendaPayload) => {
+//         if (!payload) return;
 
-        const { eventoId, id: ofrendaId, ...body } = payload;
+//         const { eventoId, id: ofrendaId, ...body } = payload;
         
-        if (ofrendaId) {
-          this.lidSvc.actualizarOfrenda(ofrendaId, body).subscribe({
-            next: () => {
-              Swal.fire('Listo', 'Ofrenda actualizada.', 'success');
-              this.cargarTotalesAsistencia(this.eventos); // Refrescar totales
-            },
-            error: () => Swal.fire('Error', 'No se pudo actualizar la ofrenda.', 'error')
-          });
-        } else {
-          this.lidSvc.crearOfrendaParaEvento(eventoId, body).subscribe({
-            next: () => {
-              Swal.fire('Listo', 'Ofrenda registrada.', 'success');
-              this.cargarTotalesAsistencia(this.eventos); // Refrescar totales
-            },
-            error: () => Swal.fire('Error', 'No se pudo registrar la ofrenda.', 'error')
-          });
-        }
-      });
-    },
-    error: () => {
-      this.abrirDialogoOfrenda(e);
-    }
-  });
-}
+//         if (ofrendaId) {
+//           this.lidSvc.actualizarOfrenda(ofrendaId, body).subscribe({
+//             next: () => {
+//               Swal.fire('Listo', 'Ofrenda actualizada.', 'success');
+//               this.cargarTotalesAsistencia(this.eventos); // Refrescar totales
+//             },
+//             error: () => Swal.fire('Error', 'No se pudo actualizar la ofrenda.', 'error')
+//           });
+//         } else {
+//           this.lidSvc.crearOfrendaParaEvento(eventoId, body).subscribe({
+//             next: () => {
+//               Swal.fire('Listo', 'Ofrenda registrada.', 'success');
+//               this.cargarTotalesAsistencia(this.eventos); // Refrescar totales
+//             },
+//             error: () => Swal.fire('Error', 'No se pudo registrar la ofrenda.', 'error')
+//           });
+//         }
+//       });
+//     },
+//     error: () => {
+//       this.abrirDialogoOfrenda(e);
+//     }
+//   });
+// }
 
-private abrirDialogoOfrenda(e: EventoItem): void {
-  const ref = this.dialog.open(OfrendaDialogComponent, {
-    width: '420px',
-    data: {
-      liderazgoNombre: this.liderazgoNombre,
-      eventos: this.eventos,
-      eventoIdDefault: e.id
-    }
-  });
+// private abrirDialogoOfrenda(e: EventoItem): void {
+//   const ref = this.dialog.open(OfrendaDialogComponent, {
+//     width: '420px',
+//     data: {
+//       liderazgoNombre: this.liderazgoNombre,
+//       eventos: this.eventos,
+//       eventoIdDefault: e.id
+//     }
+//   });
 
-  ref.afterClosed().subscribe((payload?: OfrendaPayload) => {
-    if (!payload) return;
+//   ref.afterClosed().subscribe((payload?: OfrendaPayload) => {
+//     if (!payload) return;
 
-    const { eventoId, ...body } = payload;
-    this.lidSvc.crearOfrendaParaEvento(eventoId, body).subscribe({
-      next: () => {
-        Swal.fire('Listo', 'Ofrenda registrada.', 'success');
-      },
-      error: () => Swal.fire('Error', 'No se pudo registrar la ofrenda.', 'error')
-    });
-  });
-}
+//     const { eventoId, ...body } = payload;
+//     this.lidSvc.crearOfrendaParaEvento(eventoId, body).subscribe({
+//       next: () => {
+//         Swal.fire('Listo', 'Ofrenda registrada.', 'success');
+//       },
+//       error: () => Swal.fire('Error', 'No se pudo registrar la ofrenda.', 'error')
+//     });
+//   });
+// }
 }
