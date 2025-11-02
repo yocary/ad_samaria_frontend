@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, AfterViewInit, ViewChild } from '@angular/core';
+import { MatFormField } from '@angular/material/form-field';
 import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, of } from 'rxjs';
@@ -25,7 +26,9 @@ interface Miembro {
   templateUrl: './planificacion-grupo-detalle.component.html',
   styleUrls: ['./planificacion-grupo-detalle.component.scss'],
 })
-export class PlanificacionGrupoDetalleComponent implements OnInit {
+export class PlanificacionGrupoDetalleComponent implements OnInit, AfterViewInit {
+  @ViewChild(MatFormField) matField!: MatFormField;
+
   liderazgoId!: number;
   liderazgoNombre = '';
 
@@ -33,7 +36,8 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
   tabActivo: 'integrantes' | 'eventos' = 'integrantes';
 
   // Buscar/Agregar integrantes
-  personaQuery = new FormControl('');
+  // Control acepta texto (mientras escribe) o el objeto seleccionado
+personaQuery = new FormControl('');
   opcionesFiltradas$!: Observable<PersonaMini[]>;
   seleccionado?: PersonaMini;
 
@@ -51,51 +55,52 @@ export class PlanificacionGrupoDetalleComponent implements OnInit {
     private router: Router
   ) {}
 
-ready = false;
+  ngOnInit(): void {
+    this.liderazgoId = Number(this.route.snapshot.paramMap.get('id'));
+    this.liderazgoNombre = this.route.snapshot.queryParamMap.get('nombre') || '';
 
-ngOnInit(): void {
-  // Espera un ciclo para que Angular Material calcule correctamente el outline
-  setTimeout(() => {
-    this.ready = true;
-  });
+    this.cargarMiembros();
 
-  this.liderazgoId = Number(this.route.snapshot.paramMap.get('id'));
-  this.liderazgoNombre =
-    this.route.snapshot.queryParamMap.get('nombre') || '';
+    // Stream para autocomplete (si es objeto toma su nombre; si es string usa tal cual)
+    this.opcionesFiltradas$ = this.personaQuery.valueChanges.pipe(
+      startWith(this.personaQuery.value ?? ''),
+      debounceTime(250),
+      map(v => (typeof v === 'string' ? v : v?.nombre ?? '')),
+      distinctUntilChanged(),
+      switchMap((term: string) => {
+        const q = term.trim();
+        if (!q) {
+          this.seleccionado = undefined;
+        }
+        return q.length < 2 ? of<PersonaMini[]>([]) : this.miembrosSvc.buscarMin$(q);
+      })
+    );
 
-  this.cargarMiembros();
+    // Obtener rol "miembro" del liderazgo
+    this.liderazgoSvc.listarRoles(this.liderazgoId).subscribe({
+      next: (roles) => {
+        if (roles && roles.length) {
+          const rMiembro = roles.find((r: any) => (r.nombre || '').toLowerCase().trim() === 'miembro');
+          this.rolBaseId = rMiembro?.id ?? roles[0].id;
+        } else {
+          this.rolBaseId = null;
+        }
+      },
+      error: () => (this.rolBaseId = null),
+    });
+  }
 
-  this.opcionesFiltradas$ = this.personaQuery.valueChanges.pipe(
-    startWith(this.personaQuery.value ?? ''),
-    debounceTime(250),
-    map((v) => (typeof v === 'string' ? v : v?.nombre ?? '')),
-    distinctUntilChanged(),
-    switchMap((term: string) => {
-      const q = term.trim();
-      if (!q) {
-        this.seleccionado = undefined;
+  // Fuerza el recalculo del notch/outline para evitar el “doble cuadro” en el primer render
+  ngAfterViewInit(): void {
+    setTimeout(() => {
+      try {
+        // API interna de MDC; funciona en Angular Material MDC
+        (this.matField as any)?._foundation?.updateOutlineGap?.();
+      } catch {
+        // ignorar si no existe en alguna versión
       }
-      return q.length < 2
-        ? of<PersonaMini[]>([])
-        : this.miembrosSvc.buscarMin$(q);
-    })
-  );
-
-  this.liderazgoSvc.listarRoles(this.liderazgoId).subscribe({
-    next: (roles) => {
-      if (roles && roles.length) {
-        const rMiembro = roles.find(
-          (r: any) => (r.nombre || '').toLowerCase().trim() === 'miembro'
-        );
-        this.rolBaseId = rMiembro?.id ?? roles[0].id;
-      } else {
-        this.rolBaseId = null;
-      }
-    },
-    error: () => (this.rolBaseId = null),
-  });
-}
-
+    });
+  }
 
   // Cambiar tab (Integrantes/Eventos)
   cambiarTab(tab: 'integrantes' | 'eventos'): void {
@@ -109,8 +114,7 @@ ngOnInit(): void {
       next: (res: any[]) => {
         this.miembros = (res || []).map((r: any) => ({
           id: r.id ?? r.miembroId ?? r.liderazgoMiembroId,
-          nombre:
-            r.nombre ?? r.nombrePersona ?? r.miembroNombre ?? r.persona ?? '',
+          nombre: r.nombre ?? r.nombrePersona ?? r.miembroNombre ?? r.persona ?? '',
         }));
         this.cargandoMiembros = false;
       },
@@ -121,19 +125,18 @@ ngOnInit(): void {
     });
   }
 
-  // Display del autocomplete
+  // displayWith del autocomplete
   displayPersona = (p?: PersonaMini | null): string => p?.nombre ?? '';
 
-  // Selección desde el autocomplete
+  // Selección desde el autocomplete: guarda el OBJETO en el control
   elegir(p: PersonaMini): void {
     this.seleccionado = p;
-    // mantener texto visible sin disparar nueva búsqueda
-    this.personaQuery.setValue(p.nombre, { emitEvent: false });
+    this.personaQuery.setValue(p, { emitEvent: false }); // objeto, no string
   }
 
   limpiarSeleccion(): void {
     this.seleccionado = undefined;
-    this.personaQuery.setValue('', { emitEvent: true });
+    this.personaQuery.setValue('', { emitEvent: true }); // vuelve a modo texto
   }
 
   // Agregar miembro
@@ -144,11 +147,7 @@ ngOnInit(): void {
     const ROL_ID_POR_DEFECTO = 0;
 
     this.liderazgoSvc
-      .agregarMiembro(
-        this.liderazgoId,
-        this.seleccionado.id,
-        this.rolBaseId ?? ROL_ID_POR_DEFECTO
-      )
+      .agregarMiembro(this.liderazgoId, this.seleccionado.id, this.rolBaseId ?? ROL_ID_POR_DEFECTO)
       .subscribe({
         next: () => {
           this.guardando = false;
@@ -158,11 +157,7 @@ ngOnInit(): void {
         },
         error: () => {
           this.guardando = false;
-          Swal.fire(
-            'Error',
-            'El miembro ya se encuentra en el ministerio',
-            'error'
-          );
+          Swal.fire('Error', 'El miembro ya se encuentra en el ministerio', 'error');
         },
       });
   }
@@ -183,8 +178,7 @@ ngOnInit(): void {
           this.miembros = this.miembros.filter((m) => m.id !== miembroId);
           Swal.fire('Eliminado', 'Miembro quitado del ministerio', 'success');
         },
-        error: () =>
-          Swal.fire('Error', 'No se pudo quitar el miembro', 'error'),
+        error: () => Swal.fire('Error', 'No se pudo quitar el miembro', 'error'),
       });
     });
   }

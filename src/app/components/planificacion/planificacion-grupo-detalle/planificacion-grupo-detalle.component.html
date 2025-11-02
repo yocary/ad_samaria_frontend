@@ -4,20 +4,12 @@
       {{ liderazgoNombre | uppercase }}
     </div>
 
-    <!-- Tabs simples -->
+    <!-- Tabs -->
     <div class="tabs">
-      <button
-        class="tab"
-        [class.active]="tabActivo === 'integrantes'"
-        (click)="cambiarTab('integrantes')"
-      >
+      <button class="tab" [class.active]="tabActivo === 'integrantes'" (click)="cambiarTab('integrantes')">
         Integrantes
       </button>
-      <button
-        class="tab"
-        [class.active]="tabActivo === 'eventos'"
-        (click)="cambiarTab('eventos')"
-      >
+      <button class="tab" [class.active]="tabActivo === 'eventos'" (click)="cambiarTab('eventos')">
         Eventos
       </button>
     </div>
@@ -26,15 +18,16 @@
       <!-- INTEGRANTES -->
       <ng-container *ngSwitchCase="'integrantes'">
         <div class="bar">
-          <!-- Render diferido para evitar doble-outline en el primer paint -->
-          <div class="search-container" *ngIf="ready">
+          <div class="search-container">
             <mat-form-field
+              #matField
               appearance="outline"
               floatLabel="always"
               class="search"
               subscriptSizing="dynamic"
             >
               <mat-label>Buscar persona (mín. 2 letras)</mat-label>
+
               <input
                 type="text"
                 matInput
@@ -60,18 +53,12 @@
                 panelClass="search-panel"
                 (optionSelected)="elegir($event.option.value)"
               >
-                <mat-option
-                  *ngFor="let p of opcionesFiltradas$ | async"
-                  [value]="p"
-                >
+                <mat-option *ngFor="let p of opcionesFiltradas$ | async" [value]="p">
                   {{ p.nombre }}
                 </mat-option>
 
                 <ng-container
-                  *ngIf="
-                    (opcionesFiltradas$ | async)?.length === 0 &&
-                    (personaQuery.value?.length || 0) >= 2
-                  "
+                  *ngIf="(opcionesFiltradas$ | async)?.length === 0 && (personaQuery.value?.length || 0) >= 2"
                 >
                   <mat-option disabled>Sin resultados</mat-option>
                 </ng-container>
@@ -93,10 +80,7 @@
         <!-- Tabla de integrantes -->
         <div class="table-wrap">
           <div class="loader" *ngIf="cargandoMiembros">
-            <mat-progress-spinner
-              mode="indeterminate"
-              diameter="24"
-            ></mat-progress-spinner>
+            <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
             <span>Cargando integrantes…</span>
           </div>
 
@@ -109,19 +93,11 @@
               </tr>
             </thead>
             <tbody>
-              <tr
-                *ngFor="let m of miembros; let i = index; trackBy: trackByMiembro"
-              >
+              <tr *ngFor="let m of miembros; let i = index; trackBy: trackByMiembro">
                 <td>{{ i + 1 }}</td>
                 <td>{{ m.nombre }}</td>
                 <td>
-                  <button
-                    mat-stroked-button
-                    color="warn"
-                    (click)="quitar(m.id)"
-                  >
-                    Quitar
-                  </button>
+                  <button mat-stroked-button color="warn" (click)="quitar(m.id)">Quitar</button>
                 </td>
               </tr>
             </tbody>
@@ -137,17 +113,14 @@
       <ng-container *ngSwitchCase="'eventos'">
         <app-planificacion-eventos
           [liderazgoId]="liderazgoId"
-          [liderazgoNombre]="liderazgoNombre"
-        >
+          [liderazgoNombre]="liderazgoNombre">
         </app-planificacion-eventos>
       </ng-container>
     </ng-container>
 
     <!-- Pie -->
     <div class="footer">
-      <button mat-stroked-button color="primary" (click)="regresar()">
-        Regresar
-      </button>
+      <button mat-stroked-button color="primary" (click)="regresar()">Regresar</button>
     </div>
   </div>
 </div>
