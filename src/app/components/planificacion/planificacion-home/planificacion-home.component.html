@@ -14,7 +14,7 @@
         <div class="gcard" *ngFor="let l of liderazgos; let i = index" [ngClass]="colorClass(i)">
           <div class="gcard__title" [matTooltip]="l.nombre">{{ l.nombre }}</div>
 
-          <button mat-stroked-button class="gcard__btn" (click)="verLiderazgo(l.id)">
+          <button mat-stroked-button class="gcard__btn" (click)="verLiderazgo(l.id, l.nombre)">
             Ver <mat-icon>arrow_forward</mat-icon>
           </button>
         </div>

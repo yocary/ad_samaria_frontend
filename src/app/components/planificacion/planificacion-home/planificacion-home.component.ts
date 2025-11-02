@@ -1,11 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { LiderazgoService, Liderazgo } from 'src/app/services/liderazgo.service';
+import {
+  LiderazgoService,
+  Liderazgo,
+} from 'src/app/services/liderazgo.service';
 
 @Component({
   selector: 'app-planificacion-home',
   templateUrl: './planificacion-home.component.html',
-  styleUrls: ['./planificacion-home.component.scss']
+  styleUrls: ['./planificacion-home.component.scss'],
 })
 export class PlanificacionHomeComponent implements OnInit {
   cargando = true;
@@ -14,10 +17,7 @@ export class PlanificacionHomeComponent implements OnInit {
   // solo para variar el borde superior de las tarjetas
   palette = ['teal', 'green', 'amber', 'blue', 'purple'];
 
-  constructor(
-    private liderazgoSvc: LiderazgoService,
-    private router: Router
-  ) {}
+  constructor(private liderazgoSvc: LiderazgoService, private router: Router) {}
 
   ngOnInit(): void {
     this.cargar();
@@ -34,13 +34,14 @@ export class PlanificacionHomeComponent implements OnInit {
       error: () => {
         this.liderazgos = [];
         this.cargando = false;
-      }
+      },
     });
   }
 
-  verLiderazgo(id: number): void {
-    // ajusta la ruta de destino a tu pantalla de detalle/planificación por liderazgo
-    this.router.navigate(['/planificacion/grupo', id]);
+  verLiderazgo(id: number, nombre: string): void {
+    this.router.navigate(['/planificacion/grupo', id], {
+      queryParams: { nombre: nombre },
+    });
   }
 
   regresar(): void {
