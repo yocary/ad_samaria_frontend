@@ -258,3 +258,56 @@ mat-card-actions button[mat-stroked-button][color="primary"]:focus-visible {
   outline-offset: 2px;
   border-radius: 8px;
 }
+/* ===== Centrado vertical universal – formulario moderno Samaria ===== */
+
+/* 1) Botones personalizados (.btn-agregar, .btn-secondary) */
+:host :where(.btn-agregar, .btn-secondary) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+
+  /* tienes height:40px → elimina padding vertical extra */
+  padding-block: 0;
+  padding-inline: 22px;
+  height: 40px;
+}
+
+/* Variante opcional si querés sin height fija (auto–adaptable)
+:host :where(.btn-agregar.adaptable, .btn-secondary.adaptable) {
+  height: auto;
+  min-height: 40px;
+  padding-block: 10px;
+  padding-inline: 22px;
+}
+*/
+
+/* 2) Íconos dentro de los botones */
+:host :where(.btn-agregar mat-icon, .btn-secondary mat-icon,
+              .btn-agregar .material-icons, .btn-secondary .material-icons) {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 6px; /* quítalo si el botón es solo ícono */
+}
+
+/* 3) Botones Angular Material dentro del mat-card-actions */
+:host :where(mat-card-actions button[mat-stroked-button],
+             mat-card-actions button[mat-raised-button],
+             mat-card-actions button[mat-button]) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  vertical-align: middle;
+  padding-block: 0;   /* evita desalineo con height fija */
+}
+
+/* 4) Etiqueta interna de MDC (para Material v15+) */
+:host :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button)
+       .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
