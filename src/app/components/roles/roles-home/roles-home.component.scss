@@ -156,3 +156,56 @@
   .miembros__footer{ justify-content:center; }
   .miembros__footer .btn{ width:100%; max-width:420px; }
 }
+/* ===== Centrado vertical universal (Roles – Samaria) ===== */
+
+/* 1) Tus botones .btn: forzar flex-centering y line-height neutro */
+.card :where(.btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;           /* evita que el texto “se caiga” */
+  vertical-align: middle;
+  /* si mantienes height fija (40px), reduce padding vertical: */
+  padding-block: 0;         /* <-- clave cuando hay height fija */
+  padding-inline: 18px;
+  height: 40px;             /* lo conservas */
+}
+
+/* Si prefieres SIN altura fija (auto) para que se adapte, usa esta variante: */
+/*
+.card :where(.btn.adaptable) {
+  height: auto;
+  min-height: 40px;
+  padding-block: 10px;
+  padding-inline: 18px;
+}
+*/
+
+/* 2) Íconos dentro de .btn */
+.card :where(.btn) mat-icon,
+.card :where(.btn) .material-icons,
+.card :where(.btn) i.material-icons {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 6px;      /* quítalo si hay icon-only */
+}
+
+/* 3) Botones de Angular Material en esta pantalla: centrar label interno MDC */
+.card :where(.mat-mdc-button-base) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+.card :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-unelevated-button, .mat-mdc-stroked-button)
+       .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+/* 4) Si hay botones Material con height fija aquí, evita padding vertical */
+.card :where(button[mat-raised-button], button[mat-stroked-button], button[mat-button]) {
+  padding-block: 0;        /* centra con height fija */
+}
