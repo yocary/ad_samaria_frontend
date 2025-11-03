@@ -125,3 +125,31 @@ mat-dialog-actions button:focus-visible {
 .w-full {
   width: 100%;
 }
+/* Centrado vertical para botones dentro del diálogo */
+mat-dialog-actions button[mat-raised-button],
+mat-dialog-actions button[mat-stroked-button] {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+
+  /* en vez de height: 38px */
+  min-height: 38px;
+  padding-block: 8px;     /* equivalente a padding-top/bottom */
+  padding-inline: 20px;   /* mantiene tu ancho visual */
+}
+
+/* Alinear ícono y texto */
+mat-dialog-actions button mat-icon {
+  font-size: 20px;
+  margin-right: 6px;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* Ajuste extra para MDC (Angular Material v15+): etiqueta del botón */
+.mat-mdc-button-base .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
