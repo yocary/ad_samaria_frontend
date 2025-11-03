@@ -63,3 +63,293 @@
 
 .btn-amber { background: #f5b942; color: #fff; margin-right: 8px; &:hover { filter: brightness(.95); } }
 button[color="accent"] { color: #fff !important; margin-right: 8px; &:last-child { margin-right: 0; } }
+/* =========================
+   BOTONES – ESTILO SAMARIA (compacto)
+   ========================= */
+
+/* Vars locales para esta vista */
+.wrap {
+  --btn-h: 38px;        /* alto compacto (puedes subir a 40px si prefieres) */
+  --btn-r: 10px;        /* border-radius */
+  --btn-pad-x: 16px;    /* padding horizontal */
+}
+
+/* ==== Primario (raised) – azul degradado ==== */
+.wrap button.mat-mdc-raised-button.mat-primary,
+.table .mat-column-acciones button.mat-mdc-raised-button.mat-primary {
+  /* visual */
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--btn-r) !important;
+  box-shadow: 0 6px 14px rgba(36,75,107,.22);
+  letter-spacing: .3px;
+  font-weight: 800;
+
+  /* tamaño/centrado */
+  --mdc-filled-button-container-height: var(--btn-h);
+  height: var(--btn-h) !important;
+  padding: 0 var(--btn-pad-x) !important;
+  position: relative;
+  overflow: hidden;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1 !important;
+  transition: transform .18s ease, box-shadow .25s ease, filter .25s ease;
+}
+
+/* brillo */
+.wrap button.mat-mdc-raised-button.mat-primary::before,
+.table .mat-column-acciones button.mat-mdc-raised-button.mat-primary::before {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+  transition: transform .75s ease;
+}
+.wrap button.mat-mdc-raised-button.mat-primary:hover::before,
+.table .mat-column-acciones button.mat-mdc-raised-button.mat-primary:hover::before {
+  transform: translateX(120%);
+}
+.wrap button.mat-mdc-raised-button.mat-primary:hover,
+.table .mat-column-acciones button.mat-mdc-raised-button.mat-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36,75,107,.30);
+}
+
+/* ==== Stroked (outline) – blanco → azul al hover ==== */
+.wrap button.mat-mdc-stroked-button,
+.table .mat-column-acciones button.mat-mdc-stroked-button {
+  background: #fff;
+  color: #244b6b !important;
+  border: 1px solid #244b6b !important;
+  border-radius: var(--btn-r);
+  font-weight: 800;
+  letter-spacing: .2px;
+  box-shadow: 0 6px 14px rgba(36,75,107,.14);
+  position: relative;
+  overflow: hidden;
+
+  /* tamaño/centrado */
+  --mdc-outlined-button-container-height: var(--btn-h);
+  height: var(--btn-h) !important;
+  padding: 0 var(--btn-pad-x) !important;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1 !important;
+  transition: transform .18s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
+}
+
+/* brillo */
+.wrap button.mat-mdc-stroked-button::before,
+.table .mat-column-acciones button.mat-mdc-stroked-button::before {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(36,75,107,.18), transparent);
+  transition: transform .75s ease;
+}
+.wrap button.mat-mdc-stroked-button:hover::before,
+.table .mat-column-acciones button.mat-mdc-stroked-button:hover::before {
+  transform: translateX(120%);
+}
+.wrap button.mat-mdc-stroked-button:hover,
+.table .mat-column-acciones button.mat-mdc-stroked-button:hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36,75,107,.28);
+}
+
+/* ==== Accent (verde) – degradado ==== */
+.wrap button[color="accent"].mat-mdc-raised-button,
+.table .mat-column-acciones button[color="accent"].mat-mdc-raised-button {
+  background: linear-gradient(135deg, #43a047, #2e7d32) !important;
+  color: #fff !important;
+  border-radius: var(--btn-r) !important;
+  box-shadow: 0 6px 14px rgba(46,125,50,.22);
+  font-weight: 800;
+
+  --mdc-filled-button-container-height: var(--btn-h);
+  height: var(--btn-h) !important;
+  padding: 0 var(--btn-pad-x) !important;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1 !important;
+  transition: transform .18s ease, box-shadow .25s ease;
+}
+.wrap button[color="accent"].mat-mdc-raised-button:hover,
+.table .mat-column-acciones button[color="accent"].mat-mdc-raised-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(46,125,50,.30);
+}
+
+/* ==== Amber (tu .btn-amber) – degradado + compatibilidad ==== */
+.wrap .btn-amber,
+.table .mat-column-acciones .btn-amber {
+  background: linear-gradient(135deg, #f5b942, #d99a1a) !important;
+  color: #fff !important;
+  border: none;
+  border-radius: var(--btn-r);
+  font-weight: 800;
+  letter-spacing: .2px;
+
+  height: var(--btn-h);
+  padding: 0 var(--btn-pad-x);
+  display: inline-grid;
+  place-items: center;
+  line-height: 1 !important;
+  box-shadow: 0 6px 14px rgba(217,154,26,.22);
+  transition: transform .18s ease, box-shadow .25s ease, filter .25s ease;
+}
+.wrap .btn-amber:hover,
+.table .mat-column-acciones .btn-amber:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(217,154,26,.30);
+  filter: none;
+}
+
+/* ==== Centrados internos (MDC) – elimina “texto caído” ==== */
+.wrap :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button) .mdc-button__label,
+.table :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button) .mdc-button__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;           /* ocupa todo el alto */
+  line-height: 1;         /* sin empuje extra */
+}
+
+/* ripple y touch-target al 100% del alto del botón */
+.wrap :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button) .mdc-button__ripple,
+.wrap :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button) .mat-mdc-button-touch-target,
+.table :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button) .mdc-button__ripple,
+.table :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button) .mat-mdc-button-touch-target {
+  height: 100%;
+}
+
+/* Íconos en botones */
+.wrap :where(button) mat-icon,
+.table :where(button) mat-icon {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 6px;                /* quítalo si el botón es solo ícono */
+}
+.wrap :where(button.icon-only) mat-icon,
+.table :where(button.icon-only) mat-icon { margin-right: 0; }
+
+/* Estados comunes */
+.wrap button:disabled,
+.table button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+  box-shadow: none !important;
+}
+.wrap button:focus-visible,
+.table button:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Espaciado entre botones en columna Acciones de la tabla */
+.table .mat-column-acciones button {
+  margin-right: 8px;
+}
+.table .mat-column-acciones button:last-child { margin-right: 0; }
+/* =========================
+   FIX SAMARIA – Agregar Evento (toolbar) y Observación (tabla)
+   ========================= */
+
+/* Vars locales */
+:host {
+  --samaria-btn-h: 38px;
+  --samaria-btn-r: 10px;
+  --samaria-btn-x: 16px;
+}
+
+/* 1) Toolbar: + Agregar Evento */
+:host ::ng-deep .toolbar > button[mat-raised-button][color="primary"] {
+  /* visual */
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--samaria-btn-r) !important;
+  box-shadow: 0 6px 14px rgba(36,75,107,.22) !important;
+  font-weight: 800 !important;
+  letter-spacing: .3px !important;
+
+  /* tamaño & centrado */
+  --mdc-filled-button-container-height: var(--samaria-btn-h);
+  height: var(--samaria-btn-h) !important;
+  padding: 0 var(--samaria-btn-x) !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
+  position: relative;
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .25s ease, filter .25s ease;
+}
+
+/* brillo */
+:host ::ng-deep .toolbar > button[mat-raised-button][color="primary"]::before {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+  transition: transform .75s ease;
+}
+:host ::ng-deep .toolbar > button[mat-raised-button][color="primary"]:hover::before { transform: translateX(120%); }
+:host ::ng-deep .toolbar > button[mat-raised-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36,75,107,.30) !important;
+}
+
+/* 2) Tabla: botón Observación en la columna Acciones */
+:host ::ng-deep td.mat-column-acciones button[mat-raised-button][color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--samaria-btn-r) !important;
+  box-shadow: 0 6px 14px rgba(36,75,107,.22) !important;
+  font-weight: 800 !important;
+  letter-spacing: .3px !important;
+
+  --mdc-filled-button-container-height: var(--samaria-btn-h);
+  height: var(--samaria-btn-h) !important;
+  padding: 0 var(--samaria-btn-x) !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
+  position: relative;
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .25s ease, filter .25s ease;
+}
+
+/* brillo */
+:host ::ng-deep td.mat-column-acciones button[mat-raised-button][color="primary"]::before {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+  transition: transform .75s ease;
+}
+:host ::ng-deep td.mat-column-acciones button[mat-raised-button][color="primary"]:hover::before { transform: translateX(120%); }
+:host ::ng-deep td.mat-column-acciones button[mat-raised-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36,75,107,.30) !important;
+}
+
+/* 3) Centrado interno MDC para ambos (evita texto “caído”) */
+:host ::ng-deep .toolbar > button[mat-raised-button][color="primary"] .mdc-button__label,
+:host ::ng-deep td.mat-column-acciones button[mat-raised-button][color="primary"] .mdc-button__label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  line-height: 1 !important;
+}
+:host ::ng-deep .toolbar > button[mat-raised-button][color="primary"] .mat-mdc-button-touch-target,
+:host ::ng-deep td.mat-column-acciones button[mat-raised-button][color="primary"] .mat-mdc-button-touch-target {
+  height: var(--mdc-filled-button-container-height) !important;
+}

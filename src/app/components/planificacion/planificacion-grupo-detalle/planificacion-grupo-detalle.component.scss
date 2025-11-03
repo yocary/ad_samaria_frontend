@@ -190,3 +190,528 @@ tr:hover td { background: #f9fcff; }
   .btn-add { width: 100%; height: 48px; }
   .search-container { width: 100%; }
 }
+/* =========================
+   BOTONES – ESTILO SAMARIA (esta vista)
+   ========================= */
+
+/* Vars locales (ajusta si quieres) */
+.wrap {
+  --btn-h: 40px;         /* alto */
+  --btn-r: 10px;         /* border-radius */
+  --btn-x: 18px;         /* padding horizontal */
+}
+
+/* === Primario (raised) – azul degradado === */
+.wrap :where(button.mat-mdc-raised-button.mat-primary) {
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--btn-r) !important;
+  box-shadow: 0 6px 14px rgba(36,75,107,.22);
+  font-weight: 800;
+  letter-spacing: .3px;
+
+  /* tamaño/centrado */
+  --mdc-filled-button-container-height: var(--btn-h);
+  height: var(--btn-h) !important;
+  padding: 0 var(--btn-x) !important;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1 !important;
+  position: relative;
+  overflow: hidden;
+  transition: transform .18s ease, box-shadow .25s ease, filter .25s ease;
+}
+
+/* Brillo */
+.wrap :where(button.mat-mdc-raised-button.mat-primary)::before {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
+  transition: transform .75s ease;
+}
+.wrap :where(button.mat-mdc-raised-button.mat-primary):hover::before { transform: translateX(120%); }
+.wrap :where(button.mat-mdc-raised-button.mat-primary):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36,75,107,.30);
+}
+
+/* === Stroked (outline) – blanco → azul al hover === */
+.wrap :where(button.mat-mdc-stroked-button) {
+  background: #fff;
+  color: #244b6b !important;
+  border: 1px solid #244b6b !important;
+  border-radius: var(--btn-r);
+  font-weight: 800;
+  letter-spacing: .2px;
+  box-shadow: 0 6px 14px rgba(36,75,107,.14);
+  position: relative;
+  overflow: hidden;
+
+  --mdc-outlined-button-container-height: var(--btn-h);
+  height: var(--btn-h) !important;
+  padding: 0 var(--btn-x) !important;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1 !important;
+  transition: transform .18s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
+}
+.wrap :where(button.mat-mdc-stroked-button)::before {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(36,75,107,.18), transparent);
+  transition: transform .75s ease;
+}
+.wrap :where(button.mat-mdc-stroked-button):hover::before { transform: translateX(120%); }
+.wrap :where(button.mat-mdc-stroked-button):hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36,75,107,.28);
+}
+
+/* === Accent (verde) – degradado === */
+.wrap :where(button.mat-mdc-raised-button[color="accent"]) {
+  background: linear-gradient(135deg, #43a047, #2e7d32) !important;
+  color: #fff !important;
+  border-radius: var(--btn-r) !important;
+  box-shadow: 0 6px 14px rgba(46,125,50,.22);
+  font-weight: 800;
+
+  --mdc-filled-button-container-height: var(--btn-h);
+  height: var(--btn-h) !important;
+  padding: 0 var(--btn-x) !important;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1 !important;
+  transition: transform .18s ease, box-shadow .25s ease;
+}
+.wrap :where(button.mat-mdc-raised-button[color="accent"]):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(46,125,50,.30);
+}
+
+/* === Botón Agregar (ámbar) – versión Samaria === */
+.wrap .btn-add {
+  background: linear-gradient(135deg, #f5b942, #d99a1a) !important;
+  color: #fff !important;
+  border: none;
+  border-radius: var(--btn-r);
+  font-weight: 800;
+  letter-spacing: .2px;
+  white-space: nowrap;
+
+  height: 56px;                 /* tu alto “grande” */
+  padding: 0 22px;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1 !important;
+  box-shadow: 0 8px 18px rgba(217,154,26,.22);
+  transition: transform .18s ease, box-shadow .25s ease, filter .25s ease;
+}
+.wrap .btn-add:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(217,154,26,.30);
+  filter: none;
+}
+.wrap .btn-add:disabled { opacity: .6; cursor: not-allowed; box-shadow: none; }
+
+/* === Centrados internos (MDC) — evita texto “caído” === */
+.wrap :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button) .mdc-button__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  line-height: 1;
+}
+.wrap :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button) .mdc-button__ripple,
+.wrap :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button) .mat-mdc-button-touch-target {
+  height: 100%;
+}
+
+/* Íconos en botones */
+.wrap :where(button) mat-icon {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 6px; /* quítalo con .icon-only si el botón no lleva texto */
+}
+
+/* Estados comunes */
+.wrap button:disabled { opacity: .6; cursor: not-allowed; box-shadow: none !important; }
+.wrap button:focus-visible { outline: 2px solid #ffd54f; outline-offset: 2px; border-radius: 8px; }
+/* === PARCHE: mapear stroked → outlined (MDC) y subir especificidad === */
+
+/* Outline (stroked) – base */
+.wrap :where(button.mat-mdc-outlined-button) {
+  background: #fff !important;
+  color: #244b6b !important;
+  border: 1px solid #244b6b !important;
+  border-radius: var(--btn-r);
+  font-weight: 800;
+  letter-spacing: .2px;
+  box-shadow: 0 6px 14px rgba(36,75,107,.14);
+  position: relative;
+  overflow: hidden;
+
+  /* alto/centrado */
+  --mdc-outlined-button-container-height: var(--btn-h);
+  height: var(--btn-h) !important;
+  padding: 0 var(--btn-x) !important;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1 !important;
+  transition: transform .18s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
+}
+
+/* Brillo */
+.wrap :where(button.mat-mdc-outlined-button)::before {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(36,75,107,.18), transparent);
+  transition: transform .75s ease;
+}
+.wrap :where(button.mat-mdc-outlined-button):hover::before {
+  transform: translateX(120%);
+}
+
+/* Hover degradado (forzamos con !important para ganar a MDC) */
+.wrap :where(button.mat-mdc-outlined-button):hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36,75,107,.28);
+}
+
+/* Centrado interno (label/ripple/touch) */
+.wrap :where(.mat-mdc-outlined-button) .mdc-button__label,
+.wrap :where(.mat-mdc-outlined-button) .mdc-button__ripple,
+.wrap :where(.mat-mdc-outlined-button) .mat-mdc-button-touch-target {
+  height: 100%;
+}
+.wrap :where(.mat-mdc-outlined-button) .mdc-button__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* — Opcional: conservar rojo para color="warn" — */
+.wrap button.mat-mdc-outlined-button.mat-warn {
+  border-color: #c62828 !important;
+  color: #c62828 !important;
+}
+.wrap button.mat-mdc-outlined-button.mat-warn:hover {
+  background: linear-gradient(135deg, #ef5350, #c62828) !important;
+  color: #fff !important;
+  box-shadow: 0 12px 24px rgba(198,40,40,.28);
+}
+
+/* (por si usas botones de texto) */
+.wrap :where(button.mat-mdc-button) {
+  --mdc-text-button-container-height: var(--btn-h);
+  height: var(--btn-h);
+  display: inline-grid;
+  place-items: center;
+  line-height: 1;
+  padding: 0 var(--btn-x);
+}
+.wrap :where(.mat-mdc-button) .mdc-button__label,
+.wrap :where(.mat-mdc-button) .mdc-button__ripple,
+.wrap :where(.mat-mdc-button) .mat-mdc-button-touch-target { height: 100%; }
+/* === FIX DEFINITIVO: botón "Regresar" centrado y con estilo Samaria === */
+.footer button.mat-mdc-outlined-button.mat-primary {
+  /* 1) Apariencia Samaria */
+  background: #fff !important;
+  color: #244b6b !important;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.3px;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.14);
+  position: relative;
+  overflow: hidden;
+  transition: all 0.25s ease;
+  cursor: pointer;
+
+  /* 2) Tamaño y centrado */
+  --mdc-outlined-button-container-height: 40px;
+  height: 40px !important;
+  padding: 0 22px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
+}
+
+/* Brillo animado */
+.footer button.mat-mdc-outlined-button.mat-primary::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(36, 75, 107, 0.18), transparent);
+  transition: transform 0.75s ease;
+}
+
+/* Hover degradado */
+.footer button.mat-mdc-outlined-button.mat-primary:hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36, 75, 107, 0.28);
+}
+.footer button.mat-mdc-outlined-button.mat-primary:hover::before {
+  transform: translateX(120%);
+}
+
+/* Centrado del label interno */
+.footer .mat-mdc-outlined-button .mdc-button__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  line-height: 1;
+}
+
+/* Touch target = alto del botón */
+.footer .mat-mdc-outlined-button .mat-mdc-button-touch-target {
+  height: var(--mdc-outlined-button-container-height);
+}
+
+/* Accesibilidad */
+.footer button.mat-mdc-outlined-button.mat-primary:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+/* === FIX FINAL REAL: botón "Regresar" (mat-stroked / mat-outlined) === */
+.footer :where(button[mat-stroked-button][color="primary"],
+               button.mat-mdc-outlined-button.mat-primary,
+               button.mat-mdc-stroked-button.mat-primary) {
+  /* --- Apariencia Samaria --- */
+  background: #fff !important;
+  color: #244b6b !important;
+  border: 1px solid #244b6b !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.3px !important;
+  box-shadow: 0 6px 14px rgba(36, 75, 107, 0.14) !important;
+  position: relative !important;
+  overflow: hidden !important;
+  cursor: pointer !important;
+
+  /* --- Tamaño y centrado --- */
+  --mdc-outlined-button-container-height: 40px;
+  height: 40px !important;
+  padding: 0 22px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  text-transform: none !important;
+
+  transition: all 0.25s ease !important;
+}
+
+/* Brillo */
+.footer :where(button[mat-stroked-button][color="primary"],
+               button.mat-mdc-outlined-button.mat-primary,
+               button.mat-mdc-stroked-button.mat-primary)::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(36,75,107,0.18), transparent);
+  transition: transform 0.75s ease;
+}
+
+/* Hover */
+.footer :where(button[mat-stroked-button][color="primary"],
+               button.mat-mdc-outlined-button.mat-primary,
+               button.mat-mdc-stroked-button.mat-primary):hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  color: #fff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36,75,107,0.28) !important;
+}
+.footer :where(button[mat-stroked-button][color="primary"],
+               button.mat-mdc-outlined-button.mat-primary,
+               button.mat-mdc-stroked-button.mat-primary):hover::before {
+  transform: translateX(120%);
+}
+
+/* Centrado interno (label/touch target) */
+.footer :where(.mat-mdc-outlined-button, .mat-mdc-stroked-button) .mdc-button__label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  line-height: 1 !important;
+}
+.footer :where(.mat-mdc-outlined-button, .mat-mdc-stroked-button) .mat-mdc-button-touch-target {
+  height: var(--mdc-outlined-button-container-height) !important;
+}
+
+/* Accesibilidad */
+.footer :where(button[mat-stroked-button][color="primary"],
+               button.mat-mdc-outlined-button.mat-primary,
+               button.mat-mdc-stroked-button.mat-primary):focus-visible {
+  outline: 2px solid #ffd54f !important;
+  outline-offset: 2px !important;
+  border-radius: 8px !important;
+}
+/* =========================
+   BOTÓN QUITAR (stroked/outlined, color="warn") – SAMARIA
+   ========================= */
+
+/* Base outlined rojo (reposo) dentro de la tabla */
+:host ::ng-deep td.mat-column-acciones button[mat-stroked-button][color="warn"],
+:host ::ng-deep td.mat-column-acciones .mat-mdc-outlined-button.mat-warn,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-stroked-button.mat-warn {
+  /* look Samaria */
+  background: #fff !important;
+  color: #c62828 !important;                  /* rojo Material 800 */
+  border: 1px solid #c62828 !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: .2px !important;
+  box-shadow: 0 6px 14px rgba(198,40,40,.12) !important;
+  position: relative !important;
+  overflow: hidden !important;
+
+  /* tamaño/centrado */
+  --mdc-outlined-button-container-height: 38px;
+  height: 38px !important;
+  padding: 0 16px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
+  transition: transform .18s ease, box-shadow .25s ease, background .25s ease, color .25s ease, border-color .25s ease;
+}
+
+/* Brillo */
+:host ::ng-deep td.mat-column-acciones button[mat-stroked-button][color="warn"]::before,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-outlined-button.mat-warn::before,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-stroked-button.mat-warn::before {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(198,40,40,.18), transparent);
+  transition: transform .75s ease;
+}
+
+/* Hover: degradado rojo + elevación */
+:host ::ng-deep td.mat-column-acciones button[mat-stroked-button][color="warn"]:hover,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-outlined-button.mat-warn:hover,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-stroked-button.mat-warn:hover {
+  background: linear-gradient(135deg, #ef5350, #c62828) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(198,40,40,.28) !important;
+}
+:host ::ng-deep td.mat-column-acciones button[mat-stroked-button][color="warn"]:hover::before,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-outlined-button.mat-warn:hover::before,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-stroked-button.mat-warn:hover::before {
+  transform: translateX(120%);
+}
+
+/* Centrado perfecto del label/touch target (MDC) */
+:host ::ng-deep td.mat-column-acciones .mat-mdc-outlined-button .mdc-button__label,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-stroked-button .mdc-button__label {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  height: 100% !important;
+  line-height: 1 !important;
+}
+:host ::ng-deep td.mat-column-acciones .mat-mdc-outlined-button .mat-mdc-button-touch-target,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-stroked-button .mat-mdc-button-touch-target {
+  height: var(--mdc-outlined-button-container-height) !important;
+}
+
+/* Estado disabled consistente */
+:host ::ng-deep td.mat-column-acciones button[mat-stroked-button][color="warn"]:disabled,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-outlined-button.mat-warn:disabled,
+:host ::ng-deep td.mat-column-acciones .mat-mdc-stroked-button.mat-warn:disabled {
+  opacity: .6 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  background: #fff !important;
+  color: #c62828 !important;
+  border-color: #c62828 !important;
+}
+/* =========================
+   Quitar (warn outlined) – Samaria
+   ========================= */
+
+/* base */
+:host ::ng-deep button.samaria-warn,
+:host ::ng-deep button.samaria-warn.mat-mdc-outlined-button,
+:host ::ng-deep .mat-column-acciones button.samaria-warn {
+  background: #fff !important;
+  color: #c62828 !important;                  /* rojo 800 */
+  border: 1px solid #c62828 !important;
+  border-radius: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: .2px !important;
+  box-shadow: 0 6px 14px rgba(198,40,40,.12) !important;
+  position: relative !important;
+  overflow: hidden !important;
+
+  /* alto/centrado */
+  --mdc-outlined-button-container-height: 38px;
+  height: 38px !important;
+  padding: 0 16px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
+  box-sizing: border-box !important;
+  transition: transform .18s ease, box-shadow .25s ease,
+              background .25s ease, color .25s ease, border-color .25s ease;
+}
+
+/* brillo */
+:host ::ng-deep button.samaria-warn::before {
+  content: "";
+  position: absolute; inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(198,40,40,.18), transparent);
+  transition: transform .75s ease;
+}
+
+/* hover */
+:host ::ng-deep button.samaria-warn:hover {
+  background: linear-gradient(135deg, #ef5350, #c62828) !important;
+  color: #fff !important;
+  border-color: transparent !important;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(198,40,40,.28) !important;
+}
+:host ::ng-deep button.samaria-warn:hover::before {
+  transform: translateX(120%);
+}
+
+/* centrado interno MDC */
+:host ::ng-deep button.samaria-warn .mdc-button__label,
+:host ::ng-deep button.samaria-warn .mat-mdc-button-touch-target,
+:host ::ng-deep button.samaria-warn .mdc-button__ripple {
+  height: var(--mdc-outlined-button-container-height) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+/* disabled */
+:host ::ng-deep button.samaria-warn:disabled {
+  opacity: .6 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  background: #fff !important;
+  color: #c62828 !important;
+  border-color: #c62828 !important;
+}

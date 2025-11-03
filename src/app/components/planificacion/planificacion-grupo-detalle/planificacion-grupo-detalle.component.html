@@ -85,7 +85,15 @@
                 <td>{{ i + 1 }}</td>
                 <td>{{ m.nombre }}</td>
                 <td>
-                  <button mat-stroked-button color="warn" (click)="quitar(m.id)">Quitar</button>
+                 <button
+  mat-stroked-button
+  color="warn"
+  class="samaria-warn"
+  (click)="quitar(m.id)"
+>
+  Quitar
+</button>
+
                 </td>
               </tr>
             </tbody>
