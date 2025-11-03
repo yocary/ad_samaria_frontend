@@ -795,3 +795,221 @@
   border-radius: 8px;
 }
 
+/* ===== Centrado vertical universal – módulo FINANZAS ===== */
+
+/* 1) Botones tipo Excel */
+:host :where(.btn--excel) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+  height: 40px;        /* ya definida, se mantiene */
+  padding-block: 0;    /* elimina padding vertical extra */
+  padding-inline: 16px;
+}
+
+/* ícono dentro del botón Excel */
+:host :where(.btn--excel mat-icon,
+             .btn--excel .material-icons,
+             .btn--excel i.material-icons) {
+  font-size: 18px;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* 2) Botón azul turquesa (toolbar-btn) */
+:host :where(.toolbar-btn) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: middle;
+  height: 40px;
+  padding-block: 0;     /* quita el padding vertical original */
+  padding-inline: 14px;
+}
+
+/* Ícono/texto dentro de toolbar-btn */
+:host :where(.toolbar-btn mat-icon,
+             .toolbar-btn .material-icons,
+             .toolbar-btn i.material-icons) {
+  font-size: 20px;
+  line-height: 1;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* 3) Botón REGRESAR (Angular Material) */
+:host :where(.miembros__footer button[mat-stroked-button],
+             .miembros__footer button[mat-raised-button],
+             .miembros__footer button[mat-button]) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+  vertical-align: middle;
+  padding-block: 0;   /* centrado cuando hay height fija */
+}
+
+/* 4) Ajuste de la etiqueta interna MDC (Material v15+) */
+:host :where(.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-stroked-button)
+       .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+/* 5) Botones solo icono → sin margen extra */
+:host :where(.btn--excel.icon-only mat-icon,
+             .toolbar-btn.icon-only mat-icon) {
+  margin-right: 0;
+}
+/* ===== Fix puntual: botón REGRESAR (stroked) centrado ===== */
+.miembros__footer .mat-mdc-stroked-button.mat-primary {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+
+  /* usa altura fija, así que quita padding vertical */
+  height: 38px !important;
+  padding: 0 20px !important;             /* ← sin padding arriba/abajo */
+}
+
+/* El label interno de MDC a veces empuja el texto hacia abajo */
+.miembros__footer .mat-mdc-stroked-button .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+/* El touch-target de MDC es 48px por defecto: hazlo calzar con el alto del botón */
+.miembros__footer .mat-mdc-stroked-button .mat-mdc-button-touch-target {
+  height: 100%;
+}
+
+/* (Opcional) microajuste si tu fuente aún se ve 1px baja en Windows */
+.miembros__footer .mat-mdc-stroked-button.mat-primary .mdc-button__label {
+  transform: translateY(-0.5px);
+}
+/* === FIX DEFINITIVO: Botón "Regresar" (stroked, MDC) === */
+.miembros__footer .mat-mdc-stroked-button.mat-primary {
+  /* 1) Usa las variables oficiales de MDC para que el layout interno respete el alto */
+  --mdc-outlined-button-container-height: 38px;   /* alto real del contenedor */
+  --mdc-outlined-button-outline-width: 1px;       /* tu borde */
+
+  /* 2) Centrado con flex (sobre la raíz del botón) */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  /* 3) Sin padding vertical; que el alto venga del container-height */
+  padding: 0 20px !important;
+
+  /* 4) Asegura box-sizing (borde incluido en el cálculo) */
+  box-sizing: border-box;
+  line-height: 1 !important;
+}
+
+/* Etiqueta interna: que no empuje hacia abajo */
+.miembros__footer .mat-mdc-stroked-button .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* Touch target por defecto es 48px → que coincida con el alto del botón */
+.miembros__footer .mat-mdc-stroked-button .mat-mdc-button-touch-target {
+  height: var(--mdc-outlined-button-container-height);
+}
+
+/* (Si lleva ícono) margen correcto del ícono */
+.miembros__footer .mat-mdc-stroked-button mat-icon {
+  font-size: 20px;
+  line-height: 1;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* (Opcional) microajuste si en Windows/Chrome aún lo ves 0.5px bajo */
+.miembros__footer .mat-mdc-stroked-button .mdc-button__label {
+  transform: translateY(-0.5px);
+}
+/* === FINZ: fix definitivo de centrado para el botón "Regresar" === */
+.finz .miembros__footer .mat-mdc-stroked-button.mat-primary {
+  /* usa el alto oficial de MDC */
+  --mdc-outlined-button-container-height: 38px;
+
+  /* grid centra mejor que flex en este caso */
+  display: grid !important;
+  place-items: center !important;
+
+  /* sin padding vertical; el alto lo pone la var de arriba */
+  padding: 0 20px !important;
+
+  /* por si algún estilo previo metió line-height/align raros */
+  line-height: 1 !important;
+  box-sizing: border-box;
+}
+
+/* asegura que el label quede exactamente al centro y ocupe todo el alto */
+.finz .miembros__footer .mat-mdc-stroked-button .mdc-button__label {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* último recurso: microajuste visual (descomenta si aún lo ves bajo) */
+  /* transform: translateY(-1px); */
+}
+
+/* el touch target por defecto es 48px; que coincida con el alto del botón */
+.finz .miembros__footer .mat-mdc-stroked-button .mat-mdc-button-touch-target {
+  height: var(--mdc-outlined-button-container-height);
+}
+
+/* si lleva ícono, margen correcto */
+.finz .miembros__footer .mat-mdc-stroked-button mat-icon {
+  font-size: 20px;
+  line-height: 1;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+/* === Regresar (MDC stroked) — forzar centrado vertical real === */
+.finz .miembros__footer .mat-mdc-stroked-button.mat-primary {
+  /* Alto oficial de MDC para el contenedor */
+  --mdc-outlined-button-container-height: 38px;
+
+  /* El botón en sí */
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 20px !important;      /* sin padding vertical */
+  line-height: 1 !important;
+  box-sizing: border-box;
+}
+
+/* Alturas internas iguales al contenedor (evita “caída” del texto) */
+.finz .miembros__footer .mat-mdc-stroked-button .mdc-button__label,
+.finz .miembros__footer .mat-mdc-stroked-button .mat-mdc-button-touch-target,
+.finz .miembros__footer .mat-mdc-stroked-button .mdc-button__ripple {
+  height: var(--mdc-outlined-button-container-height) !important;
+}
+
+/* El label centrado exacto y con line-height igual al alto */
+.finz .miembros__footer .mat-mdc-stroked-button .mdc-button__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: var(--mdc-outlined-button-container-height) !important;
+}
+
+/* (Si aún lo ves 1px bajo en Windows/Chrome) descomenta: */
+/*
+.finz .miembros__footer .mat-mdc-stroked-button .mdc-button__label {
+  transform: translateY(-1px);
+}
+*/
