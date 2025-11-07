@@ -1,34 +1,34 @@
-# Build Angular
+# Etapa 1: build Angular
 FROM node:18-alpine AS build
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY package.json package-lock.json ./ 
 RUN npm ci
 COPY . .
+# Ojo: ajusta el nombre de la carpeta de salida si no es "ad_samaria"
 RUN npm run build -- --configuration production
 
-# Servir con Nginx (SPA)
-FROM nginx:1.25-alpine
-# Copia el build a la raíz pública
-# ⚠️ Ajusta 'ad_samaria' si tu carpeta de dist se llama distinto
-COPY --from=build /app/dist/ad_samaria /usr/share/nginx/html
-# Configuración SPA: cualquier ruta -> index.html
-COPY <<'NGINX' /etc/nginx/conf.d/default.conf
-server {
-  listen 8080;
-  server_name _;
-  root /usr/share/nginx/html;
-  index index.html;
+# Etapa 2: servir como SPA con "serve"
+FROM node:18-alpine
 
-  # Archivos estáticos
-  location / {
-    try_files $uri $uri/ /index.html;
-  }
+# 1) Instala serve
+RUN npm i -g serve
 
-  # Tamaños/headers opcionales
-  client_max_body_size 10m;
-  add_header Cache-Control "public, max-age=0";
-}
-NGINX
+# 2) Copia el build
+WORKDIR /app
+# ⚠️ Ajusta 'ad_samaria' si tu proyecto genera otro nombre (p.ej. ad-samaria)
+COPY --from=build /app/dist/ad_samaria /app
+
+# 3) Script de arranque que valida que existe index.html y escucha en 0.0.0.0:$PORT
+RUN printf '#!/bin/sh\n\
+set -e\n\
+if [ ! -f /app/index.html ]; then\n\
+  echo "[ERROR] No existe /app/index.html. Revisa el nombre de carpeta en dist/*" >&2\n\
+  echo "Contenido de /app:"; ls -la /app || true\n\
+  exit 1\n\
+fi\n\
+PORT_TO_USE=${PORT:-8080}\n\
+echo "Iniciando serve en 0.0.0.0:${PORT_TO_USE} (SPA mode)..."\n\
+exec serve -s /app -l tcp://0.0.0.0:${PORT_TO_USE}\n' > /start.sh && chmod +x /start.sh
 
 EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["/start.sh"]
