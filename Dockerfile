@@ -1,35 +1,29 @@
 # Etapa 1: Construir la aplicación Angular
 FROM node:14 AS build
 
-# Establece el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copia package.json y package-lock.json al directorio de trabajo
 COPY package.json package-lock.json ./
-
-# Instala las dependencias
 RUN npm install
 
-# Copia el resto del código fuente de la aplicación al directorio de trabajo
 COPY . .
-
-# Construye la aplicación Angular en modo producción
 RUN npm run build -- --configuration production
 
-# Etapa 2: Servir la aplicación Angular con Node.js
+# Etapa 2: Servir la aplicación Angular como SPA
 FROM node:14
 
-# Establece el directorio de trabajo dentro del contenedor
+# 1) Instala "serve" que soporta fallback a index.html (-s)
+RUN npm i -g serve
+
+# 2) Carpeta de runtime
 WORKDIR /app
 
-# Copia los archivos estáticos generados por la construcción de la aplicación Angular desde la etapa anterior
+# 3) Copia el build (ajusta "ad_samaria" si tu carpeta dist tiene otro nombre)
 COPY --from=build /app/dist/ad_samaria /app
 
-# Instala un servidor http simple para servir la aplicación Angular
-RUN npm install -g http-server
+# 4) Expón un puerto (Railway usará $PORT). Usa 8080 por convención.
+EXPOSE 8080
 
-# Expone el puerto 4200 al mundo exterior
-EXPOSE 4200
-
-# Comando para iniciar el servidor http para servir la aplicación Angular en el puerto 4200
-CMD ["http-server", "-p", "4200"]
+# 5) Arranca serve en modo single-page (-s) y liga al puerto que pone Railway
+#    Si PORT no existe (local), usa 8080.
+CMD ["sh", "-c", "serve -s /app -l ${PORT:-8080}"]
