@@ -19,7 +19,7 @@
 
   <!-- Lista -->
   <div class="ldr__list">
-    <div class="row" *ngFor="let m of filtrados">
+    <div class="row" *ngFor="let m of pageData">
       <div class="name">{{ m.nombre }}</div>
       <div class="actions">
         <button mat-raised-button class="pill pill--blue" (click)="openMembers(m)">Integrantes</button>
@@ -28,8 +28,19 @@
       </div>
     </div>
   </div>
-  <br>
-      <button mat-stroked-button color="primary" (click)="regresarDashboard()">Regresar</button>
+
+<!-- Paginador -->
+<mat-paginator
+  class="ldr__paginator"
+  [length]="filtrados.length"
+  [pageSize]="pageSize"
+  [pageIndex]="pageIndex"
+  [pageSizeOptions]="pageSizeOptions"
+  hidePageSize="true"
+  (page)="handlePage($event)">
+</mat-paginator>
+
+
+  <br />
+  <button mat-stroked-button color="primary" (click)="regresarDashboard()">Regresar</button>
 </div>
-
-

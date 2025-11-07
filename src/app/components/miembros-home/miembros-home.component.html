@@ -4,15 +4,15 @@
 
   <!-- TOOLBAR -->
   <div class="miembros__toolbar">
-<div class="miembros__btns">
-  <button mat-raised-button color="primary" class="btn btn--primary" (click)="agregarPersona()">
-    + Agregar Persona
-  </button>
+    <div class="miembros__btns">
+      <button mat-raised-button class="btn btn--primary" (click)="agregarPersona()">
+        + Agregar Persona
+      </button>
 
-  <button mat-raised-button color="primary" class="btn btn--primary" (click)="agregarFamilia()">
-    + Agregar Familia
-  </button>
-</div>
+      <button mat-raised-button class="btn btn--primary" (click)="agregarFamilia()">
+        + Agregar Familia
+      </button>
+    </div>
 
     <div class="miembros__search">
       <mat-icon>search</mat-icon>
@@ -34,10 +34,18 @@
       <ng-container matColumnDef="acciones">
         <th mat-header-cell *matHeaderCellDef>Acciones</th>
         <td mat-cell *matCellDef="let row">
-          <button mat-stroked-button color="primary" (click)="verFicha(row.id, row.nombre)">
+          <button
+            mat-raised-button
+            class="btn btn--primary btn--sma"
+            (click)="verFicha(row.id, row.nombre)">
             Ver ficha
           </button>
-          <button mat-stroked-button color="accent" *ngIf="esAdministrador()" (click)="crearUsuarioPara(row)">
+
+          <button
+            mat-raised-button
+            class="btn btn--accent btn--sma"
+            *ngIf="esAdministrador()"
+            (click)="crearUsuarioPara(row)">
             Crear usuario
           </button>
         </td>
