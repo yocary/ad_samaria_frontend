@@ -458,3 +458,11 @@
   height: 36px;
   padding-inline: 12px;
 }
+.miembros__paginator {
+  margin-top: 10px;
+  border: 1px solid #e3edf7;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,.06);
+  .mat-mdc-paginator-container { padding: 4px 10px; }
+}

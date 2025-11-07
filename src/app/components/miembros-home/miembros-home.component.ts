@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewEncapsulation, AfterViewInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -10,16 +10,25 @@ import { CrearUsuarioDialogComponent } from '../crear-usuario-dialog/crear-usuar
 import { AuthService, UsuarioActual } from 'src/app/services/auth.service';
 import jsPDF from 'jspdf';
 
+import { MatPaginator } from '@angular/material/paginator';
+import { MatTableDataSource } from '@angular/material/table';
+
 @Component({
   selector: 'app-miembros-home',
   templateUrl: './miembros-home.component.html',
   styleUrls: ['./miembros-home.component.scss'],
-    encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None
 })
-export class MiembrosHomeComponent implements OnInit, OnDestroy {
+export class MiembrosHomeComponent implements OnInit, OnDestroy, AfterViewInit {
   search = new FormControl('');
   all: PersonaMini[] = [];
-  filtered: PersonaMini[] = [];
+
+  // MatTable + Paginator
+  displayedColumns: string[] = ['nombre', 'acciones'];
+  dataSource = new MatTableDataSource<PersonaMini>([]);
+
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+
   private subs: Subscription[] = [];
   usuario: UsuarioActual | null = null;
 
@@ -36,17 +45,29 @@ export class MiembrosHomeComponent implements OnInit, OnDestroy {
     const s1 = this.miembrosSvc.listarTodos().subscribe({
       next: (list) => {
         this.all = list || [];
-        this.applyFilter();
+        this.applyFilter(); // inicializa datasource con filtro vacío
       },
       error: (e) => console.error('Error cargando miembros', e)
     });
     this.subs.push(s1);
 
-    const s2 = this.search.valueChanges.pipe(debounceTime(200)).subscribe(() => this.applyFilter());
+    const s2 = this.search.valueChanges
+      .pipe(debounceTime(200))
+      .subscribe(() => this.applyFilter());
     this.subs.push(s2);
   }
 
-  ngOnDestroy(): void { this.subs.forEach(s => s.unsubscribe()); }
+  ngAfterViewInit(): void {
+    // Conectar el paginator y fijar 5 por página
+    this.dataSource.paginator = this.paginator;
+    if (this.paginator) {
+      this.paginator._changePageSize(10); // fuerza 5 inicial
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subs.forEach(s => s.unsubscribe());
+  }
 
   private normalize(x: string): string {
     return (x || '').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
@@ -54,7 +75,11 @@ export class MiembrosHomeComponent implements OnInit, OnDestroy {
 
   private applyFilter(): void {
     const q = this.normalize(this.search.value || '');
-    this.filtered = !q ? [...this.all] : this.all.filter(p => this.normalize(p.nombre).includes(q));
+    const filtered = !q ? [...this.all] : this.all.filter(p => this.normalize(p.nombre).includes(q));
+    this.dataSource.data = filtered;
+
+    // resetear a página 0 después de filtrar
+    if (this.paginator) this.paginator.firstPage();
   }
 
   esAdministrador(): boolean {

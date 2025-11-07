@@ -22,7 +22,7 @@
 
   <!-- TABLA -->
   <div class="miembros__table">
-    <table mat-table [dataSource]="filtered" class="custom-table">
+    <table mat-table [dataSource]="dataSource" class="custom-table">
 
       <!-- NOMBRE -->
       <ng-container matColumnDef="nombre">
@@ -52,10 +52,19 @@
       </ng-container>
 
       <!-- FILAS -->
-      <tr mat-header-row *matHeaderRowDef="['nombre', 'acciones']" class="gradient-header"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['nombre', 'acciones']"></tr>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns" class="gradient-header"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
     </table>
   </div>
+
+  <!-- PAGINADOR -->
+  <mat-paginator
+    class="miembros__paginator"
+    [length]="dataSource.data.length"
+    [pageSize]="5"
+    [pageIndex]="0"
+    hidePageSize="true">
+  </mat-paginator>
 
   <!-- FOOTER -->
   <div class="miembros__footer">
