@@ -1,34 +1,40 @@
-# Etapa 1: build Angular
-FROM node:18-alpine AS build
+# ============================
+# Etapa 1: Construir la aplicación Angular
+# ============================
+FROM node:14 AS build
+
+# Directorio de trabajo
 WORKDIR /app
-COPY package.json package-lock.json ./ 
+
+# Copiar dependencias e instalarlas
+COPY package.json package-lock.json ./
 RUN npm ci
+
+# Copiar el resto del código fuente
 COPY . .
-# Ojo: ajusta el nombre de la carpeta de salida si no es "ad_samaria"
+
+# Construir la app Angular en modo producción
 RUN npm run build -- --configuration production
 
-# Etapa 2: servir como SPA con "serve"
-FROM node:18-alpine
+# ============================
+# Etapa 2: Servir la aplicación Angular como SPA
+# ============================
+FROM node:14
 
-# 1) Instala serve
-RUN npm i -g serve
-
-# 2) Copia el build
+# Directorio de trabajo
 WORKDIR /app
-# ⚠️ Ajusta 'ad_samaria' si tu proyecto genera otro nombre (p.ej. ad-samaria)
+
+# Copiar el build generado
+# ⚠️ Asegúrate de que la carpeta sea correcta (verifica que sea /dist/ad_samaria)
 COPY --from=build /app/dist/ad_samaria /app
 
-# 3) Script de arranque que valida que existe index.html y escucha en 0.0.0.0:$PORT
-RUN printf '#!/bin/sh\n\
-set -e\n\
-if [ ! -f /app/index.html ]; then\n\
-  echo "[ERROR] No existe /app/index.html. Revisa el nombre de carpeta en dist/*" >&2\n\
-  echo "Contenido de /app:"; ls -la /app || true\n\
-  exit 1\n\
-fi\n\
-PORT_TO_USE=${PORT:-8080}\n\
-echo "Iniciando serve en 0.0.0.0:${PORT_TO_USE} (SPA mode)..."\n\
-exec serve -s /app -l tcp://0.0.0.0:${PORT_TO_USE}\n' > /start.sh && chmod +x /start.sh
+# Instalar el servidor estático "serve" (SPA-friendly)
+RUN npm install -g serve
 
-EXPOSE 8080
-CMD ["/start.sh"]
+# Exponer el puerto 4200
+EXPOSE 4200
+
+# Comando para iniciar la app en modo SPA y bind en 0.0.0.0
+# -s = single-page app (todas las rutas apuntan a index.html)
+# -l = listen en 0.0.0.0:4200
+CMD ["serve", "-s", "/app", "-l", "tcp://0.0.0.0:4200"]
