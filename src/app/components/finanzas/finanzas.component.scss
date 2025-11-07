@@ -1013,3 +1013,41 @@
   transform: translateY(-1px);
 }
 */
+/* === FINZ — Regresar centrado perfecto (stroked, MDC) === */
+.finz .miembros__footer .btn-back {
+  /* alto exacto que quieres */
+  --h: 38px;
+
+  /* el botón en sí */
+  height: var(--h) !important;
+  padding: 0 20px !important;
+
+  /* centrado real con grid (mejor que flex para estos casos) */
+  display: inline-grid !important;
+  place-items: center !important;
+
+  /* que nada “baje” el texto */
+  line-height: 1 !important;
+  box-sizing: border-box;
+}
+
+/* El label interno de MDC debe ocupar todo el alto y centrarse */
+.finz .miembros__footer .btn-back .mdc-button__label {
+  height: 100% !important;
+  display: grid !important;
+  place-items: center !important;
+  line-height: 1 !important;
+  transform: none !important; /* por si algún fix anterior dejaba translateY */
+}
+
+/* Nuestro span interno: sin trucos de líneas base */
+.finz .miembros__footer .btn-back__label {
+  display: block;
+  line-height: 1;   /* neutraliza métricas “caídas” de la fuente */
+}
+
+/* Touch-target de MDC a la misma altura (no empuja nada) */
+.finz .miembros__footer .btn-back .mat-mdc-button-touch-target {
+  height: var(--h) !important;
+  top: 0; bottom: 0;
+}

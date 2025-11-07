@@ -494,3 +494,42 @@ button[mat-stroked-button][color="primary"]:focus-visible {
     padding: 4px 10px;
   }
 }
+/* === Botón "Regresar" — versión custom (idéntico look, centrado perfecto) === */
+.footer .sam-stroked {
+  --h: 40px;
+  height: var(--h);
+  padding: 0 22px;
+  border-radius: 10px;
+  border: 1px solid #244b6b;
+  background: #fff;
+  color: #244b6b;
+  font-weight: 800;
+  letter-spacing: .3px;
+  cursor: pointer;
+  box-shadow: 0 6px 14px rgba(36,75,107,.14);
+  transition: transform .2s ease, box-shadow .25s ease, background .25s ease, color .25s ease;
+
+  /* centrado vertical/horizontal 100% fiable */
+  display: grid;
+  place-items: center;
+  line-height: 1;       /* sin baseline raro */
+  white-space: nowrap;  /* evita saltos */
+  user-select: none;
+}
+
+.footer .sam-stroked:hover {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(36,75,107,.28);
+}
+
+.footer .sam-stroked:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+.footer .sam-stroked:active {
+  transform: translateY(0) scale(.98);
+}
