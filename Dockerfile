@@ -1,29 +1,34 @@
-# Etapa 1: Construir la aplicación Angular
-FROM node:14 AS build
-
+# Build Angular
+FROM node:18-alpine AS build
 WORKDIR /app
-
 COPY package.json package-lock.json ./
-RUN npm install
-
+RUN npm ci
 COPY . .
 RUN npm run build -- --configuration production
 
-# Etapa 2: Servir la aplicación Angular como SPA
-FROM node:14
+# Servir con Nginx (SPA)
+FROM nginx:1.25-alpine
+# Copia el build a la raíz pública
+# ⚠️ Ajusta 'ad_samaria' si tu carpeta de dist se llama distinto
+COPY --from=build /app/dist/ad_samaria /usr/share/nginx/html
+# Configuración SPA: cualquier ruta -> index.html
+COPY <<'NGINX' /etc/nginx/conf.d/default.conf
+server {
+  listen 8080;
+  server_name _;
+  root /usr/share/nginx/html;
+  index index.html;
 
-# 1) Instala "serve" que soporta fallback a index.html (-s)
-RUN npm i -g serve
+  # Archivos estáticos
+  location / {
+    try_files $uri $uri/ /index.html;
+  }
 
-# 2) Carpeta de runtime
-WORKDIR /app
+  # Tamaños/headers opcionales
+  client_max_body_size 10m;
+  add_header Cache-Control "public, max-age=0";
+}
+NGINX
 
-# 3) Copia el build (ajusta "ad_samaria" si tu carpeta dist tiene otro nombre)
-COPY --from=build /app/dist/ad_samaria /app
-
-# 4) Expón un puerto (Railway usará $PORT). Usa 8080 por convención.
 EXPOSE 8080
-
-# 5) Arranca serve en modo single-page (-s) y liga al puerto que pone Railway
-#    Si PORT no existe (local), usa 8080.
-CMD ["sh", "-c", "serve -s /app -l ${PORT:-8080}"]
+CMD ["nginx", "-g", "daemon off;"]
