@@ -119,4 +119,9 @@ crearUsuarioPara(row: PersonaMini) {
     doc.text(`Contraseña: ${password}`, 20, 50);
     doc.save(`credenciales_${username}.pdf`);
   }
+
+  editar(row: PersonaMini) {
+  this.router.navigate(['/miembros/editar', row.id]);
+}
+
 }

@@ -19,7 +19,7 @@ import { MiembrosFormComponent } from './components/miembros-form/miembros-form.
 import { RolesComponent } from './components/roles/roles.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { RouterModule } from '@angular/router';
-import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule, MatRippleModule } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE, MatNativeDateModule, MatRippleModule } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
 import { FamiliasComponent } from './components/familias/familias.component';
 import { MatDialogModule } from '@angular/material/dialog';
@@ -65,6 +65,7 @@ import { AnalyticsInterceptor } from './core/interceptors/analytics.interceptor'
 import { AnalyticsApiInterceptor } from './interceptors/analytics-api.interceptor';
 import { MatOutlineFixDirective } from './shared/mat-outline-fix.directive';
 import { HeaderComponent } from './components/core/header/header.component';
+import { DDMYYYYDateAdapter } from './components/shared/ddmmyyyy-date-adapter';
 
 
 export const MY_DATE_FORMATS = {
@@ -154,6 +155,8 @@ export const MY_DATE_FORMATS = {
 
   // 🔴 Maneja 401/403 con Swal y redirige al login
   { provide: HTTP_INTERCEPTORS, useClass: RequestInterceptor, multi: true },
+
+      { provide: DateAdapter, useClass: DDMYYYYDateAdapter },
 
   { provide: MAT_DATE_LOCALE, useValue: 'es-ES' },
   { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },

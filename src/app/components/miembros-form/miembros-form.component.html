@@ -1,19 +1,23 @@
 <div class="form-wrapper">
   <mat-card class="card">
     <mat-card-header>
-      <mat-card-title>Agregar Miembro</mat-card-title>
-      <mat-card-subtitle>Complete los datos del miembro o visitante</mat-card-subtitle>
+      <mat-card-title>{{ isEdit ? 'Editar Miembro' : 'Agregar Miembro' }}</mat-card-title>
+      <mat-card-subtitle>
+        {{ isEdit ? 'Modifique los datos del miembro y guarde los cambios' : 'Complete los datos del miembro o visitante' }}
+      </mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
       <form [formGroup]="form" (ngSubmit)="guardar()" class="form-grid">
 
+        <!-- Nombres -->
         <mat-form-field appearance="outline" class="col-12">
           <mat-label>Nombres</mat-label>
           <input matInput formControlName="nombres" />
           <mat-error *ngIf="hasError('nombres','required')">Requerido</mat-error>
         </mat-form-field>
 
+        <!-- Apellidos -->
         <mat-form-field appearance="outline" class="col-6">
           <mat-label>Apellido Paterno</mat-label>
           <input matInput formControlName="apellidoPaterno" />
@@ -25,12 +29,14 @@
           <input matInput formControlName="apellidoMaterno" />
         </mat-form-field>
 
+        <!-- Teléfono -->
         <mat-form-field appearance="outline" class="col-12">
           <mat-label>Teléfono</mat-label>
           <input matInput formControlName="telefono" />
           <mat-error *ngIf="hasError('telefono','pattern')">Formato inválido</mat-error>
         </mat-form-field>
 
+        <!-- Dirección -->
         <mat-form-field appearance="outline" class="col-12">
           <mat-label>Dirección</mat-label>
           <textarea matInput formControlName="direccion" rows="1"></textarea>
@@ -68,17 +74,19 @@
           </mat-select>
         </mat-form-field>
 
-
+        <!-- Fecha de nacimiento -->
         <mat-form-field appearance="outline" class="col-12">
           <mat-label>Fecha de nacimiento</mat-label>
-          <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" />
+          <input matInput [matDatepicker]="picker" formControlName="fechaNacimiento" placeholder="dd/MM/yyyy" />
           <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker></mat-datepicker>
           <mat-error *ngIf="hasError('fechaNacimiento','required')">Requerido</mat-error>
         </mat-form-field>
 
         <div class="acciones col-12">
-          <button mat-raised-button color="primary" type="submit">Guardar</button>
+          <button mat-raised-button color="primary" type="submit">
+            {{ isEdit ? 'Actualizar' : 'Guardar' }}
+          </button>
           <button mat-raised-button color="warn" type="button" (click)="cancelar()">Cancelar</button>
         </div>
       </form>

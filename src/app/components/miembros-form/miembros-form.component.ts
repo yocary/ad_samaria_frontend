@@ -4,18 +4,22 @@ import Swal from 'sweetalert2';
 import {
   MiembrosService,
   OpcionCatalogo,
+  CrearMiembroRequest,
 } from 'src/app/services/miembros.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
+// ✅ DateAdapter nativo con formato dd/MM/yyyy
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { DDMYYYYDateAdapter } from '../shared/ddmmyyyy-date-adapter'; 
+
+// Formatos personalizados dd/MM/yyyy
 export const MY_DATE_FORMATS = {
-  parse: {
-    dateInput: 'DD/MM/YYYY',
-  },
+  parse: { dateInput: 'DD/MM/YYYY' },
   display: {
     dateInput: 'DD/MM/YYYY',
     monthYearLabel: 'MMMM YYYY',
     dateA11yLabel: 'LL',
-    monthYearA11yLabel: 'MMMM YYYY'
+    monthYearA11yLabel: 'MMMM YYYY',
   },
 };
 
@@ -23,9 +27,18 @@ export const MY_DATE_FORMATS = {
   selector: 'app-miembros-form',
   templateUrl: './miembros-form.component.html',
   styleUrls: ['./miembros-form.component.scss'],
+  providers: [
+    { provide: DateAdapter, useClass: DDMYYYYDateAdapter }, // ← usa tu adaptador nativo
+    { provide: MAT_DATE_FORMATS, useValue: MY_DATE_FORMATS },
+    { provide: MAT_DATE_LOCALE, useValue: 'es-GT' },
+  ],
 })
 export class MiembrosFormComponent implements OnInit {
-  // listas que vendrán del backend
+  // modo edición
+  isEdit = false;
+  miembroId: number | null = null;
+
+  // catálogos
   tiposPersona: OpcionCatalogo[] = [];
   sexos: OpcionCatalogo[] = [];
   clasificaciones: OpcionCatalogo[] = [];
@@ -38,100 +51,141 @@ export class MiembrosFormComponent implements OnInit {
     telefono: ['', [Validators.pattern(/^[0-9\s+-]{8,20}$/)]],
     direccion: ['', [Validators.maxLength(200)]],
 
-    // ahora trabajamos con IDs (number)
     tipoPersonaId: [null as number | null, Validators.required],
     sexoId: [null as number | null, Validators.required],
     clasificacionId: [null as number | null, Validators.required],
     estadoCivilId: [null as number | null, Validators.required],
 
-    fechaNacimiento: [null, Validators.required], // Date del datepicker
+    fechaNacimiento: [null, Validators.required], // Date (MatDatepicker)
   });
 
-  constructor(private fb: FormBuilder, private svc: MiembrosService, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private svc: MiembrosService,
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
 
   ngOnInit(): void {
-    // Cargar catálogos (en paralelo) y setear defaults
-    this.svc.getTiposPersona().subscribe((list) => {
-      this.tiposPersona = list;
-      if (list.length) this.form.patchValue({ tipoPersonaId: list[0].id });
+    // Determinar si es edición según param id
+    this.route.paramMap.subscribe(params => {
+      const idStr = params.get('id');
+      this.isEdit = !!idStr;
+      this.miembroId = idStr ? Number(idStr) : null;
     });
-    this.svc.getSexos().subscribe((list) => {
-      this.sexos = list;
-      if (list.length) this.form.patchValue({ sexoId: list[0].id });
-    });
-    this.svc.getClasificaciones().subscribe((list) => {
-      this.clasificaciones = list;
-      if (list.length) this.form.patchValue({ clasificacionId: list[0].id });
-    });
-    this.svc.getEstadosCiviles().subscribe((list) => {
-      this.estadosCiviles = list;
-      if (list.length) this.form.patchValue({ estadoCivilId: list[0].id });
+
+    // Cargar catálogos en paralelo
+    this.svc.getTiposPersona().subscribe((list) => { this.tiposPersona = list; });
+    this.svc.getSexos().subscribe((list) => { this.sexos = list; });
+    this.svc.getClasificaciones().subscribe((list) => { this.clasificaciones = list; });
+    this.svc.getEstadosCiviles().subscribe((list) => { this.estadosCiviles = list; });
+
+    // Si es creación, setea defaults
+    setTimeout(() => {
+      if (!this.isEdit) {
+        this.form.patchValue({
+          tipoPersonaId: this.tiposPersona[0]?.id ?? null,
+          sexoId: this.sexos[0]?.id ?? null,
+          clasificacionId: this.clasificaciones[0]?.id ?? null,
+          estadoCivilId: this.estadosCiviles[0]?.id ?? null,
+        });
+      }
+    }, 0);
+
+    // Si es edición, carga datos del miembro
+    if (this.isEdit && this.miembroId) {
+      this.svc.getMiembroForm(this.miembroId).subscribe({
+        next: (dto) => this.patchFromDto(dto),
+        error: (e) => {
+          const msg = e?.error?.message || 'No se pudo cargar el miembro.';
+          Swal.fire('Error', msg, 'error');
+          this.router.navigate(['/miembros/home']);
+        }
+      });
+    }
+  }
+
+  /** Convierte 'yyyy-MM-dd' a objeto Date */
+  private toDate(yyyyMMdd: string | undefined | null): Date | null {
+    if (!yyyyMMdd) return null;
+    const [y, m, d] = yyyyMMdd.split('-').map(Number);
+    return new Date(y, m - 1, d);
+  }
+
+  private patchFromDto(dto: CrearMiembroRequest) {
+    this.form.patchValue({
+      nombres: dto.nombres,
+      apellidoPaterno: dto.apellidoPaterno,
+      apellidoMaterno: dto.apellidoMaterno || '',
+      telefono: dto.telefono || '',
+      direccion: dto.direccion || '',
+
+      tipoPersonaId: dto.tipoPersonaId,
+      sexoId: dto.sexoId,
+      clasificacionId: dto.clasificacionId,
+      estadoCivilId: dto.estadoCivilId,
+
+      // convierte yyyy-MM-dd a objeto Date
+      fechaNacimiento: this.toDate(dto.fechaNacimiento),
     });
   }
 
   guardar(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
-      Swal.fire(
-        'Formulario incompleto',
-        'Revisa los campos requeridos.',
-        'warning'
-      );
+      Swal.fire('Formulario incompleto', 'Revisa los campos requeridos.', 'warning');
       return;
     }
 
     const v = this.form.getRawValue();
-
-    // convertir Date → 'yyyy-MM-dd'
     const f: Date | null = v.fechaNacimiento as any;
+
+    // Convierte Date a 'yyyy-MM-dd' para backend
     const yyyyMMdd = f
-      ? `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(
-          2,
-          '0'
-        )}-${String(f.getDate()).padStart(2, '0')}`
+      ? `${f.getFullYear()}-${String(f.getMonth() + 1).padStart(2, '0')}-${String(f.getDate()).padStart(2, '0')}`
       : '';
 
-    const payload = {
+    const payload: CrearMiembroRequest = {
       nombres: v.nombres!.trim(),
       apellidoPaterno: v.apellidoPaterno!.trim(),
       apellidoMaterno: (v.apellidoMaterno || '').trim(),
       telefono: (v.telefono || '').trim(),
       direccion: (v.direccion || '').trim(),
-
       tipoPersonaId: v.tipoPersonaId!,
       sexoId: v.sexoId!,
       clasificacionId: v.clasificacionId!,
       estadoCivilId: v.estadoCivilId!,
-
       fechaNacimiento: yyyyMMdd,
     };
 
-    this.svc.crearMiembroForm(payload).subscribe({
-      next: () => {
-        Swal.fire('Guardado', 'El miembro se guardó correctamente.', 'success');
-        this.resetDefaults();
-
-        this.router.navigate(['/miembros/home']);
-      },
-      error: (e) => {
-        const msg = e?.error?.message || 'Ocurrió un error al guardar';
-        Swal.fire('Error', msg, 'error');
-      },
-    });
+    // Crear o actualizar
+    if (this.isEdit && this.miembroId) {
+      this.svc.actualizarMiembroForm(this.miembroId, payload).subscribe({
+        next: () => {
+          Swal.fire('Actualizado', 'El miembro se actualizó correctamente.', 'success');
+          this.router.navigate(['/miembros/home']);
+        },
+        error: (e) => {
+          const msg = e?.error?.message || 'Ocurrió un error al actualizar';
+          Swal.fire('Error', msg, 'error');
+        },
+      });
+    } else {
+      this.svc.crearMiembroForm(payload).subscribe({
+        next: () => {
+          Swal.fire('Guardado', 'El miembro se guardó correctamente.', 'success');
+          this.router.navigate(['/miembros/home']);
+        },
+        error: (e) => {
+          const msg = e?.error?.message || 'Ocurrió un error al guardar';
+          Swal.fire('Error', msg, 'error');
+        },
+      });
+    }
   }
 
   cancelar(): void {
     this.router.navigate(['/miembros/home']);
-  }
-
-  private resetDefaults() {
-    this.form.reset({
-      tipoPersonaId: this.tiposPersona[0]?.id ?? null,
-      sexoId: this.sexos[0]?.id ?? null,
-      clasificacionId: this.clasificaciones[0]?.id ?? null,
-      estadoCivilId: this.estadosCiviles[0]?.id ?? null,
-      fechaNacimiento: null,
-    });
   }
 
   hasError(ctrl: string, error: string) {

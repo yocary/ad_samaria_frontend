@@ -99,5 +99,16 @@ export class MiembrosService {
   return this.http.get<PersonaMini[]>(`${this.base}/buscar`, { params: { q } });
 }
 
+// Obtiene los datos editables del miembro por id (IDs de catálogos y fecha en 'yyyy-MM-dd')
+getMiembroForm(id: number) {
+  return this.http.get<CrearMiembroRequest>(`${this.base}/form/${id}`);
+}
+
+// Actualiza el miembro (PUT)
+actualizarMiembroForm(id: number, payload: CrearMiembroRequest) {
+  return this.http.put(`${this.base}/form/${id}`, payload);
+}
+
+
 }
 

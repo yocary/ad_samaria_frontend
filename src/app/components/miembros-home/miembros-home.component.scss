@@ -466,3 +466,17 @@
   box-shadow: 0 1px 3px rgba(0,0,0,.06);
   .mat-mdc-paginator-container { padding: 4px 10px; }
 }
+/* Contenedor de botones en acciones */
+.acciones-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;       /* separación entre botones */
+  flex-wrap: wrap; /* permite que bajen de línea si no caben */
+}
+
+/* Botones más compactos */
+.btn--sma {
+  height: 34px;
+  padding: 0 12px;
+  line-height: 1;
+}
