@@ -171,3 +171,146 @@ textarea {
   outline-offset: 2px;
   border-radius: 8px;
 }
+/* =========================
+   FORMULARIO AGREGAR MIEMBRO – UNIFICADO SAMARIA
+   ========================= */
+
+.form-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #f5f7fa;
+  animation: fadeIn 0.45s ease-out both;
+}
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+.card {
+  max-width: 750px;
+  width: 100%;
+  margin: 16px;
+  border: 1px solid #cde7f0;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  background: #fff;
+  padding: 16px;
+}
+
+mat-card-title {
+  font-weight: 800;
+  color: #244b6b;
+  text-transform: uppercase;
+  letter-spacing: .35px;
+}
+
+mat-card-subtitle {
+  color: #6b7c93;
+  font-weight: 500;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 20px;
+}
+
+.col-12 { grid-column: span 12; }
+.col-6  { grid-column: span 6; }
+
+@media (max-width: 768px) {
+  .col-6 { grid-column: span 12; }
+}
+
+textarea {
+  resize: vertical;
+}
+
+/* =========================
+   BOTONES UNIFICADOS – CENTRADOS
+   ========================= */
+
+.acciones {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+/* --- Botón primario (Guardar) --- */
+.acciones button[mat-raised-button][color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 0 26px;
+  height: 42px;                   /* altura más equilibrada */
+  line-height: 42px;              /* centra el texto verticalmente */
+  box-shadow: 0 8px 18px rgba(36, 75, 107, 0.25);
+  display: inline-flex;
+  align-items: center;            /* centra verticalmente el texto e íconos */
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.25s ease;
+}
+
+.acciones button[mat-raised-button][color="primary"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-120%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+  transition: transform 0.75s ease;
+}
+
+.acciones button[mat-raised-button][color="primary"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(36, 75, 107, 0.35);
+}
+
+.acciones button[mat-raised-button][color="primary"]:hover::before {
+  transform: translateX(120%);
+}
+
+/* --- Botón cancelar (rojo degradado) --- */
+.acciones button[mat-raised-button][color="warn"] {
+  background: linear-gradient(135deg, #ef5350, #c62828);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  padding: 0 26px;
+  height: 42px;
+  line-height: 42px;
+  box-shadow: 0 6px 14px rgba(198, 40, 40, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.18s ease, box-shadow 0.25s ease;
+}
+
+.acciones button[mat-raised-button][color="warn"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(198, 40, 40, 0.35);
+}
+
+/* Accesibilidad */
+.acciones button:focus-visible {
+  outline: 2px solid #ffd54f;
+  outline-offset: 2px;
+  border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 560px) {
+  .acciones {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .acciones button {
+    width: 100%;
+  }
+}
