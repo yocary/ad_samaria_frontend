@@ -480,3 +480,36 @@
   padding: 0 12px;
   line-height: 1;
 }
+/* ==== FIJO: que "Editar" nunca pierda el color ==== */
+
+/* 1) Forzar color del label en stroked primary/accent */
+.miembros__table button.mat-mdc-stroked-button[color="primary"] .mdc-button__label,
+.miembros__table button[mat-stroked-button][color="primary"] .mdc-button__label {
+  color: #fff !important;
+  opacity: 1 !important;
+}
+
+.miembros__table button.mat-mdc-stroked-button[color="accent"] .mdc-button__label,
+.miembros__table button[mat-stroked-button][color="accent"] .mdc-button__label {
+  color: #fff !important;
+  opacity: 1 !important;
+}
+
+/* 2) Alinear con variables de MDC (evita que el tema re-escriba el color) */
+.miembros__table button.mat-mdc-stroked-button[color="primary"],
+.miembros__table button[mat-stroked-button][color="primary"] {
+  --mdc-outlined-button-label-text-color: #fff;
+  --mat-mdc-stroked-button-label-text-color: #fff;
+}
+
+.miembros__table button.mat-mdc-stroked-button[color="accent"],
+.miembros__table button[mat-stroked-button][color="accent"] {
+  --mdc-outlined-button-label-text-color: #fff;
+  --mat-mdc-stroked-button-label-text-color: #fff;
+}
+
+/* 3) (opcional) elevar la especificidad para el fondo gradiente */
+.miembros__table tr td button.mat-mdc-stroked-button[color="primary"] {
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  border: none !important;
+}
