@@ -48,7 +48,10 @@ export class MiembrosFormComponent implements OnInit {
     nombres: ['', [Validators.required, Validators.maxLength(120)]],
     apellidoPaterno: ['', [Validators.required, Validators.maxLength(80)]],
     apellidoMaterno: ['', [Validators.maxLength(80)]],
-    telefono: ['', [Validators.pattern(/^[0-9\s+-]{8,20}$/)]],
+
+    // ✅ Teléfono: solo números y exactamente 8 dígitos
+    telefono: ['', [Validators.pattern(/^[0-9]{8}$/)]],
+
     direccion: ['', [Validators.maxLength(200)]],
 
     tipoPersonaId: [null as number | null, Validators.required],
@@ -191,5 +194,13 @@ export class MiembrosFormComponent implements OnInit {
   hasError(ctrl: string, error: string) {
     const c = this.form.get(ctrl);
     return !!c && c.touched && c.hasError(error);
+  }
+
+  /** ✅ Permite solo números en el campo teléfono */
+  soloNumeros(event: KeyboardEvent): void {
+    const charCode = event.key.charCodeAt(0);
+    if (charCode < 48 || charCode > 57) {
+      event.preventDefault();
+    }
   }
 }

@@ -32,8 +32,17 @@
         <!-- Teléfono -->
         <mat-form-field appearance="outline" class="col-12">
           <mat-label>Teléfono</mat-label>
-          <input matInput formControlName="telefono" />
-          <mat-error *ngIf="hasError('telefono','pattern')">Formato inválido</mat-error>
+          <input
+            matInput
+            type="tel"
+            maxlength="8"
+            placeholder="8 dígitos"
+            formControlName="telefono"
+            (keypress)="soloNumeros($event)"
+          />
+          <mat-error *ngIf="hasError('telefono','pattern')">
+            Debe contener exactamente 8 dígitos numéricos
+          </mat-error>
         </mat-form-field>
 
         <!-- Dirección -->
