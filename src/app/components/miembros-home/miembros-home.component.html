@@ -41,9 +41,10 @@
               Ver ficha
             </button>
 
-            <button mat-stroked-button color="primary" class="btn btn--sma" (click)="editar(row)">
+            <button mat-stroked-button class="btn btn--sma sam-stroked-primary" (click)="editar(row)">
               Editar
             </button>
+
 
             <button mat-raised-button class="btn btn--accent btn--sma" *ngIf="esAdministrador()"
               (click)="crearUsuarioPara(row)">

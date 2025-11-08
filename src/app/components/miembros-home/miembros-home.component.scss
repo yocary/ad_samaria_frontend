@@ -561,3 +561,43 @@
   -webkit-text-fill-color: #1f2d3d !important;
   caret-color: #1f2d3d;
 }
+/* Botón stroked “Samaria” estable: no pierde el color del texto */
+.sam-stroked-primary {
+  /* visual */
+  background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
+  border: none !important;
+  border-radius: 8px;
+  color: #fff !important;
+
+  /* variables MDC para que el tema NO sobreescriba el label */
+  --mdc-outlined-button-label-text-color: #fff !important;
+  --mat-mdc-stroked-button-label-text-color: #fff !important;
+
+  /* tamaño/espaciado consistente */
+  height: 36px;
+  padding: 0 14px;
+
+  /* ripple acorde a fondo oscuro */
+  --mat-mdc-button-ripple-color: rgba(255,255,255,.32);
+  --mat-mdc-button-persistent-ripple-color: rgba(255,255,255,.24);
+}
+
+/* Fuerza definitiva del label (por si algún load tardío del tema gana la cascada) */
+.sam-stroked-primary .mdc-button__label {
+  color: #fff !important;
+  opacity: 1 !important;
+}
+
+/* Hover consistente */
+.sam-stroked-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 22px rgba(30, 59, 85, 0.28);
+}
+
+/* Estado disabled sin “desaparecer” el texto */
+.sam-stroked-primary.mat-mdc-button-disabled,
+.sam-stroked-primary.mat-mdc-button-disabled .mdc-button__label {
+  color: rgba(255,255,255,.65) !important;
+  opacity: 1 !important;
+  filter: saturate(.85) brightness(.95);
+}
