@@ -513,3 +513,51 @@
   background: linear-gradient(135deg, #244b6b, #1e3b55) !important;
   border: none !important;
 }
+/* Quitar el “recuadro” interior */
+.miembros__search {
+  justify-self: end;
+  width: 100%;
+  max-width: 420px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #fff;
+  border: 1px solid #cfd9e6;
+  border-radius: 22px;
+  padding: 0 12px;
+
+  /* ⛔ Eliminar el inset que parece otro recuadro */
+  box-shadow: none; /* antes: inset 0 0 0 1px ... */
+  transition: border-color .25s ease, transform .25s ease, box-shadow .25s ease;
+}
+
+.miembros__search:hover {
+  border-color: #b9c8da;
+  transform: translateY(-1px);
+}
+
+.miembros__search:focus-within {
+  border-color: #244b6b;
+  box-shadow: 0 0 0 3px rgba(36, 75, 107, 0.12);
+}
+
+.miembros__search input {
+  flex: 1;
+  border: 0 !important;        /* fuerza sin borde */
+  background: transparent !important;
+  box-shadow: none !important;  /* evita sombras internas */
+  outline: none !important;     /* quita contorno del navegador */
+  color: #1f2d3d;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Evitar “relleno” amarillo/azul de autofill que parece recuadro en Chrome */
+.miembros__search input:-webkit-autofill,
+.miembros__search input:-webkit-autofill:hover,
+.miembros__search input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #fff inset !important;
+  -webkit-text-fill-color: #1f2d3d !important;
+  caret-color: #1f2d3d;
+}
