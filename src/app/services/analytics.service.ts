@@ -13,7 +13,7 @@ export class AnalyticsService {
   private trackPageViews() {
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        gtag('config', 'G-FCB0DQCB0R', { page_path: event.urlAfterRedirects });
+        gtag('config', 'G-BQ19YWG7PH', { page_path: event.urlAfterRedirects });
       }
     });
   }
