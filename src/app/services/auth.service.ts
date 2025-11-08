@@ -21,7 +21,6 @@ export interface UsuarioActual {
 
 export interface CrearUsuarioRequest {
   personaId?: number;
-  dpi?: string;
   password: string;
   username?: string;
 }

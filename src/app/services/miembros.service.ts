@@ -15,7 +15,6 @@ export interface CrearMiembroRequest {
   apellidoPaterno: string;
   apellidoMaterno?: string;
   telefono?: string;
-  dpi?: string;
   direccion?: string;
 
   sexoId: number;
@@ -57,7 +56,6 @@ export interface PersonaFicha {
   nombreCompleto: string;
 
   telefono?: string;
-  dpi?: string;
   direccion?: string;
 
   fechaNacimiento?: string; // dd/MM/yyyy

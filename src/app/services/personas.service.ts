@@ -6,7 +6,6 @@ import { Observable } from 'rxjs';
 export interface PersonaMini {
   id: number;
   nombre: string;
-  dpi: string | null;
 }
 
 @Injectable({ providedIn: 'root' })

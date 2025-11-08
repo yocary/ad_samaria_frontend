@@ -3,14 +3,6 @@
 
 <mat-dialog-content class="dlg-body">
   <form [formGroup]="form" (ngSubmit)="guardar()" class="form">
-    <!-- Si llega personaId en data, puede que ya no necesites DPI -->
-    <mat-form-field appearance="outline" class="w-full" *ngIf="!data?.personaId">
-      <mat-label>DPI</mat-label>
-      <input matInput formControlName="dpi" maxlength="20" />
-      <mat-error *ngIf="form.get('dpi')?.touched && form.get('dpi')?.hasError('required')">
-        DPI requerido
-      </mat-error>
-    </mat-form-field>
 
     <mat-form-field appearance="outline" class="w-full">
       <mat-label>Contraseña</mat-label>

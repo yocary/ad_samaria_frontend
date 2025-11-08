@@ -36,7 +36,6 @@ export class MiembrosFormComponent implements OnInit {
     apellidoPaterno: ['', [Validators.required, Validators.maxLength(80)]],
     apellidoMaterno: ['', [Validators.maxLength(80)]],
     telefono: ['', [Validators.pattern(/^[0-9\s+-]{8,20}$/)]],
-    dpi: ['', [Validators.minLength(8), Validators.maxLength(25)]],
     direccion: ['', [Validators.maxLength(200)]],
 
     // ahora trabajamos con IDs (number)
@@ -97,7 +96,6 @@ export class MiembrosFormComponent implements OnInit {
       apellidoPaterno: v.apellidoPaterno!.trim(),
       apellidoMaterno: (v.apellidoMaterno || '').trim(),
       telefono: (v.telefono || '').trim(),
-      dpi: (v.dpi || '').trim(),
       direccion: (v.direccion || '').trim(),
 
       tipoPersonaId: v.tipoPersonaId!,

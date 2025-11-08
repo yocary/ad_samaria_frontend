@@ -94,20 +94,21 @@ export class MiembrosHomeComponent implements OnInit, OnDestroy, AfterViewInit {
     this.dialog.open(MemberCardDialogComponent, { width: '980px', data: { personaId, nombre } });
   }
 
-  crearUsuarioPara(row: PersonaMini) {
-    if (!this.esAdministrador()) return; // Solo admin puede crear usuario
+crearUsuarioPara(row: PersonaMini) {
+  if (!this.esAdministrador()) return; // Solo admin puede crear usuario
 
-    this.dialog.open(CrearUsuarioDialogComponent, {
-      width: '400px',
-      data: { personaId: row.id, dpi: row.dpi ?? '' },
-    }).afterClosed().subscribe((res: any) => {
-      if (res) {
-        const username = res.username;
-        const password = res.password;
-        this.descargarCredenciales(username, password);
-      }
-    });
-  }
+  this.dialog.open(CrearUsuarioDialogComponent, {
+    width: '400px',
+    data: { personaId: row.id },
+  }).afterClosed().subscribe((res: any) => {
+    if (res) {
+      const username = res.username;
+      const password = res.password;
+      this.descargarCredenciales(username, password);
+    }
+  });
+}
+
 
   private descargarCredenciales(username: string, password: string) {
     const doc = new jsPDF();
