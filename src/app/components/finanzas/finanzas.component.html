@@ -40,18 +40,19 @@
             <mat-form-field appearance="outline" class="month-field">
               <mat-label>Mes y Año</mat-label>
               <input class="month-display-input" [value]="displayMonth" placeholder="MM/AAAA" readonly
-                     (click)="pickerMes.open()" aria-label="Mes y año seleccionado" />
-              <button mat-icon-button matSuffix type="button" (click)="pickerMes.open()" aria-label="Abrir selector de mes">
+                (click)="pickerMes.open()" aria-label="Mes y año seleccionado" />
+              <button mat-icon-button matSuffix type="button" (click)="pickerMes.open()"
+                aria-label="Abrir selector de mes">
                 <mat-icon>event</mat-icon>
               </button>
               <input matInput [matDatepicker]="pickerMes" [formControl]="monthCtrl" [max]="maxMonth"
-                     class="visually-hidden-input" tabindex="-1" aria-hidden="true" />
+                class="visually-hidden-input" tabindex="-1" aria-hidden="true" />
               <mat-datepicker #pickerMes startView="multi-year"
-                              (monthSelected)="chosenMonthHandler($event, pickerMes)"></mat-datepicker>
+                (monthSelected)="chosenMonthHandler($event, pickerMes)"></mat-datepicker>
             </mat-form-field>
 
             <button class="btn btn--excel" type="button" (click)="downloadReporte()" [disabled]="!canDownload"
-                    matTooltip="Genera el PDF del mes seleccionado" aria-label="Descargar reporte PDF">
+              matTooltip="Genera el PDF del mes seleccionado" aria-label="Descargar reporte PDF">
               <mat-icon aria-hidden="true">download</mat-icon>
               <span>Descargar Reporte</span>
             </button>
@@ -88,15 +89,10 @@
           </table>
 
           <!-- PAGINADOR estilo "Miembros" -->
-          <mat-paginator
-            class="miembros__paginator"
-            [length]="total"
-            [pageSize]="pageSize"
-            [pageIndex]="pageIndex"
-            [pageSizeOptions]="pageSizeOptions"
-            [hidePageSize]="false"
-            (page)="onMgPage($event)">
+          <mat-paginator class="miembros__paginator" [length]="total" [pageSize]="10" [pageIndex]="pageIndex"
+            [hidePageSize]="true" (page)="onMgPage($event)">
           </mat-paginator>
+
         </div>
 
         <!-- Estado vacío -->
@@ -120,8 +116,8 @@
         </button>
 
         <div class="treas-grid" *ngIf="(treasuries?.length || 0) > 0; else emptyTreas">
-          <div class="treas-card" *ngFor="let t of treasuries; trackBy: trackByTreas"
-               (click)="openTreasury(t)" tabindex="0" role="button" (keyup.enter)="openTreasury(t)">
+          <div class="treas-card" *ngFor="let t of treasuries; trackBy: trackByTreas" (click)="openTreasury(t)"
+            tabindex="0" role="button" (keyup.enter)="openTreasury(t)">
             <div class="treas-card-header">
               <div class="treas-card-icon">
                 <mat-icon>account_balance_wallet</mat-icon>

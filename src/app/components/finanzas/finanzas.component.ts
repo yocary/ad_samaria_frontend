@@ -1,4 +1,10 @@
-import { Component, OnInit, OnDestroy, ViewEncapsulation, ChangeDetectorRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  OnDestroy,
+  ViewEncapsulation,
+  ChangeDetectorRef,
+} from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { debounceTime } from 'rxjs/operators';
@@ -37,7 +43,9 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   // ===== KPIs
   totIngresos = 0;
   totEgresos = 0;
-  get totSaldo(): number { return this.totIngresos - this.totEgresos; }
+  get totSaldo(): number {
+    return this.totIngresos - this.totEgresos;
+  }
 
   loadingTreas = false;
 
@@ -55,10 +63,11 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   // Paginación (client-side) + MatPaginator
   mgPaged: MovimientoGeneralRow[] = [];
   pageIndex = 0;
-  pageSize = 10;
-  pageSizeOptions = [10, 25, 50];
+  readonly pageSize = 10; // ← siempre 10 por página
   total = 0;
-  get totalPages(): number { return this.pageSize ? Math.ceil(this.total / this.pageSize) : 0; }
+  get totalPages(): number {
+    return this.pageSize ? Math.ceil(this.total / this.pageSize) : 0;
+  }
 
   // Para poder usar Math.min en el template (si lo necesitas en otros lugares)
   readonly Math = Math;
@@ -80,8 +89,8 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.authSub = this.auth.usuario.subscribe(u => {
-      const roles = (u?.roles || []).map(r => (r || '').toUpperCase());
+    this.authSub = this.auth.usuario.subscribe((u) => {
+      const roles = (u?.roles || []).map((r) => (r || '').toUpperCase());
       this.isPastor = roles.includes('PASTOR') || roles.includes('ROLE_PASTOR');
     });
 
@@ -126,7 +135,8 @@ export class FinanzasComponent implements OnInit, OnDestroy {
     this.canDownload = false;
 
     this.subs.add(
-      this.fin.getMovimientosGenerales({ periodo: 'mes', mes: mesISO, q })
+      this.fin
+        .getMovimientosGenerales({ periodo: 'mes', mes: mesISO, q })
         .subscribe(
           (resp: any) => {
             const items = (resp?.items ?? []) as MovimientoGeneralRow[];
@@ -135,12 +145,14 @@ export class FinanzasComponent implements OnInit, OnDestroy {
             // KPI
             if (resp?.totales) {
               this.totIngresos = Number(resp.totales.ingresos || 0);
-              this.totEgresos  = Number(resp.totales.egresos  || 0);
+              this.totEgresos = Number(resp.totales.egresos || 0);
             } else {
-              this.totIngresos = items.filter(r => r.type === 'Ingreso')
-                                      .reduce((a, r) => a + (r.amount || 0), 0);
-              this.totEgresos  = items.filter(r => r.type === 'Egreso')
-                                      .reduce((a, r) => a + (r.amount || 0), 0);
+              this.totIngresos = items
+                .filter((r) => r.type === 'Ingreso')
+                .reduce((a, r) => a + (r.amount || 0), 0);
+              this.totEgresos = items
+                .filter((r) => r.type === 'Egreso')
+                .reduce((a, r) => a + (r.amount || 0), 0);
             }
 
             // Paginación
@@ -150,7 +162,7 @@ export class FinanzasComponent implements OnInit, OnDestroy {
 
             this.canDownload = this.total > 0;
           },
-          _ => {
+          (_) => {
             this.movimientosGenerales = [];
             this.mgPaged = [];
             this.total = 0;
@@ -171,7 +183,6 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   // Evento del MatPaginator (como en Miembros)
   onMgPage(e: PageEvent) {
     this.pageIndex = e.pageIndex;
-    this.pageSize = e.pageSize;
     this.applyPaging();
   }
 
@@ -181,8 +192,9 @@ export class FinanzasComponent implements OnInit, OnDestroy {
     const periodo = this.convertirFechaAPeriodo(fechaSeleccionada);
 
     this.subs.add(
-      this.fin.getTesorerias({ estado: 'activas', periodo })
-        .subscribe(rows => {
+      this.fin
+        .getTesorerias({ estado: 'activas', periodo })
+        .subscribe((rows) => {
           this.treasuries = this.fin.mapToUI(rows || []);
         })
     );
@@ -191,7 +203,11 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   // ===================== CONVERSIÓN FECHA A PERIODO =====================
   private convertirFechaAPeriodo(fecha: Date): MGPeriod {
     const ahora = new Date();
-    const fechaSeleccionada = new Date(fecha.getFullYear(), fecha.getMonth(), 1);
+    const fechaSeleccionada = new Date(
+      fecha.getFullYear(),
+      fecha.getMonth(),
+      1
+    );
     const mesActual = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
     const mesAnterior = new Date(ahora.getFullYear(), ahora.getMonth() - 1, 1);
     const inicioAnio = new Date(ahora.getFullYear(), 0, 1);
@@ -200,7 +216,10 @@ export class FinanzasComponent implements OnInit, OnDestroy {
       return 'mes';
     } else if (fechaSeleccionada.getTime() === mesAnterior.getTime()) {
       return 'mes_anterior';
-    } else if (fechaSeleccionada >= inicioAnio && fechaSeleccionada <= mesActual) {
+    } else if (
+      fechaSeleccionada >= inicioAnio &&
+      fechaSeleccionada <= mesActual
+    ) {
       return 'anio';
     } else {
       return 'todos';
@@ -209,24 +228,29 @@ export class FinanzasComponent implements OnInit, OnDestroy {
 
   openTreasury(t: Treasury) {
     if (!t?.id) return;
-    this.dialog.open(DialogTreasuryDetailComponent, {
-      width: '960px',
-      disableClose: true,
-      data: { treasuryId: t.id, treasuryName: t.name },
-    })
-    .afterClosed()
-    .subscribe((result: any) => {
-      if (result?.changed || result?.reloadFinanzas) {
-        this.loadTesorerias();
-        this.loadMovimientosGenerales();
-      }
-    });
+    this.dialog
+      .open(DialogTreasuryDetailComponent, {
+        width: '960px',
+        disableClose: true,
+        data: { treasuryId: t.id, treasuryName: t.name },
+      })
+      .afterClosed()
+      .subscribe((result: any) => {
+        if (result?.changed || result?.reloadFinanzas) {
+          this.loadTesorerias();
+          this.loadMovimientosGenerales();
+        }
+      });
   }
 
   // ===================== SELECTOR DE MES =====================
   downloadReporte() {
     if (!this.canDownload) {
-      this.snack.open('No hay datos para generar el reporte en el mes seleccionado.', 'OK', { duration: 3000 });
+      this.snack.open(
+        'No hay datos para generar el reporte en el mes seleccionado.',
+        'OK',
+        { duration: 3000 }
+      );
       return;
     }
 
@@ -277,12 +301,14 @@ export class FinanzasComponent implements OnInit, OnDestroy {
     `${r.treasuryId}-${r.categoryId}-${r.type}-${r.fecha}-${r.amount}`;
   trackByTreas = (_: number, t: Treasury) => t.id;
 
-  back() { this.router.navigate(['/dashboard']); }
+  back() {
+    this.router.navigate(['/dashboard']);
+  }
 
   openAddTesoreria(): void {
     const ref = this.dialog.open(DialogAddTreasuryComponent, {
       width: '460px',
-      disableClose: true
+      disableClose: true,
     });
 
     this.subs.add(
@@ -291,7 +317,9 @@ export class FinanzasComponent implements OnInit, OnDestroy {
           this.tabIndex = 1;
           this.loadTesorerias();
           this.loadMovimientosGenerales();
-          this.snack.open('Tesorería creada con éxito', 'OK', { duration: 2000 });
+          this.snack.open('Tesorería creada con éxito', 'OK', {
+            duration: 2000,
+          });
           this.cdr.markForCheck();
         }
       })
@@ -303,7 +331,7 @@ export class FinanzasComponent implements OnInit, OnDestroy {
       width: '980px',
       maxWidth: '98vw',
       panelClass: 'dlg-diezmos',
-      disableClose: true
+      disableClose: true,
     });
   }
 }
