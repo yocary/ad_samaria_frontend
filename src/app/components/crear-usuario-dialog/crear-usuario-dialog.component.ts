@@ -9,10 +9,17 @@ export interface CrearUsuarioData {
   personaId?: number | null; // si abres el diálogo desde una fila específica
 }
 
+// (Opcional) Si quieres, define el tipo esperado de la respuesta del backend.
+// Si tu servicio no lo retorna así, déjalo como opcional.
+interface CrearUsuarioResponse {
+  username?: string;
+  // agrega aquí otros campos si tu API los devuelve (id, email, etc.)
+}
+
 @Component({
   selector: 'app-crear-usuario-dialog',
   templateUrl: './crear-usuario-dialog.component.html',
-  styleUrls: ['./crear-usuario-dialog.component.scss']
+  styleUrls: ['./crear-usuario-dialog.component.scss'],
 })
 export class CrearUsuarioDialogComponent implements OnInit {
   cargando = false;
@@ -20,6 +27,7 @@ export class CrearUsuarioDialogComponent implements OnInit {
 
   form = this.fb.group(
     {
+      username: [null, [Validators.required, Validators.minLength(3)]],
       password: [null, [Validators.required, Validators.minLength(6)]],
       confirm: [null, [Validators.required]],
     },
@@ -28,14 +36,15 @@ export class CrearUsuarioDialogComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private ref: MatDialogRef<CrearUsuarioDialogComponent, { username: string; password: string } | null>,
+    private ref: MatDialogRef<
+      CrearUsuarioDialogComponent,
+      { username: string; password: string } | null
+    >,
     @Inject(MAT_DIALOG_DATA) public data: CrearUsuarioData,
     private usuariosSvc: AuthService
   ) {}
 
   ngOnInit(): void {
- 
-
     if (this.data?.personaId) {
       this.obtenerUsernameSugerido();
     }
@@ -46,41 +55,75 @@ export class CrearUsuarioDialogComponent implements OnInit {
   }
 
   guardar(): void {
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    return;
-  }
-
-  const raw = this.form.value;
-  const payload: any = {
-    password: raw.password
-  };
-
-  if (this.data?.personaId) {
-    payload.personaId = this.data.personaId;
-  } 
-
-  this.cargando = true;
-  this.usuariosSvc.crearUsuario(payload).subscribe({
-    next: (res) => {
-      this.cargando = false;
-      Swal.fire('Usuario creado', 'El usuario se creó correctamente.', 'success');
-      // Cerrar el diálogo y enviar username y password
-      this.ref.close({ username: payload.username, password: raw.password });
-    },
-    error: (err) => {
-      this.cargando = false;
-      console.error(err);
-      // Si la persona ya tiene usuario o el username está en uso
-      if (err.status === 409) {
-        Swal.fire('Atención', err.error, 'warning');
-      } else {
-        Swal.fire('Error', 'No se pudo crear el usuario.', 'error');
-      }
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
     }
-  });
-}
 
+    const raw = this.form.value;
+    const chosenUsername: string | null =
+      (raw.username as string) || this.usernameSugerido || null;
+
+    if (!chosenUsername) {
+      Swal.fire(
+        'Atención',
+        'No hay nombre de usuario. Intente obtener la sugerencia o escriba uno.',
+        'warning'
+      );
+      return;
+    }
+
+    const payload: any = {
+      username: chosenUsername,
+      password: raw.password,
+    };
+
+    if (this.data?.personaId) {
+      payload.personaId = this.data.personaId;
+    }
+
+    this.cargando = true;
+
+    this.usuariosSvc.crearUsuario(payload).subscribe({
+      next: (res: unknown) => {
+        this.cargando = false;
+
+        let finalUsername = chosenUsername;
+        // type guard seguro
+        if (
+          res &&
+          typeof res === 'object' &&
+          'username' in (res as Record<string, unknown>)
+        ) {
+          finalUsername =
+            (res as CrearUsuarioResponse).username ?? chosenUsername!;
+        }
+
+        Swal.fire(
+          'Usuario creado',
+          'El usuario se creó correctamente.',
+          'success'
+        );
+
+        this.ref.close({
+          username: finalUsername!,
+          password: raw.password as string,
+        });
+      },
+      error: (err) => {
+        this.cargando = false;
+        if (err?.status === 409) {
+          Swal.fire(
+            'Atención',
+            err?.error || 'Conflicto al crear el usuario.',
+            'warning'
+          );
+        } else {
+          Swal.fire('Error', 'No se pudo crear el usuario.', 'error');
+        }
+      },
+    });
+  }
 
   private passwordsIgualesValidator(ctrl: AbstractControl) {
     const p = ctrl.get('password')?.value;
@@ -90,17 +133,21 @@ export class CrearUsuarioDialogComponent implements OnInit {
 
   obtenerUsernameSugerido(): void {
     const id = this.data?.personaId;
-    if (id == null) return;
+    if (id == null) {
+      return;
+    }
 
     this.usuariosSvc.sugerirUsername(id).subscribe({
       next: (response) => {
-        this.usernameSugerido = response.username;
-        console.log('Username sugerido obtenido:', this.usernameSugerido); // Para debug
+        this.usernameSugerido = (response as any)?.username ?? '';
+
+        const actual = this.form.get('username')?.value;
+        if (!actual) {
+          this.form.patchValue({ username: this.usernameSugerido });
+        } else {
+        }
       },
-      error: (e) => {
-        console.error('Error al obtener username sugerido', e);
-        console.log('Usuario:', this.usernameSugerido); // Para debug
-      }
+      error: (e) => {},
     });
   }
 
