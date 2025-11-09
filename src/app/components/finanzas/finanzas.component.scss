@@ -1051,3 +1051,161 @@
   height: var(--h) !important;
   top: 0; bottom: 0;
 }
+
+/* ======= MG TABLE: anchos y alineación con columna FECHA ======= */
+
+/* Cabecera: define anchos por columna */
+.mg-table th:nth-child(1),
+.mg-table td:nth-child(1) { /* # */
+  width: 60px;
+  text-align: center;
+}
+
+.mg-table th:nth-child(2),
+.mg-table td:nth-child(2) { /* Tesorería */
+  width: 24%;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.mg-table th:nth-child(3),
+.mg-table td:nth-child(3) { /* Categoría */
+  width: 32%;
+}
+
+.mg-table th:nth-child(4),
+.mg-table td:nth-child(4) { /* Tipo */
+  width: 12%;
+  text-align: center;
+}
+
+.mg-table th:nth-child(5),
+.mg-table td:nth-child(5) { /* Fecha */
+  width: 14%;
+  text-align: center;
+  white-space: nowrap;      /* evita salto 12/10/2025 */
+}
+
+.mg-table th:nth-child(6),
+.mg-table td:nth-child(6) { /* Cantidad */
+  width: 18%;
+  text-align: right;
+}
+
+/* Celdas: tipografías y numerales */
+.mg-table td {
+  padding: 1rem;
+  color: #475569;
+}
+
+.mg-table td:first-child {     /* # */
+  font-weight: 700;
+  color: #64748b;
+}
+
+.mg-table td:last-child {      /* Cantidad */
+  font-weight: 800;
+  color: #1e293b;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Opcional: si notas desbordes, usa tabla fija */
+@media (min-width: 769px) {
+  .mg-table { table-layout: fixed; }
+}
+/* Tesorería */
+.mg-table th:nth-child(2),
+.mg-table td:nth-child(2) {
+  width: 26%;
+}
+
+/* Categoría — más angosta + elipsis */
+.mg-table th:nth-child(3),
+.mg-table td:nth-child(3) {
+  width: 24%;              /* ↓ antes 32% */
+}
+
+.mg-table td:nth-child(3) {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;  /* … cuando sea largo */
+}
+
+/* Tipo */
+.mg-table th:nth-child(4),
+.mg-table td:nth-child(4) {
+  width: 12%;
+  text-align: center;
+}
+
+/* Fecha */
+.mg-table th:nth-child(5),
+.mg-table td:nth-child(5) {
+  width: 16%;              /* ↑ damos un poco más a fecha si quieres */
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Cantidad */
+.mg-table th:nth-child(6),
+.mg-table td:nth-child(6) {
+  width: 18%;
+  text-align: right;
+}
+.mg-paginator {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  background: #fff;
+}
+
+.mg-paginator__rows {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .9rem;
+  color: #475569;
+}
+
+.mg-paginator__rows select {
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 4px 8px;
+  background: #f8fafc;
+}
+
+.mg-paginator__status {
+  justify-self: center;
+  font-size: .9rem;
+  color: #475569;
+}
+
+.mg-paginator__controls {
+  justify-self: end;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mg-paginator__controls button {
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-width: 32px;
+  cursor: pointer;
+}
+
+.mg-paginator__controls button[disabled] {
+  opacity: .5;
+  cursor: default;
+}
+
+.mg-paginator__page {
+  font-size: .9rem;
+  color: #475569;
+  margin: 0 6px;
+}

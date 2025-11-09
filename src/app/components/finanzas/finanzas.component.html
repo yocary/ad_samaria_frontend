@@ -18,15 +18,16 @@
     </div>
   </section>
 
-          <button class="toolbar-btn" type="button" *ngIf="isPastor" (click)="openDiezmos()" aria-label="Abrir diezmos">
-          Diezmos
-        </button>
+  <button class="toolbar-btn" type="button" *ngIf="isPastor" (click)="openDiezmos()" aria-label="Abrir diezmos">
+    Diezmos
+  </button>
+
   <!-- TABS -->
-<mat-tab-group class="finz-tabs" [(selectedIndex)]="tabIndex">
+  <mat-tab-group class="finz-tabs" [(selectedIndex)]="tabIndex">
     <!-- MOVIMIENTOS GENERALES -->
     <mat-tab label="Movimientos generales">
       <div class="mg-wrap">
-        <!-- Toolbar simplificada -->
+        <!-- Toolbar -->
         <div class="toolbar">
           <div class="left">
             <div class="search">
@@ -36,36 +37,24 @@
           </div>
 
           <div class="right">
-            <!-- Selector de Mes y Año único -->
             <mat-form-field appearance="outline" class="month-field">
               <mat-label>Mes y Año</mat-label>
-
-              <!-- Input visible -->
-              <input class="month-display-input" [value]="displayMonth" aria-label="Mes y año seleccionado"
-                placeholder="MM/AAAA" readonly (click)="pickerMes.open()" />
-
-              <!-- Botón para abrir el calendario -->
-              <button mat-icon-button matSuffix type="button" (click)="pickerMes.open()"
-                aria-label="Abrir selector de mes">
+              <input class="month-display-input" [value]="displayMonth" placeholder="MM/AAAA" readonly
+                     (click)="pickerMes.open()" aria-label="Mes y año seleccionado" />
+              <button mat-icon-button matSuffix type="button" (click)="pickerMes.open()" aria-label="Abrir selector de mes">
                 <mat-icon>event</mat-icon>
               </button>
-
-              <!-- Input oculto al que se ancla el mat-datepicker -->
               <input matInput [matDatepicker]="pickerMes" [formControl]="monthCtrl" [max]="maxMonth"
-                class="visually-hidden-input" tabindex="-1" aria-hidden="true" />
-
-              <!-- Calendario de selección de mes -->
-              <mat-datepicker #pickerMes startView="multi-year" (monthSelected)="chosenMonthHandler($event, pickerMes)">
-              </mat-datepicker>
+                     class="visually-hidden-input" tabindex="-1" aria-hidden="true" />
+              <mat-datepicker #pickerMes startView="multi-year"
+                              (monthSelected)="chosenMonthHandler($event, pickerMes)"></mat-datepicker>
             </mat-form-field>
 
-            <!-- Botón de descarga -->
             <button class="btn btn--excel" type="button" (click)="downloadReporte()" [disabled]="!canDownload"
-              matTooltip="Genera el PDF del mes seleccionado" aria-label="Descargar reporte PDF">
+                    matTooltip="Genera el PDF del mes seleccionado" aria-label="Descargar reporte PDF">
               <mat-icon aria-hidden="true">download</mat-icon>
               <span>Descargar Reporte</span>
             </button>
-
           </div>
         </div>
 
@@ -78,23 +67,36 @@
                 <th>Tesorería</th>
                 <th>Categoría</th>
                 <th>Tipo</th>
+                <th>Fecha</th>
                 <th>Cantidad</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let r of movimientosGenerales; let i = index; trackBy: trackByMg">
-                <td>{{ i + 1 }}</td>
+              <tr *ngFor="let r of mgPaged; let i = index; trackBy: trackByMg">
+                <td>{{ pageIndex * pageSize + i + 1 }}</td>
                 <td>{{ r.treasury }}</td>
-                <td>{{ r.category }}</td>
+                <td [title]="r.category">{{ r.category }}</td>
                 <td>
                   <span class="badge" [ngClass]="r.type === 'Ingreso' ? 'badge-ingreso' : 'badge-egreso'">
                     {{ r.type }}
                   </span>
                 </td>
+                <td>{{ r.fecha }}</td>
                 <td>{{ r.amount | currency:'GTQ':'symbol':'1.2-2' }}</td>
               </tr>
             </tbody>
           </table>
+
+          <!-- PAGINADOR estilo "Miembros" -->
+          <mat-paginator
+            class="miembros__paginator"
+            [length]="total"
+            [pageSize]="pageSize"
+            [pageIndex]="pageIndex"
+            [pageSizeOptions]="pageSizeOptions"
+            [hidePageSize]="false"
+            (page)="onMgPage($event)">
+          </mat-paginator>
         </div>
 
         <!-- Estado vacío -->
@@ -114,12 +116,12 @@
           <h3 class="title">Tesorerías</h3>
         </div>
         <button class="toolbar-btn" type="button" (click)="openAddTesoreria()" aria-label="Agregar tesorería">
-           Agregar Tesorería
+          Agregar Tesorería
         </button>
-        <!-- Grid de tarjetas -->
+
         <div class="treas-grid" *ngIf="(treasuries?.length || 0) > 0; else emptyTreas">
-          <div class="treas-card" *ngFor="let t of treasuries; trackBy: trackByTreas" (click)="openTreasury(t)"
-            tabindex="0" role="button" (keyup.enter)="openTreasury(t)">
+          <div class="treas-card" *ngFor="let t of treasuries; trackBy: trackByTreas"
+               (click)="openTreasury(t)" tabindex="0" role="button" (keyup.enter)="openTreasury(t)">
             <div class="treas-card-header">
               <div class="treas-card-icon">
                 <mat-icon>account_balance_wallet</mat-icon>
@@ -130,7 +132,6 @@
           </div>
         </div>
 
-        <!-- Estado vacío tesorerías -->
         <ng-template #emptyTreas>
           <div class="empty-state">
             <mat-icon>list_alt</mat-icon>
@@ -140,10 +141,10 @@
       </div>
     </mat-tab>
   </mat-tab-group>
-<div class="miembros__footer">
-  <button mat-stroked-button color="primary" class="btn-back" (click)="back()">
-    <span class="btn-back__label">Regresar</span>
-  </button>
-</div>
 
+  <div class="miembros__footer">
+    <button mat-stroked-button color="primary" class="btn-back" (click)="back()">
+      <span class="btn-back__label">Regresar</span>
+    </button>
+  </div>
 </div>

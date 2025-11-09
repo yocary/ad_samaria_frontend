@@ -354,38 +354,47 @@ removeCategory(c: CategoriaUI): void {
   }
 
   addMovement() {
-    this.dialog
-      .open(DialogMovementComponent, {
-        width: '680px',
-        disableClose: true,
-  data: { treasuryId: this.treasuryId } as { treasuryId: number },
-      })
-      .afterClosed()
-      .subscribe((result: any) => {
-        if (result?.success) {
-          this.reloadMovimientos();
-          this.cargarResumen(this.currentPeriod);
-          if (result.reloadFinanzas) this.dialogRef.close({ reloadFinanzas: true });
-        }
-      });
-  }
+  this.dialog.open(DialogMovementComponent, {
+    width: '680px',
+    disableClose: true,
+    data: { treasuryId: this.treasuryId } as { treasuryId: number },
+  })
+  .afterClosed()
+  .subscribe((result: any) => {
+    if (result?.success) {
+      // recarga movimientos y kpis SIEMPRE
+      this.reloadMovimientos();
+      this.cargarResumen(this.currentPeriod);
+    }
+    if (result?.reloadFinanzas) {
 
-  editMovement(row: Movement) {
-    this.dialog
-      .open(DialogMovementComponent, {
-        width: '680px',
-        disableClose: true,
-        data: { treasuryId: this.treasuryId, movement: row },
-      })
-      .afterClosed()
-      .subscribe((result: any) => {
-        if (result?.success) {
-          this.reloadMovimientos();
-          this.cargarResumen(this.currentPeriod);
-          if (result.reloadFinanzas) this.dialogRef.close({ reloadFinanzas: true });
-        }
-      });
-  }
+      this._reloadFinanzasPorCategorias = true;
+
+      this.loadCategorias(); 
+    }
+
+  });
+}
+
+editMovement(row: Movement) {
+  this.dialog.open(DialogMovementComponent, {
+    width: '680px',
+    disableClose: true,
+    data: { treasuryId: this.treasuryId, movement: row },
+  })
+  .afterClosed()
+  .subscribe((result: any) => {
+    if (result?.success) {
+      this.reloadMovimientos();
+      this.cargarResumen(this.currentPeriod);
+    }
+    if (result?.reloadFinanzas) {
+      this._reloadFinanzasPorCategorias = true;
+      this.loadCategorias();
+    }
+
+  });
+}
 
   deleteMovement(row: Movement) {
     if (!row?.id) return;

@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 import { DialogAddTreasuryComponent } from './dialogs/dialog-add-treasury/dialog-add-treasury.component';
 import { DialogDiezmosComponent } from './dialogs/dialog-diezmos/dialog-diezmos.component';
 import { AuthService } from 'src/app/services/auth.service';
+import { PageEvent } from '@angular/material/paginator';
 
 type MGPeriod = 'mes' | 'mes_anterior' | 'anio' | 'todos';
 
@@ -22,6 +23,7 @@ interface MovimientoGeneralRow {
   categoryId: number;
   category: string;
   type: 'Ingreso' | 'Egreso';
+  fecha: string;
   amount: number;
 }
 
@@ -35,28 +37,37 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   // ===== KPIs
   totIngresos = 0;
   totEgresos = 0;
-  get totSaldo(): number {
-    return this.totIngresos - this.totEgresos;
-  }
+  get totSaldo(): number { return this.totIngresos - this.totEgresos; }
 
   loadingTreas = false;
+
   // ===== Selector de Mes Único
   monthCtrl: FormControl = new FormControl(new Date());
   maxMonth = new Date();
 
-    tabIndex = 0;
-
+  tabIndex = 0;
   canDownload = false;
-  // ===== Pestaña "Movimientos generales"
+
+  // ===== Movimientos generales
   searchGen = new FormControl('');
   movimientosGenerales: MovimientoGeneralRow[] = [];
 
-  // ===== Pestaña "Tesorerías"
+  // Paginación (client-side) + MatPaginator
+  mgPaged: MovimientoGeneralRow[] = [];
+  pageIndex = 0;
+  pageSize = 10;
+  pageSizeOptions = [10, 25, 50];
+  total = 0;
+  get totalPages(): number { return this.pageSize ? Math.ceil(this.total / this.pageSize) : 0; }
+
+  // Para poder usar Math.min en el template (si lo necesitas en otros lugares)
+  readonly Math = Math;
+
+  // ===== Tesorerías
   treasuries: Treasury[] = [];
 
-    isPastor = false;
-      private authSub?: Subscription;
-
+  isPastor = false;
+  private authSub?: Subscription;
   private subs = new Subscription();
 
   constructor(
@@ -64,13 +75,12 @@ export class FinanzasComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private snack: MatSnackBar,
     private router: Router,
-        private cdr: ChangeDetectorRef,
-           private auth: AuthService
+    private cdr: ChangeDetectorRef,
+    private auth: AuthService
   ) {}
 
   ngOnInit(): void {
-
-        this.authSub = this.auth.usuario.subscribe(u => {
+    this.authSub = this.auth.usuario.subscribe(u => {
       const roles = (u?.roles || []).map(r => (r || '').toUpperCase());
       this.isPastor = roles.includes('PASTOR') || roles.includes('ROLE_PASTOR');
     });
@@ -81,14 +91,16 @@ export class FinanzasComponent implements OnInit, OnDestroy {
     // Buscar con debounce
     this.subs.add(
       this.searchGen.valueChanges.pipe(debounceTime(250)).subscribe(() => {
+        this.pageIndex = 0; // reset
         this.loadMovimientosGenerales();
       })
     );
 
-    // Escuchar cambios en el selector de mes
+    // Cambios en el mes
     this.subs.add(
       this.monthCtrl.valueChanges.subscribe((selectedDate) => {
         if (selectedDate) {
+          this.pageIndex = 0; // reset
           this.loadMovimientosGenerales();
           this.loadTesorerias();
         }
@@ -98,46 +110,50 @@ export class FinanzasComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
+    this.authSub?.unsubscribe();
   }
 
   // ===================== MOVIMIENTOS GENERALES =====================
-  // finanzas.component.ts (en loadMovimientosGenerales)
   private loadMovimientosGenerales() {
     const q = (this.searchGen.value || '').toString().trim();
     const fechaSeleccionada = this.monthCtrl.value;
     const mesISO = this.formatMonthISO(fechaSeleccionada);
 
     this.movimientosGenerales = [];
+    this.mgPaged = [];
     this.totIngresos = 0;
     this.totEgresos = 0;
-    this.canDownload = false; // resetea mientras carga
+    this.canDownload = false;
 
     this.subs.add(
-      this.fin
-        .getMovimientosGenerales({ periodo: 'mes', mes: mesISO, q })
+      this.fin.getMovimientosGenerales({ periodo: 'mes', mes: mesISO, q })
         .subscribe(
           (resp: any) => {
             const items = (resp?.items ?? []) as MovimientoGeneralRow[];
             this.movimientosGenerales = items;
 
-            // KPI...
+            // KPI
             if (resp?.totales) {
               this.totIngresos = Number(resp.totales.ingresos || 0);
-              this.totEgresos = Number(resp.totales.egresos || 0);
+              this.totEgresos  = Number(resp.totales.egresos  || 0);
             } else {
-              this.totIngresos = items
-                .filter((r) => r.type === 'Ingreso')
-                .reduce((a, r) => a + (r.amount || 0), 0);
-              this.totEgresos = items
-                .filter((r) => r.type === 'Egreso')
-                .reduce((a, r) => a + (r.amount || 0), 0);
+              this.totIngresos = items.filter(r => r.type === 'Ingreso')
+                                      .reduce((a, r) => a + (r.amount || 0), 0);
+              this.totEgresos  = items.filter(r => r.type === 'Egreso')
+                                      .reduce((a, r) => a + (r.amount || 0), 0);
             }
 
-            // Habilita descarga solo si hay filas
-            this.canDownload = this.movimientosGenerales.length > 0;
+            // Paginación
+            this.total = this.movimientosGenerales.length;
+            this.pageIndex = 0; // reset al cargar
+            this.applyPaging();
+
+            this.canDownload = this.total > 0;
           },
-          (_) => {
+          _ => {
             this.movimientosGenerales = [];
+            this.mgPaged = [];
+            this.total = 0;
             this.totIngresos = 0;
             this.totEgresos = 0;
             this.canDownload = false;
@@ -145,18 +161,28 @@ export class FinanzasComponent implements OnInit, OnDestroy {
         )
     );
   }
+
+  private applyPaging(): void {
+    const start = this.pageIndex * this.pageSize;
+    const end = start + this.pageSize;
+    this.mgPaged = this.movimientosGenerales.slice(start, end);
+  }
+
+  // Evento del MatPaginator (como en Miembros)
+  onMgPage(e: PageEvent) {
+    this.pageIndex = e.pageIndex;
+    this.pageSize = e.pageSize;
+    this.applyPaging();
+  }
+
   // ===================== TESORERÍAS =====================
   private loadTesorerias() {
     const fechaSeleccionada = this.monthCtrl.value;
     const periodo = this.convertirFechaAPeriodo(fechaSeleccionada);
 
     this.subs.add(
-      this.fin
-        .getTesorerias({
-          estado: 'activas',
-          periodo, // Usar el mismo periodo convertido
-        })
-        .subscribe((rows) => {
+      this.fin.getTesorerias({ estado: 'activas', periodo })
+        .subscribe(rows => {
           this.treasuries = this.fin.mapToUI(rows || []);
         })
     );
@@ -165,34 +191,25 @@ export class FinanzasComponent implements OnInit, OnDestroy {
   // ===================== CONVERSIÓN FECHA A PERIODO =====================
   private convertirFechaAPeriodo(fecha: Date): MGPeriod {
     const ahora = new Date();
-    const fechaSeleccionada = new Date(
-      fecha.getFullYear(),
-      fecha.getMonth(),
-      1
-    );
+    const fechaSeleccionada = new Date(fecha.getFullYear(), fecha.getMonth(), 1);
     const mesActual = new Date(ahora.getFullYear(), ahora.getMonth(), 1);
     const mesAnterior = new Date(ahora.getFullYear(), ahora.getMonth() - 1, 1);
     const inicioAnio = new Date(ahora.getFullYear(), 0, 1);
 
-    // Comparar fechas para determinar el periodo
     if (fechaSeleccionada.getTime() === mesActual.getTime()) {
       return 'mes';
     } else if (fechaSeleccionada.getTime() === mesAnterior.getTime()) {
       return 'mes_anterior';
-    } else if (
-      fechaSeleccionada >= inicioAnio &&
-      fechaSeleccionada <= mesActual
-    ) {
+    } else if (fechaSeleccionada >= inicioAnio && fechaSeleccionada <= mesActual) {
       return 'anio';
     } else {
       return 'todos';
     }
   }
 
-openTreasury(t: Treasury) {
-  if (!t?.id) return;
-  this.dialog
-    .open(DialogTreasuryDetailComponent, {
+  openTreasury(t: Treasury) {
+    if (!t?.id) return;
+    this.dialog.open(DialogTreasuryDetailComponent, {
       width: '960px',
       disableClose: true,
       data: { treasuryId: t.id, treasuryName: t.name },
@@ -201,20 +218,15 @@ openTreasury(t: Treasury) {
     .subscribe((result: any) => {
       if (result?.changed || result?.reloadFinanzas) {
         this.loadTesorerias();
-        this.loadMovimientosGenerales(); // ← Esto recargará las finanzas
+        this.loadMovimientosGenerales();
       }
     });
-}
+  }
+
   // ===================== SELECTOR DE MES =====================
   downloadReporte() {
-    // Guard extra por si alguien intenta forzar el click
     if (!this.canDownload) {
-      // opcional: mostrar aviso
-      this.snack.open(
-        'No hay datos para generar el reporte en el mes seleccionado.',
-        'OK',
-        { duration: 3000 }
-      );
+      this.snack.open('No hay datos para generar el reporte en el mes seleccionado.', 'OK', { duration: 3000 });
       return;
     }
 
@@ -236,6 +248,7 @@ openTreasury(t: Treasury) {
       }
     );
   }
+
   get displayMonth(): string {
     const d = this.monthCtrl.value;
     if (!d) return '';
@@ -246,16 +259,12 @@ openTreasury(t: Treasury) {
 
   chosenMonthHandler(date: Date, datepicker: MatDatepicker<Date>) {
     const normalized = new Date(date.getFullYear(), date.getMonth(), 1);
-
-    // Verificar que no sea un mes futuro
     const hoy = new Date();
     const max = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
 
-    if (normalized <= max) {
-      this.monthCtrl.setValue(normalized);
-    } else {
-      this.monthCtrl.setValue(this.monthCtrl.value);
-    }
+    if (normalized <= max) this.monthCtrl.setValue(normalized);
+    else this.monthCtrl.setValue(this.monthCtrl.value);
+
     datepicker.close();
   }
 
@@ -263,42 +272,32 @@ openTreasury(t: Treasury) {
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
   }
 
-  // ===================== TRACK BY FUNCTIONS =====================
+  // ===================== TRACK BY =====================
   trackByMg = (_: number, r: MovimientoGeneralRow) =>
-    `${r.treasuryId}-${r.categoryId}-${r.type}`;
+    `${r.treasuryId}-${r.categoryId}-${r.type}-${r.fecha}-${r.amount}`;
   trackByTreas = (_: number, t: Treasury) => t.id;
 
-  back() {
-    this.router.navigate(['/dashboard']);
+  back() { this.router.navigate(['/dashboard']); }
+
+  openAddTesoreria(): void {
+    const ref = this.dialog.open(DialogAddTreasuryComponent, {
+      width: '460px',
+      disableClose: true
+    });
+
+    this.subs.add(
+      ref.afterClosed().subscribe((ok: boolean) => {
+        if (ok) {
+          this.tabIndex = 1;
+          this.loadTesorerias();
+          this.loadMovimientosGenerales();
+          this.snack.open('Tesorería creada con éxito', 'OK', { duration: 2000 });
+          this.cdr.markForCheck();
+        }
+      })
+    );
   }
 
-openAddTesoreria(): void {
-  const ref = this.dialog.open(DialogAddTreasuryComponent, {
-    width: '460px',
-    disableClose: true
-  });
-
-  this.subs.add(
-    ref.afterClosed().subscribe((ok: boolean) => {
-      console.log('Diálogo cerrado con:', ok); // ← Agrega este log
-      if (ok) {
-        console.log('Recargando datos...'); // ← Agrega este log
-        
-        // ir al tab "Tesorerías"
-        this.tabIndex = 1;
-
-        // recargar datos
-        this.loadTesorerias();
-        this.loadMovimientosGenerales();
-
-        // feedback
-        this.snack.open('Tesorería creada con éxito', 'OK', { duration: 2000 });
-
-        this.cdr.markForCheck();
-      }
-    })
-  );
-}
   openDiezmos(): void {
     this.dialog.open(DialogDiezmosComponent, {
       width: '980px',

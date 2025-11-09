@@ -31,7 +31,7 @@ interface PersonaMini {
   selector: 'app-dialog-movement',
   templateUrl: './dialog-movement.component.html',
   styleUrls: ['./dialog-movement.component.scss'],
-      encapsulation: ViewEncapsulation.None,
+  encapsulation: ViewEncapsulation.None,
 })
 export class DialogMovementComponent implements OnInit {
   // 🔁 Alta/Edición
@@ -61,7 +61,7 @@ export class DialogMovementComponent implements OnInit {
   categorias: CategoriaMini[] = [];
   metodosPago: MetodoPago[] = [];
 
-    treasuryId!: number;
+  treasuryId!: number;
 
   constructor(
     private fb: FormBuilder,
@@ -76,7 +76,7 @@ export class DialogMovementComponent implements OnInit {
   private parseLocalYmd(s: string): Date {
     // s esperado: 'YYYY-MM-DD'
     const [y, m, d] = s.split('-').map(Number);
-    return new Date(y, (m - 1), d);
+    return new Date(y, m - 1, d);
   }
 
   private normalizeToLocalMidnight(d: Date): Date {
@@ -93,8 +93,8 @@ export class DialogMovementComponent implements OnInit {
   ngOnInit(): void {
     this.isEdit = !!this.data?.movement;
 
-      // ← agrega esta línea
-  this.treasuryId = this.data.treasuryId;
+    // ← agrega esta línea
+    this.treasuryId = this.data.treasuryId;
 
     // 1) Cargar métodos de pago primero (porque al editar quizá necesitemos resolver el ID por nombre)
     this.loadMetodosPago(() => {
@@ -121,7 +121,10 @@ export class DialogMovementComponent implements OnInit {
           // ===== Fecha sin desfase =====
           let fecha: Date;
           if (mv.date) {
-            if (typeof mv.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(mv.date)) {
+            if (
+              typeof mv.date === 'string' &&
+              /^\d{4}-\d{2}-\d{2}$/.test(mv.date)
+            ) {
               // Llega 'YYYY-MM-DD' → parseo local
               fecha = this.parseLocalYmd(mv.date);
             } else {
@@ -250,54 +253,56 @@ export class DialogMovementComponent implements OnInit {
     });
   }
 
-private loadCategorias(tipo: 'Ingreso' | 'Egreso', afterLoad?: () => void) {
-  const tesoreriaId = this.treasuryId; // o this.data.treasuryId
-  if (!tesoreriaId) return;
+  private loadCategorias(tipo: 'Ingreso' | 'Egreso', afterLoad?: () => void) {
+    const tesoreriaId = this.treasuryId; // o this.data.treasuryId
+    if (!tesoreriaId) return;
 
-  this.fin.getCategoriasPorTipo(tipo, tesoreriaId).subscribe({
-    next: (list) => {
-      this.categorias = (list || []).filter(c =>
-        !['diezmo','diezmos'].includes((c.nombre || '').trim().toLowerCase())
-      );
+    this.fin.getCategoriasPorTipo(tipo, tesoreriaId).subscribe({
+      next: (list) => {
+        this.categorias = (list || []).filter(
+          (c) =>
+            !['diezmo', 'diezmos'].includes(
+              (c.nombre || '').trim().toLowerCase()
+            )
+        );
 
-      // ⚠️ Si no hay categorías, avisa y cierra el diálogo.
-      if (!this.categorias.length) {
-        // deshabilita el control para evitar validaciones molestas
+        // ⚠️ Si no hay categorías, avisa y cierra el diálogo.
+        if (!this.categorias.length) {
+          // deshabilita el control para evitar validaciones molestas
+          this.form.get('categoriaId')?.disable({ emitEvent: false });
+          Swal.fire({
+            icon: 'info',
+            title: 'Sin categorías',
+            text: 'Primero debes crear al menos una categoría en esta tesorería.',
+            confirmButtonText: 'Entendido',
+          }).then(() => {
+            this.ref.close({ success: false, reason: 'no_categories' });
+          });
+          return;
+        }
+
+        // hay categorías -> habilita el control por si estaba deshabilitado
+        this.form.get('categoriaId')?.enable({ emitEvent: false });
+
+        afterLoad?.();
+      },
+      error: (e) => {
+        console.error('Error cargando categorías', e);
+        this.categorias = [];
+        // también deshabilita el control ante error
         this.form.get('categoriaId')?.disable({ emitEvent: false });
         Swal.fire({
-          icon: 'info',
-          title: 'Sin categorías',
-          text: 'Primero debes crear al menos una categoría en esta tesorería.',
-          confirmButtonText: 'Entendido'
+          icon: 'error',
+          title: 'No se pudieron cargar las categorías',
+          text: 'Intenta de nuevo o verifica la conexión.',
+          confirmButtonText: 'Ok',
         }).then(() => {
-          this.ref.close({ success: false, reason: 'no_categories' });
+          this.ref.close({ success: false, reason: 'cat_load_error' });
         });
-        return;
-      }
-
-      // hay categorías -> habilita el control por si estaba deshabilitado
-      this.form.get('categoriaId')?.enable({ emitEvent: false });
-
-      afterLoad?.();
-    },
-    error: (e) => {
-      console.error('Error cargando categorías', e);
-      this.categorias = [];
-      // también deshabilita el control ante error
-      this.form.get('categoriaId')?.disable({ emitEvent: false });
-      Swal.fire({
-        icon: 'error',
-        title: 'No se pudieron cargar las categorías',
-        text: 'Intenta de nuevo o verifica la conexión.',
-        confirmButtonText: 'Ok'
-      }).then(() => {
-        this.ref.close({ success: false, reason: 'cat_load_error' });
-      });
-      afterLoad?.();
-    },
-  });
-}
-
+        afterLoad?.();
+      },
+    });
+  }
 
   // ========= personas =========
 
@@ -317,44 +322,44 @@ private loadCategorias(tipo: 'Ingreso' | 'Egreso', afterLoad?: () => void) {
 
   // ========= guardar =========
 
-save() {
-  if (this.form.invalid) {
-    this.form.markAllAsTouched();
-    return;
-  }
+  save() {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
-  const v = this.form.value;
-  const payload: CrearMovimientoReq = {
-    tipo: v.type!,
-    fecha: this.formatLocalYmd(v.date as Date),
-    concepto: '',
-    cantidad: Number(v.amount),
-    metodoPagoId: v.metodoPagoId!,
-    personaId: (v.personaId as number) || undefined,
-    categoriaId: (v.categoriaId as number) || undefined,
-    observaciones: v.notes || '',
-  };
+    const v = this.form.value;
+    const payload: CrearMovimientoReq = {
+      tipo: v.type!,
+      fecha: this.formatLocalYmd(v.date as Date),
+      concepto: '',
+      cantidad: Number(v.amount),
+      metodoPagoId: v.metodoPagoId!,
+      personaId: (v.personaId as number) || undefined,
+      categoriaId: (v.categoriaId as number) || undefined,
+      observaciones: v.notes || '',
+    };
 
-  if (this.isEdit && this.data.movement?.id) {
-    this.fin
-      .updateMovement(this.data.treasuryId, this.data.movement.id, payload)
-      .subscribe({
-        next: () => this.ref.close({ success: true, reloadFinanzas: true }), // ← Cambia aquí
+    if (this.isEdit && this.data.movement?.id) {
+      this.fin
+        .updateMovement(this.data.treasuryId, this.data.movement.id, payload)
+        .subscribe({
+          next: () => this.ref.close({ success: true, reloadFinanzas: true }), // ← Cambia aquí
+          error: (err) => {
+            console.error('Error al actualizar movimiento', err);
+            this.ref.close({ success: false, reloadFinanzas: false }); // ← Cambia aquí
+          },
+        });
+    } else {
+      this.fin.addMovements(this.data.treasuryId, payload).subscribe({
+        next: () => this.ref.close({ success: true, reloadFinanzas: true }),
         error: (err) => {
-          console.error('Error al actualizar movimiento', err);
-          this.ref.close({ success: false, reloadFinanzas: false }); // ← Cambia aquí
+          console.error('Error al crear movimiento', err);
+          this.ref.close({ success: false, reloadFinanzas: false });
         },
       });
-  } else {
-    this.fin.addMovements(this.data.treasuryId, payload).subscribe({
-      next: () => this.ref.close({ success: true, reloadFinanzas: true }), // ← Cambia aquí
-      error: (err) => {
-        console.error('Error al crear movimiento', err);
-        this.ref.close({ success: false, reloadFinanzas: false }); // ← Cambia aquí
-      },
-    });
+    }
   }
-}
   cancel() {
     this.ref.close();
   }

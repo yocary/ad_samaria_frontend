@@ -432,6 +432,7 @@ getMovimientosGenerales(params: { periodo?: 'mes'|'mes_anterior'|'anio'|'todos';
           categoryId: x.categoriaId ?? x.categoryId ?? x.categoria_id,
           category:   x.categoria   ?? x.category   ?? x.categoria_nombre ?? x.categoriaName,
           type:       (x.tipo ?? x.type) as ('Ingreso'|'Egreso'),
+          fecha:      x.fecha ?? x.date,
           amount:     x.amount ?? x.monto ?? x.cantidad
         }));
         const totales = resp.totales
